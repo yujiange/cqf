@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>通知详情</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style>
+			*{
+				-webkit-user-select:text;
+				user-select:text;
+			}
+			body {
+				background-color: #fff;
+			}
+			#submit-btn{cursor:pointer}
+			.info_view.mui-content{
+				background-color: #FFFFFF;
+			}
+			.info_view{
+				width: 100%;
+			}
+			.info_view p{
+				text-indent:2em;
+				font-size: 22px;
+				color: #000000;
+				width: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">通知详情</h1>
+		</header>
+		<div class="mui-content info_view">
+			
+		</div>
+
+		<!-- 重连遮罩层	start -->
+		<!-- @touchmove.prevent -->
+		<div class="stopBlock">
+			<!-- 重连时禁止用户操作界面 -->
+			<div class="centers content">
+				<h3 class="centers title txt_2">温馨提示!</h3>
+				<p class="font_20 green txt_1">您已断开连接,已为您重连&nbsp;<span class="red txt_1 counts"></span>&nbsp;次</p>
+			</div>
+		</div>
+		<!-- 重连遮罩层	end -->
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init();
+			var id;
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				id = self.vid;
+				ajax("/notice/detail",{
+					"id":id
+				},function(res){
+					console.log(JSON.stringify(res));
+					var data = res.result;
+					console.log(data.content)
+					$(".info_view").append("<p>"+data.content+"</p>")
+				},"POST")
+			})
+		</script>
+	</body>
+
+</html>

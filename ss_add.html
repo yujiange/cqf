@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>申请申诉</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<link rel="stylesheet" href="css/mui.picker.min.css" />
+		<style>
+			.mui-input-group .none:after, .mui-input-group:after { height: 0;}
+			.area-box { margin: 0 15px; }
+			.mui-input-group .textarea { border: 1px solid #eee; border-radius: 5px; }
+		</style>
+	</head>
+
+	<body class="b_white">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">申请申诉</h1>
+		</header>
+
+		
+		<div class="mui-content">
+				<form class="mui-input-group" id="form">
+					<div class="mui-input-row">
+						<label>申诉编号：</label>
+						<input type="text" class="mui-input-clear" name="code" placeholder="请输入申诉编号" disabled>
+					</div>
+					<div class="mui-input-row">
+						<label>申诉类型：</label>
+						<input type="text" class="mui-input-z" name="status" id="status" placeholder="请选择申诉类型">
+						<span class="mui-icon mui-icon-arrowdown"></span>
+					</div>
+					<div class="mui-input-row none">
+						<label>申诉内容：</label>
+					</div>
+					<div class="area-box"><textarea placeholder="请输入申诉内容" rows="5" class="textarea"></textarea></div>
+				</form>
+			</div>
+			<nav class="mui-bar mui-bar-tab bottom-fix"><button type="button" class="btn-blue" id="submit-btn">确认申诉</button></nav>
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/mui.picker.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/mui.poppicker.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init()
+			$(function () {
+				//初始化 pick
+				var userPicker = new mui.PopPicker();
+				userPicker.setData([{
+					value: 1,
+					text: "商家申诉"
+				}, {
+					value: 0,
+					text: '用户申诉'
+				}]);
+				//点击文本框弹出选择器
+				var showUserPickerButton = document.getElementById('status');
+				showUserPickerButton.addEventListener('tap', function (event) {
+					userPicker.show(function (items) {
+						var val = items[0].value;
+						showUserPickerButton.value = items[0].text;
+					});
+				}, false);
+				$("#submit").on("tap",function () {
+					//文本框是否为空
+					if (empty()) {
+						return false;
+					}
+					//两次密码是否一致
+					if (!ed("y_pass", "pass")) {
+						return false;
+					}
+					ajax("", getFormData($('#form')), function (data) {
+
+					})
+				})
+			})
+		</script>
+	</body>
+
+</html>

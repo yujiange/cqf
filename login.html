@@ -1,0 +1,270 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>登录</title>
+        <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+        <link href="css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" href="css/public.css">
+        <link rel="stylesheet" href="css/registeredLogin.css">
+        <script src="js/jquery-2.1.0.js"></script>
+        <script src="js/mui.min.js"></script>
+        <script src="js/vue-2.6.10.js"></script>
+		<style>
+			/* #wrap{display: none;} */
+			#infoWrap{display: none;height: 100%;width: 100%;position: absolute;font-size:30px;color: #ccc;margin: 0;padding: 40px 20px;/* border: 1px solid red;min-height: 200px; */}
+			#infoWrap .content{/* position: absolute;top: 50%;left: 50%; transform:translate(-50%,-75%);min-height: 200px; */
+				border: 1px solid #fff;box-shadow:0 0 4px rgba(0,0,0,.5);
+				border-radius:10px;
+				padding: 45px 20px;
+				margin: 40px auto;
+			}
+			#infoWrap .bold{font-weight: bold;}
+			#infoWrap .red{color: #f00;}
+			#infoWrap .green{color: green;}
+			.centers{text-align: center;margin:0 0 20px 0;}
+			#infoWrap .title{font-size: 40px;}
+			/* 镂空字体 */
+			.txt_1{font-weight: bolder;-webkit-text-stroke:1px #ff9c00;color: transparent;}
+			/* 渐变文字 */
+			.txt_2{background: linear-gradient(to bottom,blue,red);-webkit-text-fill-color: transparent;-webkit-background-clip: text;}
+			/* 模糊 */
+			.txt_3 {text-shadow: 0 0 5px red;-webkit-text-fill-color: transparent;}
+		</style>
+    </head>
+    <body>
+		<!-- v-if="versionFlag>5" -->
+        <div id="wrap">
+            <div class="main">
+                <img class="appNameImage" :src="appNameImage" alt="">
+                
+                <div class="registrationReset">
+                    <form action="" id="myform">
+                        <!-- 用户名密码登录    start -->
+                        <div class="userNamePassword">
+                            <div class="flexRow registrationReset_List" v-for="(item,index) in userNamePassword" v-key="index">
+                                <div class="iconImg">
+                                    <img :src="item.url" alt="">
+                                </div>
+                                <!-- input输入框 -->
+                                <input class="font_14 infoVal" :type="item.type" :placeholder="item.value" :class="{'reg_userLogin':!index,'reg_passwordLogin':index==1}">
+                            </div>
+                        </div>
+                        <!-- 用户名密码登录    end -->
+
+                        <!-- 用户名密码登录   start -->
+                        <div class="btnList">
+                            <input class="btns active userNamePasswordLogin" :type="btnList.type" :value="btnList.value">
+                        </div>
+                        <!-- 用户名密码登录    end -->
+
+        
+                        <!-- 忘记密码    start -->
+                        <div class="font_15 forgetPassword" :class="{'active':loginType==1}" @click="forgetPasswordFn" v-text="forgetPassword"></div>
+                        <!-- 忘记密码    end -->
+                    </form>
+                </div>
+            </div>
+        </div>
+		
+		
+		<!-- 重连遮罩层	start -->
+		<!-- @touchmove.prevent -->
+		<div class="stopBlock">
+			<!-- 重连时禁止用户操作界面 -->
+			<div class="centers content">
+				<h3 class="centers title txt_2">温馨提示!</h3>
+				<p class="font_20 green txt_1">您已断开连接,已为您重连&nbsp;<span class="red txt_1 counts"></span>&nbsp;次</p>
+			</div>
+		</div>
+		<!-- 重连遮罩层	end -->
+		
+		
+		<!-- 版本过低提示		start -->
+		<div class="infoWrap" id="infoWrap">
+			<div class="centers content">
+				<h3 class="centers title txt_2">温馨提示!</h3>
+				<!-- <p>检测到您当前手机版本为<span id="mobileModels"></span>&nbsp;<span class="red bold versionNumber"></span><span class="red bold">.0</span></p> -->
+				
+				<p>检测到您当前手机版本为&nbsp;
+				<span id="mobileModels" class="red bold"></span>
+				<span class="red bold">:&nbsp;</span>
+				<span class="red bold versionNumber"></span>
+				</p>
+				<p>您的手机内核浏览器过低不支持此应用,请您对内核浏览器进行更新升级至&nbsp;<span class="green bold">6.0</span>&nbsp;版本及以上</p>
+			</div>
+		</div>
+		<!-- 版本过低提示	end -->
+        <script src="js/mui.js"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<!-- 验证码倒计时 -->
+		<script src="js/Countdown.js"></script>
+        <script type="text/javascript">
+            var app=new Vue({
+                el:'#wrap',
+                data:{
+					// versionFlag:thisVersionNumber,
+					versionFlag:localStorage.getItem("getVCodeNumber"),
+                    loginType:0,
+
+                    appNameImage:'images/appNameImage.png',
+                    verificaCode:'获取验证码',
+                    forgetPassword:'忘记密码',
+
+
+                    // 用户密码登录
+                    userNamePassword:[{
+                        type:'text',
+                        url:'images/icon_user.png',
+                        value:'请输入用户名'
+                    },{
+                        type:'password',
+                        url:'images/icon_pass.png',
+                        value:'请输入密码'
+                    }],
+
+                    // 登录按钮    
+                    btnList:{
+                        type:'submit',
+                        // type:'button',
+                        value:'登录账号'
+                    },
+                },
+                methods:{
+                    forgetPasswordFn(){
+						this.loginType=1;
+						$(window).attr('location','retrievePassword.html');
+                    },
+                }
+            });
+            
+            
+			var userLogin_Boolean = false;
+			var passwordLogin_Boolean=false;
+            
+            /* -----------------------------验证规则 start---------------------------- */
+            // verifiy
+			// 验证登陆用户名 规则4-8位用户名
+			function verifiyUser_login(){
+				var userNames=$(".reg_userLogin").val();
+				// console.log('userNames---',userNames);
+				if(userNames == null || userNames == ''){
+				    userLogin_Boolean = false;
+				    mui.toast('用户名不能为空',{duration:'short',type:'div'});
+				    return false;
+				}else if((/^[A-Za-z0-9_-]{3,20}$/).test($(".reg_userLogin").val())){
+				    userLogin_Boolean = true;
+				    return false;
+				}else {
+				    mui.toast('请输入3到20位用户名',{duration:'short',type:'div'});
+				    userLogin_Boolean = false;
+				    return false;
+				};
+			};
+			
+			// 验证登陆密码
+			function verifiyPassword_login(){
+				var regPassword=$(".reg_passwordLogin").val();
+				// console.log('regPassword---',regPassword);
+				
+				if(!userLogin_Boolean){
+				    verifiyUser_login();
+				}else{
+				    if(regPassword == null || regPassword == ''){
+				        mui.toast('密码不能为空',{duration:'short',type:'div'});
+				        passwordLogin_Boolean = false;
+				        return false;
+				    }else if ((/^[A-Za-z0-9_-]{3,20}$/).test(regPassword)){
+				        passwordLogin_Boolean = true;
+				        return false;
+				    }else {
+				        mui.toast('请输入3-20位密码',{duration:'short',type:'div'});
+				        passwordLogin_Boolean = false;
+				        return false;
+				    };
+				};
+			};
+
+            /* -------------------------------------验证规则 end---------------------------------------- */
+
+            // 登陆用户名
+			$('.reg_userLogin').blur(function(){
+			    verifiyUser_login();
+			});
+
+            // 登陆密码输入框
+			$('.reg_passwordLogin').blur(function(){
+				verifiyPassword_login();
+			});	
+			
+			mui.init();
+			$(function () {
+				// 是否登录过
+				if (localStorage.getItem("token")) {
+					setTimeout(function () {
+						//websocket对象是否存在,存在就销毁
+						if(ws)
+							ws.close();
+						updateLoginTime(mbId());
+						create_view("index","index.html");
+						localStorage.setItem("placeSatus", '0');
+						// plus.webview.currentWebview().close();
+					}, 500)
+				};
+			
+				$(".userNamePasswordLogin").on("click",function (e) {
+					e.preventDefault();//阻止默认行为（表单提交）
+					if(!userLogin_Boolean){
+					    //验证用户名
+						verifiyUser_login();
+					}else if(!passwordLogin_Boolean){
+					    // 验证密码
+						verifiyPassword_login();
+					}else if(userLogin_Boolean && passwordLogin_Boolean){
+					
+						/* ---------------------------------------------------- */
+						var name=$(".reg_userLogin").val();
+						var password=$(".reg_passwordLogin").val();
+						var url = "/newLogin?name="+name+"&pwd="+password;
+						console.log(url)
+						var temp = {};
+						ajax(url, {
+						},  function (data) {
+						  console.log(JSON.stringify(data));
+							if (data.ok) {
+								 localStorage.setItem("token", data.token.appId);
+								 localStorage.setItem("mbId", data.token.mbId);
+								 localStorage.setItem("parentId", data.token.parentId);
+								 localStorage.setItem("wxRate", data.token.wxRate);
+								 localStorage.setItem("ylRate", data.token.ylRate);
+								 localStorage.setItem("ysfRate", data.token.ysfRate);
+								 localStorage.setItem("zfbRate", data.token.zfbRate);
+								 localStorage.setItem("zfblRate", data.token.zfblRate);
+								 localStorage.setItem("qqRate", data.token.qqRate);
+								 // 账号
+								 localStorage.setItem("mbName", data.token.mbName);
+								 // 用户名
+								 localStorage.setItem("mbLinkman", data.token.mbLinkman);
+								 // 设置抓单状态
+								 create_view("index", "index.html");
+								 localStorage.setItem("placeSatus", '0');
+								 timer2=setTimeout(outLoginFn,3000);
+								 // plus.webview.currentWebview().close();
+							}else {
+								mui.alert(data.message,' ','确定',function (e) {
+									localStorage.removeItem("token");
+									localStorage.removeItem("user");
+								},'div')
+							}
+						}, "POST");
+
+						/* ---------------------------------------------------- */
+						
+					}else {
+					    mui.toast('请完善信息',{duration:'short',type:'div'});
+					};
+				});
+			});
+        </script>
+    </body>
+</html>

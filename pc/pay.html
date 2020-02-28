@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>收银台</title>
+		<link rel="stylesheet" href="css/pay.css" />
+	</head>
+
+	<body>
+		<div class="topbar clearfix">
+			<div class="container">
+				<div class="fr">
+					<span class="user">欢迎您，13988886666</span>
+					<span class="lind">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+					<a class="gray">我的订单</a>
+					<span class="lind">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+					<a><img src="images/i_wx.png" alt="">微信</a>
+					<span class="lind">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+					<a><img src="images/i_msg.png" alt="">联系客服</a>
+				</div>
+			</div>
+		</div>
+		<header class="header">
+			<div class="container">
+				<div class="tit">|&nbsp;&nbsp;收银台</div>
+			</div>
+		</header>
+		<div class="main">
+			<div class="container">
+				<div class="tips red">
+					<div class="tit">重点提示</div>
+					<ol>
+						<li>请勿直接打款到之前充值的卡号,每次充值重新匹配账号。否则不能到账，损失自行承担!</li>
+						<li>订单超过5分钟未付款则将超时自动取消，超时取消之后，请不要再继续付款，如仍需充值请重新提交订单。</li>
+					</ol>
+				</div>
+				<div class="pays">
+					<div class="tit">您的支付信息</div>
+					<div class="info"><span class="fr">支付金额：<i class="red">8888元</i></span>时间：2019-02-27</div>
+					<div class="box">
+						<div class="info">支付方式：微信支付</div>
+						<div class="clearfix">
+							<div class="fl code">
+								<strong class="red">实名：王老二</strong><br>
+								<img src="images/code.png" alt="">
+							</div>
+							<div class="fl">
+								<div class="jiantou">请使用微信扫描左侧二维码<br>已完成支付</div>
+								<div class="times">五分钟倒计时：还剩<span id="time">300</span>s</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			times();
+			function times() {
+				// 五分钟倒计时
+				var time = 5*60;
+				var set = setInterval(function () {
+					if (time > 0) {
+						time--;
+						document.getElementById('time').innerHTML = time;
+					} else {
+						clearInterval(set);
+					}
+				}, 1000)
+			}
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,38 @@
+.mui-col-sm-4{
+	width: 70px;
+	height: 70px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #36A9CE;
+	font-size: 14px;
+	box-shadow: 5px 5px 5px #D5D5D5;
+}
+.mui-row{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin: 15px 0;
+}
+.mui-row a{
+	color: #000000;
+}
+button{
+	width: 40%;    		
+	height: 40px;
+	border: 1px solid #000 !important;
+}
+.mui-content{
+	text-align: center;
+}
+.mar{
+	height:50px;
+	border-bottom: 1px solid #D3D3D6;
+	display: flex;
+	align-items: center;
+	width: 100%;
+}
+marquee{
+	width: 95%;
+	margin: 0 auto;
+}

@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>充值</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style type="text/css">
+			.bottom-fix .line {
+				padding-right: 1px;
+			}
+
+			.bottom-fix .btn-blue {
+				border-radius: 0;
+				border-top-left-radius: 3px;
+				border-top-right-radius: 3px;
+			}
+
+			.mui-input-row .mui-input-right {
+				top: 14px;
+			}
+
+			#ok_fk,
+			#ok_rg {
+				cursor: pointer
+			}
+
+			#bt_view {
+				margin: 30px auto;
+				width: 100%;
+				height: 70px;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: space-around;
+			}
+			#bt_view button{
+				width: 30%;
+				height: 60px;
+				background: #00A1E9;
+				color: #FFFFFF;
+				border-radius: 5px;
+				border: none;
+			}
+
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">充值</h1>
+		</header>
+
+		<div class="mui-content">
+			<form class="mui-input-group" id="form">
+				<div class="mui-input-row">
+					<label>充值方式：</label>
+					<input type="text" name="cz_fs" disabled value="银行卡转账">
+				</div>
+				<div class="mui-input-row">
+					<label>充值金额：</label>
+					<input type="number" class="mui-input-clear" name="cz_je" placeholder="请输入充值金额">
+				</div>
+				<div class="t-center red m_20" style="padding-bottom: 20px;">*请填写正确的金额</div>
+			</form>
+		</div>
+		<div id="bt_view">
+			<button type="button" class="recharge_list">充值记录</button>
+			<button type="button" class="recharge">确认金额</button>
+		</div>
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init({
+				beforeback: function() {
+					//获得父页面的webview
+					var list = plus.webview.currentWebview().opener();
+					//触发父页面的自定义事件(refresh),从而进行刷新
+					mui.fire(list, 'refresh');
+					//返回true,继续页面关闭逻辑
+					return true;
+				}
+			});
+			$(".recharge").on("tap", function() {
+				var money = $("[name='cz_je']").val();
+					create_view("cz_detail", "cz_detail.html",{},{
+						"money":money
+					});
+			})
+			$(".recharge_list").on("tap",function(){
+				create_view("cz_list","cz_list.html");
+			})
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>提现记录</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" href="css/public.css">
+		<script src="js/jquery-2.1.0.js"></script>
+		<script src="js/vue-2.6.10.js"></script>
+		<style>
+			/* header.mui-bar{background: rgba(37,111,249,1);background-image: none;} */
+			.cashOutBox{margin:44px 0 80px 0;}
+			.cashOutItem{color: #949494;/* width: 92%;margin: 0 auto; */padding: 20px 4%;border-bottom: 1px solid #ccc;}
+			/* .cashOutItem:first-child{border-top: 1px solid #ccc;} */
+			.cashOutList:nth-of-type(2){margin-top: 4px;}
+			.cashOutList>span:nth-of-type(2){margin-left: 4px;}
+			.caynColor{/* color: #333; */color: #f20918;}
+			.tabPart{
+				text-align: center;
+				position: fixed;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+			}
+			.tabPart button{
+				float:left;
+				width: 50%;
+				color:#000000;
+				font-size: 18px;
+				height: 35px;
+				border-radius: 0;
+				background-color:rgba(242,242,242,1);
+				border: none;
+			}
+			.tabPart button.active{
+				background-color:rgba(22,155,213,1);
+				color:#fff;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="wrap" v-cloak>
+			<header class="mui-bar mui-bar-nav">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+				<h1 class="mui-title">提现记录</h1>
+			</header>
+			<div class="tabPart mui-clearfix">
+				<button type="button" :class="newAccountSectionShow==0?'active':''" @tap="gotoIndex(0)">保证金提现记录</button>
+				<button type="button" :class="newAccountSectionShow!=0?'active':''" @tap="gotoIndex(1)">佣金提现记录</button>
+			</div>
+			<div class="cashOutBox" v-show="!newAccountSectionShow">
+				<div class="justify-content font_14 cashOut cashOutItem" v-for="(item,index) in cashOutItem" v-key="index">
+					<div class="cashOutListBox" >
+						<div class="flex cashOutList" v-for="(list,subIndex) in cashOutTitle" v-key="subIndex">
+							<span v-text="list+' : '"></span>
+							<span class="font_14 bold caynColor" v-if="!subIndex" v-text="item.money"></span>
+							<span class="font_14" v-if="subIndex==1" v-text="item.updateTime"></span>
+						</div>
+					</div>
+					<div v-if="!item.status" v-text="cashOutState[0]"></div>
+					<div v-if="item.status==1" v-text="cashOutState[1]"></div>
+					<div v-else-if="item.status=='2'" v-text="cashOutState[2]"></div>
+					<div v-else-if="item.status=='-1'" v-text="cashOutState[3]"></div>
+				</div>
+			</div>
+			<div class="cashOutBox" v-show="newAccountSectionShow">
+				<div class="justify-content font_14 cashOut cashOutItem" v-for="(item,index) in cashOutItem" v-key="index">
+					<div class="cashOutListBox" >
+						<div class="flex cashOutList" v-for="(list,subIndex) in cashOutTitle" v-key="subIndex">
+							<span v-text="list+' : '"></span>
+							<span class="font_14 bold caynColor" v-if="!subIndex" v-text="item.withdrawMoney"></span>
+							<span class="font_14" v-if="subIndex==1" v-text="item.createTime"></span>
+						</div>
+					</div>
+					<div v-if="!item.withdrawState" v-text="cashOutState[0]"></div>
+					<div v-if="item.withdrawState==1" v-text="cashOutState[2]"></div>
+					<div v-else-if="item.withdrawState=='-1'" v-text="cashOutState[3]"></div>
+				</div>
+			</div>
+		</div>
+		
+		<script src="js/mui.js"></script>
+		<script src="js/comm.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			var app=new Vue({
+				el:'#wrap',
+				data:{
+					cashOutTitle:['申请金额','操作日期'],
+					cashOutState:['待审核','处理中','成功', "失败或驳回"],
+					cashOutItem:[],
+					newAccountSectionShow:0
+				},
+				created: function() {
+					var that = this;
+					getList(this,0);
+				},
+				methods:{
+					gotoIndex(n){
+						if(!n){
+							this.newAccountSectionShow = 0;
+							getList(this,0);
+						}else{
+							this.newAccountSectionShow=1;
+							getList(this,1);
+						}
+					}
+				}
+			});
+			function getList(that,type){
+				var url = '';
+				var theType = '';
+				if(!type){
+					url = "/memberWithdrawal/list?memberId="+mbId();
+					theType = "GET";
+				}else{
+					url = "/check/list?memberId="+mbId();
+					theType = "POST";
+				}
+				ajax(url, {}, function(res) {
+					var data;
+					if(!type){
+						data = JSON.stringify(res.list);
+					}else{
+						data = JSON.stringify(res.result);
+					}
+					// console.log(data);
+					// 判断数据是否为 undefined
+					if(data == undefined){
+						that.cashOutItem = [];
+					}else{
+						that.cashOutItem = JSON.parse(data);
+					}
+				}, theType);
+			}
+		</script>
+	</body>
+</html>

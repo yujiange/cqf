@@ -1,0 +1,291 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>充值</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style type="text/css">
+			input,
+			label~input[type=text],
+			.defaultBanks>input,
+			.defaultBankText {
+				font-size: 14px;
+				padding-left: 6px;
+				/* color: #838287; */
+			}
+
+			input::-webkit-input-placeholder {
+				color: #838287;
+			}
+
+			input::-moz-placeholder {
+				/* Mozilla Firefox 19+ */
+				color: #838287;
+			}
+
+			input:-moz-placeholder {
+				/* Mozilla Firefox 4 to 18 */
+				color: #838287;
+			}
+
+			input:-ms-input-placeholder {
+				/* Internet Explorer 10-11 */
+				color: #838287;
+			}
+
+			.mui-input-group .mui-input-row:after {
+				position: absolute;
+				right: 0;
+				bottom: 0;
+				/* left: 15px; */
+				left: 0px;
+				height: 1px;
+				content: '';
+				-webkit-transform: scaleY(.5);
+				transform: scaleY(.5);
+				background-color: #c8c7cc;
+			}
+
+
+			.bottom-fix .line {
+				padding-right: 1px;
+			}
+
+			.bottom-fix .btn-blue {
+				border-radius: 0;
+				border-top-left-radius: 3px;
+				border-top-right-radius: 3px;
+			}
+
+			.mui-input-row .mui-input-right {
+				top: 14px;
+			}
+
+			#ok_fk,
+			#ok_rg {
+				cursor: pointer
+			}
+
+			#bt_view {
+				margin: 30px auto;
+				width: 100%;
+				height: 70px;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: space-around;
+			}
+
+			#bt_view button {
+				width: 50%;
+				display: block;
+				margin: 30px auto;
+				height: 42px;
+				text-align: center;
+				font-size: 15px;
+				border-radius: 25px;
+				border: 1px solid rgba(49, 124, 223, 1);
+				background: rgba(49, 124, 223, 1);
+				color: #fff;
+			}
+
+
+			/* overflow: auto;overflow: hidden;overflow:visible; */
+			.mui-input-row.cashBanksRow {
+				width: 100%;
+				height: 50px;
+				position: relative;
+				overflow: visible;
+				/* overflow: hidden; */
+			}
+
+			.cashBanks {
+				position: relative;
+				height: 100%;
+			}
+
+			.mui-input-row label~.cashBanks {
+				float: right;
+				width: 65%;
+				margin-bottom: 0;
+				padding-left: 0;
+				border: 0;
+				/* border: 1px solid red; */
+			}
+
+			.defaultBanks {
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				top: 0;
+				left: 0;
+				/* border: 1px solid rgba(49,124,223,1); */
+			}
+
+			.defaultBanks>div.defaultBankText {
+				height: 100%;
+				line-height: 40px;
+				padding: 0 6px;
+			}
+
+			.cashBanksList {
+				box-shadow: 0 0 4px rgba(0, 0, 0, .5);
+				z-index: 999;
+				width: 70%;
+				position: absolute;
+				top: 100%;
+				left: 0;
+				/* width: 100%;left: -25%;left: -50%;transform:translate(25%,0); */
+				color: rgba(49, 124, 223, 1);
+				background: #fff;
+				border: 1px solid rgba(49, 124, 223, 1);
+				/* border-top: none; */
+			}
+
+			.cashBanksList>li {
+				padding: 6px 6px;
+			}
+
+			.cashBanksList>li:not(:first-child) {
+				border-top: 1px solid rgba(49, 124, 223, 1);
+			}
+
+			.cashBanksList>li.active {
+				background: rgba(49, 124, 223, 1);
+				color: #fff;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="wrap" class="font_14" v-cloak>
+			<header class="mui-bar mui-bar-nav">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+				<h1 class="mui-title">提现</h1>
+			</header>
+
+			<div class="mui-content">
+				<form class="mui-input-group" id="form">
+					<div class="mui-input-row cashBanksRow">
+						<label>提现银行：</label>
+						<div class="cashBanks">
+							<div class="defaultBanks">
+								<div class="mui-input-clear defaultBankText" v-text="defaultBanks" ></div>
+							</div>
+						</div>
+					</div>
+					<div class="mui-input-row cashBanksRow">
+						<label>提现支行：</label>
+						<div class="cashBanks">
+							<div class="defaultBanks">
+								<div class="mui-input-clear defaultBankText" v-text="tx_zhm" ></div>
+							</div>
+						</div>
+					</div>
+					<div class="mui-input-row">
+						<label>提现账户：</label>
+						<div class="cashBanks">
+							<div class="defaultBanks">
+								<div class="mui-input-clear defaultBankText" v-text="tx_account" ></div>
+							</div>
+						</div>
+					</div>
+					<div class="mui-input-row">
+						<label>提现账户名：</label>
+						<div class="cashBanks">
+							<div class="defaultBanks">
+								<div class="mui-input-clear defaultBankText" v-text="tx_name" ></div>
+							</div>
+						</div>
+					</div>
+					<div class="mui-input-row">
+						<label>账户手机号：</label>
+						<input type="number" class="mui-input-clear" name="tx_mobile" maxlength="11" placeholder="请输入账户手机号">
+					</div>
+					<div class="mui-input-row">
+						<label>提现金额：</label>
+						<input type="number" name="tx_money" class="mui-input-clear" v-model="tx_money" placeholder="请输入提现的金额">
+					</div>
+					<div class="mui-input-row">
+						<label >账户资金密码：</label>
+						<input type="password" class="mui-input-clear" name="funPassword" maxlength="11" v-model="funPassword" placeholder="请输入资金密码以验证身份">
+					</div>
+					<div class="t-center red m_20" style="padding-bottom: 20px;">*请填写正确的信息</div>
+				</form>
+			</div>
+			<div id="bt_view">
+				<button type="button" class="recharge">发起提现</button>
+			</div>
+		</div>
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/vue-2.6.10.js"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var app = new Vue({
+				el: '#wrap',
+				data: {
+					bankId:'',
+					defaultBanks: '',
+					tx_account: '',
+					tx_name:'',
+					defaultBanks:'',
+					tx_money:'',
+					tx_zhm:'',
+					funPassword:''
+				},
+				created: function() {
+					var that = this;
+					ajax("/memberWithdrawalBank/getListById?memberId="+mbId(), {}, function(res){
+						if(res.ok){
+							that.bankId = res.bank.id;
+							that.tx_name= res.bank.bankCardOwner;
+							that.defaultBanks= res.bank.bankName;
+							that.tx_account= res.bank.bankNo;
+							that.tx_zhm= res.bank.bankBranchName;
+						}
+					}, "GET");
+				},
+				methods: {
+					
+				}
+			});
+
+			mui.init({});
+			$(".recharge").on("tap", function() {
+				var money = $("[name='tx_money']").val().trim();
+				var mobile = $("[name='tx_mobile']").val().trim();
+				var funPassword = $("[name='funPassword']").val().trim();
+				money = money.replace(/\n/g, '');
+				mobile = mobile.replace(/\n/g, '');
+				if (money.indexOf(" ") < 0 && mobile.indexOf(" ") < 0 ) {
+					ajax("/memberWithdrawal/new-save", {
+						"mbId": mbId(),
+						"money": money,
+						"bankId": app.bankId,
+						"mobile": mobile,
+						"funPassword": funPassword
+					}, function(res) {
+						console.log(JSON.stringify(res));
+						if (res.ok) {
+							mui.alert('提现申请已提交', ' ', '确定', function(e) {
+								window.location.href = "index.html";
+							}, 'div')
+						} else {
+							mui.alert(res.message, ' ', '确定', function(e) {}, 'div')
+						}
+					}, "POST");
+				} else {
+					mui.alert('信息有误，请检查', ' ', '确定', function(e) {}, 'div')
+				}
+			});
+		</script>
+	</body>
+
+</html>

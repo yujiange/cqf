@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>佣金管理</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style type="text/css">
+			body {
+				background-color: #fff;
+			}
+
+			.mui-content {
+				padding-bottom: 15px;
+			}
+
+			.my_info {
+				padding-top: 25px;
+				background-color: #c8ddf2;
+				background-image: -moz-linear-gradient(-90deg, #d0e1f2 0%, #b6d5ee 100%);
+				background-image: -webkit-linear-gradient(-90deg, #d0e1f2 0%, #b6d5ee 100%);
+				background-image: -ms-linear-gradient(-90deg, #d0e1f2 0%, #b6d5ee 100%);
+				margin-bottom: 10px;
+				text-align: center;
+				color: #fff;
+			}
+
+			.user-img {
+				margin: 0 auto;
+				height: 130px;
+				width: 130px;
+				position: relative;
+			}
+
+			.user-img img {
+				height: 130px;
+				width: 130px;
+				border-radius: 100px;
+				overflow: hidden;
+			}
+
+			.user-img .level {
+				display: block;
+				position: absolute;
+				bottom: -10px;
+				left: 90px;
+				padding: 8px;
+				background-color: #f0ac4e;
+				font-size: 15px;
+				white-space: nowrap;
+				border-radius: 5px;
+			}
+
+			.user-name {
+				padding: 20px 0 25px;
+				font-size: 17px;
+			}
+
+			.info-row {
+				padding: 15px 0;
+				border-top: 1px solid #fff;
+				border-bottom: 1px solid #fff;
+				line-height: 1.2;
+			}
+
+			.btn-box {
+				margin: 15px;
+			}
+
+			.btn-group {
+				padding-top: 40px;
+			}
+
+			a {
+				cursor: pointer
+			}
+		</style>
+	</head>
+
+	<body class="b_white">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">个码设置</h1>
+		</header>
+
+		<!-- <div class="mui-content" id="refreshContainer">
+			<div class="mui-row main_white main_pay" id="main_white">
+				<div class="mui-col-xs-6" id="1">
+					<a class="link active">
+						<div class="img"><img src="images/pay_wx.png"></div>
+					</a>
+				</div>
+				<div class="mui-col-xs-6" id="2">
+					<a class="link active">
+						<div class="img"><img src="images/pay_zfb.png"></div>
+					</a>
+				</div>
+				<div class="mui-col-xs-6" id="4">
+					<a class="link active">
+						<div class="img"><img src="images/pay_sf.png"></div>
+					</a>
+				</div>
+			</div>
+		</div> -->
+		<div class="btn-group">
+			<div class="btn-box">
+				<a id="0" class="tx_list btn-blue">提现列表</a>
+			</div>
+			<div class="btn-box">
+				<a id="50" class="yj_z_zfb btn-blue">佣金转入保证金</a>
+			</div>
+			<div class="btn-box">
+				<a id="100" class="tx btn-blue">保证金提现到银行卡</a>
+			</div>
+			
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init({
+				beforeback: function() {
+					//获得父页面的webview
+					var list = plus.webview.currentWebview().opener();
+					//触发父页面的自定义事件(refresh),从而进行刷新
+					mui.fire(list, 'refresh');
+					//返回true,继续页面关闭逻辑
+					return true;
+				}
+			});
+			$(".yj_z_zfb").on("tap", function() {
+				ajax("/memberWithdrawal/toIntegral",{
+					"memberId":mbId()
+				},function(res){
+					if (res.ok) {
+						mui.alert("转入成功",' ','确定',function () {},'div')
+					} else{
+						mui.alert(res.message,' ','确定',function () {},'div')
+					}
+				},"GET")
+			})
+			$(".tx_list").on("tap", function() {
+				create_view("tx_list", "tx_list.html", {}, {});
+			})
+			$(".tx").on("tap", function() {
+				create_view("tx", "tx.html", {}, {});
+			})
+		</script>
+	</body>
+
+</html>

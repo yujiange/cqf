@@ -1,0 +1,640 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>我要推广</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" href="css/public.css">
+		<script src="js/jquery-2.1.0.js"></script>
+		<script src="js/vue-2.6.10.js"></script>
+		<style>
+			input[type="text"],input[type="number"]{margin-bottom: 0;width: auto;height: auto;padding: 0;font-size:14px;}
+			.leftBlock{margin:0 0 0 20px;}
+			.btnStyle,.titleStyle{text-align: center;display: block;width: 110px;padding: 3px 4px;border: 1px solid #ccc;border-radius:6px;}
+			.titleStyle{
+				width:80px;
+			}
+			.itemFirstDiv{width: 33%;}
+			.width_20{display: block;width: 20%;}
+			.width_33{display: block;width: 33%;}
+			.width_66{display: block;width: 66%;}
+			
+			body{background: #fff;color: #000;}
+			#wrap{position: relative;}
+			.none{display: none;}
+			.greenColor{color: #37e81b;}
+			.redColor{color: #f20918;}
+			.fontItalic{ font-style:italic} 
+			.orderWrap{margin: 84px 0 232px;}
+			
+			.sectionMain{padding: 10px 5%;}
+			.content{margin: 44px 0;}
+			.popularizeTab{padding:10px 5%;border-bottom: 1px solid #ccc;}
+			.popularizeTab .popularizeText.active{color: #256ff9;border: 1px solid #256ff9;}
+			
+			/* 普通开户	start */
+			.selectCategoriesList{box-shadow:0 0 4px rgba(0,0,0,.5);}
+			.selectCategoriesList input{padding:3px 20px;background: none;}
+			.selectCategoriesMain{position: relative;width: 100%;height: 30px;}
+			.selectCategoriesMain .selectShowText{padding:0 6px;position: absolute;top: 0;left: 0;width: 100%;height: 100%;border: 1px solid rgba(49,124,223,1);}
+			.selectShowText span:nth-of-type(1){display:block;width: 80%;}
+			.selectShowText span:nth-of-type(2){display:block;width: 20%;text-align: right;display: none;}
+			.selectCategoriesMain .selectCategoriesItem{box-shadow:0 0 4px rgba(0,0,0,.5);width: 100%;border: 1px solid rgba(49,124,223,1);border-top: none;background: #fff;position: absolute;top: 100%;left: 0;}
+			.selectCategoriesItem li{display: block;color: rgba(49,124,223,1);padding:2px 6px;}
+			.selectCategoriesItem li:not(:first-child){border-top: 1px solid rgba(49,124,223,1);}
+			.selectCategoriesItem li.active{background: rgba(49,124,223,1);color: #fff;}
+			.ordinaryAccountOpeningItem{border-top: 1px solid #ccc;}
+			.ordinaryAccountOpeningItem:last-child{border-bottom: 1px solid #ccc;}
+			.ordinaryAccountOpeningItem input{padding:0 20px;border: none;background: none;}
+			.btns {
+				display: block;
+				width: 50%;
+				margin:40px auto;
+				height: 42px;
+				color: rgba(49,124,223,1);
+				font-size: 15px;
+				border-radius: 25px;
+				border: 1px solid rgba(49,124,223,1);
+				background: none;
+			}
+			.btns.active {
+				background: rgba(49,124,223,1);
+				color: #fff;
+			}
+			.reminder{color: #b28118;}
+			/* 普通开户	end */
+			
+			/* 链接管理	start */
+			.linkManagementItem:nth-of-type(2){padding: 30px 0 0 0;}
+			.QRCodeImg{width: 50%;height: auto;display: block;border: 1px solid #ccc;margin: 20px auto;padding: 0;}
+			.linkManagementItem:nth-of-type(2) .QRCodeImg{border: 1px solid #b28118;}
+			.linkManagementItem .sectionMain>div:nth-of-type(2){margin-left: 5px;}
+			.linkManagement .copyBtn{margin: 20px auto;}
+			/* 链接管理	end */
+		</style>
+	</head>
+	<body>
+		<div id="wrap" v-cloak>
+			<header class="mui-bar mui-bar-nav">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+				<h1 class="mui-title">我要推广</h1>
+			</header>
+			
+			<div class="font_14 content">
+				<div class="justify-content popularizeTab">
+					<div class="font_14 centers width_20" v-for="(item,index) in popularizeTab" v-key="index" @click="openingListToggle(item,index)">
+						<span class="titleStyle popularizeText" :class="{'active':openingListFlag==index}" v-text="item.text"></span>
+					</div>
+				</div>
+				<div class="accountOpeningList">
+					<div class="ordinaryAccountOpening">
+						<!-- 选择开户类型	start -->
+						<div class="flex itemFlex sectionMain selectCategories" v-if="!openingListShow || openingListShow==1">
+							<div class="width_33">
+								<span class="btnStyle">开启类别 : </span>
+							</div>
+							<div class="width_33 flex selectCategoriesList">
+								<div class="optionsWrap selectCategoriesMain">
+									<div class="flex itemFlex selectShowText" @click="selectCategoriesToggle">
+										<span v-text="defaultDisplayCategory"></span>
+										<span></span>
+									</div>
+									<ul class="selectCategoriesItem" v-if="selectCategoriesShow">
+										<li :class="{'active':judgingAccountStatus==index}" v-for="(item,index) in options" :key="index" @click="judgingAccountStatusFn(item,index)" v-text="item.label"></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<!-- 选择开户类型	end -->
+						
+						<!-- 普通开户 	start -->
+						<template v-if="!openingListShow">
+							<div class="ordinaryAccountOpeningWrap">
+								<div class="flex sectionMain ordinaryAccountOpeningItem" v-for="(item,index) in accountOpening" v-key="index">
+									<div class="width_33">
+										<span class="btnStyle" v-text="item.text+' : '"></span>
+									</div>
+									<input type="text" :id="item.id" value="" v-if="!index">
+									<input type="number" :id="item.id" value="" v-else-if="index">
+								</div>
+							</div>
+							<button class="btns confirmReg" @click="confirmRegFn" v-text="confirmReg"></button>
+							<div class="sectionMain reminder">
+								<div v-text="reminderListTitle"></div>
+								<div v-for="(item,index) in reminderList" v-key="index" v-text="item.text"></div>
+							</div>
+						</template>
+						<!-- 普通开户 	end -->
+					</div>
+					
+					<!-- 链接开户 	start -->
+					<div class="linkAccountOpening" v-if="openingListShow==1">
+						<div class="linkAccountOpeningItem">
+							<div class="ordinaryAccountOpeningWrap">
+								<div class="flex sectionMain ordinaryAccountOpeningItem" v-for="(item,index) in accountOpening2" v-key="index">
+									<div class="width_33">
+										<span class="btnStyle" v-text="item.text+' : '"></span>
+									</div>
+									<input type="number" :id="item.id" value="">
+								</div>
+							</div>
+							
+							<button class="btns generateLinkReg" @click="generateLinkRegFn" v-text="generateLinkReg"></button>
+						</div>
+					</div>
+					<!-- 链接开户 	end -->
+					
+					<!-- 链接管理 	start -->
+					<div class="linkManagement" v-if="openingListShow==2">
+						<!-- 生成会员二维码 	start -->
+						<div class="linkManagementItem agentQRCode" v-if="judgingAccountStatus==0">
+							<div class="flex itemFlex sectionMain">
+								<div class="width_33 flex selectCategoriesList">
+									<div class="optionsWrap selectCategoriesMain">
+										<div class="flex itemFlex selectShowText" @click="selectCategoriesToggle">
+											<span v-text="defaultDisplayCategory"></span>
+											<span></span>
+										</div>
+										<ul class="selectCategoriesItem" v-if="selectCategoriesShow">
+											<li :class="{'active':judgingAccountStatus==index}" v-for="(item,index) in options" :key="index" @click="judgingAccountStatusFn(item,index)" v-text="item.label"></li>
+										</ul>
+									</div>
+								</div>
+								
+								<div class="width_66">
+									<div class="flex">
+										<span>ID : </span>
+										<span v-text="mbId"></span>
+									</div>
+								</div>
+							</div>
+							<img :src="QRCodeImg_hy" alt="" class="QRCodeImg">
+							<button class="btns copyBtn" @tap="downloadCodeImg(QRCodeImg_hy,'QRCodeImg_hy')" v-text="copyBtn"></button>
+						</div>
+						<!-- 生成会员二维码 	end -->
+						
+						<!-- 生成代理二维码	start -->
+						<div class="linkManagementItem memberQRCode" v-if="judgingAccountStatus==1">
+							<div class="flex itemFlex itemCenter sectionMain">
+								<div class="width_33 flex selectCategoriesList">
+									<div class="optionsWrap selectCategoriesMain">
+										<div class="flex itemFlex selectShowText" @click="selectCategoriesToggle">
+											<span v-text="defaultDisplayCategory"></span>
+											<span></span>
+										</div>
+										<ul class="selectCategoriesItem" v-if="selectCategoriesShow">
+											<li :class="{'active':judgingAccountStatus==index}" v-for="(item,index) in options" :key="index" @click="judgingAccountStatusFn(item,index)" v-text="item.label"></li>
+										</ul>
+									</div>
+								</div>
+								
+								<div class="width_66">
+									<div class="flex">
+										<span>ID : </span>
+										<span v-text="mbId"></span>
+									</div>
+								</div>
+							</div>
+							
+							<img :src="QRCodeImg_dl" alt="" class="QRCodeImg" v-tap="vuetouch" v-longtap="{fn:longtapImg_dl,name:'长按'}">
+							<button class="btns copyBtn" @click="downloadCodeImg(QRCodeImg_dl,'QRCodeImg_dl')" v-text="copyBtn2"></button>
+						</div>
+						<!-- 生成代理二维码	end -->
+					</div>
+					<!-- 链接管理 	end -->
+					<!-- 我的费率 	start -->
+					<div class="myRate" v-if="openingListShow==3">
+						<div class="linkAccountOpeningItem">
+							<div class="ordinaryAccountOpeningWrap">
+								<div class="flex sectionMain ordinaryAccountOpeningItem" v-for="(item,index) in accountOpening2" v-key="index">
+									<div class="width_33">
+										<span class="btnStyle" v-text="item.text+' : '"></span>
+									</div>
+									<span class="theText" v-text="item.rate+'‰'"></span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- 我的费率 	end -->
+				</div>
+				
+			</div>
+						
+		</div>
+		
+		
+		<script src="js/touch.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/mui.js"></script>
+		<script src="js/comm.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			var app=new Vue({
+				el:'#wrap',
+				data:{
+					judgingAccountStatus:0,//判断当前类型状态值,默认显示值为0,当值0为会员,1为代理
+					selectCategories:['会员','代理'],
+					selectCategoriesShow:false,
+					defaultDisplayCategory:'会员',//默认类别为会员
+					openingListFlag:0,
+					openingListShow:0,
+					mbId:"888888",
+					
+					confirmReg:'确认注册',
+					generateLinkReg:'生成注册链接',
+					copyBtn:'保存会员二维码',
+					copyBtn2:'保存代理二维码',
+					// QRCodeImg_hy:'images/pays_zfb.png',
+					QRCodeImg_hy:'images/new_logo.png',
+					QRCodeImg_dl:'images/new_logo.png',
+					popularizeTab:[{
+						text:'普通开户'
+					},{
+						text:'链接开户'
+					},{
+						text:'链接管理'
+					},{
+						text:'我的费率'
+					}],
+					
+					accountOpening:[{
+						id:'mbName',
+						text:'用户名'
+					},{
+						id:'mbTel',
+						text:'手机号'
+					},
+					{
+						id:'wxRate',
+						text:'微信费率'
+					},{
+						id:'zfbRate',
+						text:'支付宝费率'
+					},{
+						id:'ysfRate',
+						text:'云闪付费率'
+					},{
+						id:'ylRate',
+						text:'银联费率'
+					},{
+						id:'zfblRate',
+						text:'支付宝H5费率'
+					},{
+						id:'qqRate',
+						text:'qq费率'
+					},{
+						id:'wxBankRate',
+						text:'微信转卡费率'
+					},{
+						id:'wxPhoneRate',
+						text:'微信转手机号费率'
+					}],
+					accountOpening2:[{
+						id:'wxRate',
+						text:'微信费率',
+						rate:''
+					},{
+						id:'zfbRate',
+						text:'支付宝费率',
+						rate:''
+					},{
+						id:'ysfRate',
+						text:'云闪付费率',
+						rate:''
+					},{
+						id:'ylRate',
+						text:'银联费率',
+						rate:''
+					},{
+						id:'zfblRate',
+						text:'支付宝H5费率',
+						rate:''
+					},{
+						id:'qqRate',
+						text:'qq费率',
+						rate:''
+					},{
+						id:'wxBankRate',
+						text:'微信转卡费率'
+					},{
+						id:'wxPhoneRate',
+						text:'微信转手机号费率'
+					}],
+					reminderListTitle:'温馨提示',
+					reminderList:[{
+						text:'1、自动注册的会员初始密码为"a123456"'
+					},{
+						text:'2、为了提高服务效率,系统将自动清理注册7天没有充值或一个月未收单用户,并且金额低于10元得账户'
+					}],
+					// 类别下拉框
+					options: [{
+					  status: '0',
+					  label: '会员'
+					}, {
+					  status: '1',
+					  label: '代理'
+					}],
+					// 订单列表	start
+					orderLists:[
+						{
+							"getGrabeggStatus":1, //PS:当getGrabeggStatus=0时为待确认订单,当getGrabeggStatus=1时为异常订单,当getGrabeggStatus=2时为已完成订单,getGrabeggStatus=3时为失败订单
+							"grabeggId":"191163362652979200",
+							"mbId":"156031359965772287",
+							"grabeggTime":"2019-08-03 12:14:57",
+							"payTye":"支付宝",
+							"mbName":"de9999",
+							"getGrabeggMoney":100,
+							zh:'A0001',
+							tel:'134****8888',
+							date:'2019-08-03',
+							jf:'600',
+							yj:555
+						},
+						{
+							"getGrabeggStatus":1, 
+							"grabeggId":"191163362652979200",
+							"mbId":"156031359965772287",
+							"grabeggTime":"2019-08-03 12:14:57",
+							"payTye":"支付宝",
+							"mbName":"de9999",
+							"getGrabeggMoney":100,
+							zh:'B0001',
+							tel:'159****2343',
+							date:'2019-08-02',
+							jf:'632',
+							yj:640
+						}
+					],
+					// 订单列表	end	
+					
+					name:"开始",
+				},
+				methods:{
+					// 长按保存图片到手机
+					longtapImg_hy(url,name){
+						var that=this;
+						getImg(that);
+						// console.log("=====changeImg_hy-img========");
+						// console.log(that.QRCodeImg_dl);
+						// console.log(that.QRCodeImg_hy);
+						// console.log('下载图片');
+						saveAs(that.QRCodeImg_hy,'QRCodeImg_hy');
+						// saveAs(url,name)
+					},
+					longtapImg_dl(url,name){
+						var that=this;
+						getImg(that);
+						saveAs(that.QRCodeImg_dl,'QRCodeImg_dl');
+						// saveAs(url,name)
+					},
+					vuetouch:function(s,e){
+						this.name=s.name;
+						// alert('name'+name)
+					},
+					touchend(s,e){
+						this.name=s.name;
+						alert('触摸结束，手指离开屏幕时'+name);
+						
+						var that=this;
+						getImg(that);
+						// saveAs(that.QRCodeImg_dl,'QRCodeImg_dl');
+					},
+
+					orderTabFn(item,index){
+						//更改导航切换默认显示状态值
+						this.orderActive=index;
+						// console.log(this.orderActive);
+					},
+					openingListToggle(item,index){
+						this.openingListFlag=index;
+						this.openingListShow=index;
+						this.selectCategoriesShow=false;//隐藏类型选择框
+					},
+					selectCategoriesToggle(){
+						this.selectCategoriesShow=!this.selectCategoriesShow;
+						this.reloadQrcode();
+					},
+					judgingAccountStatusFn(item,index){
+						this.judgingAccountStatus=item.status;//获取状态值
+						this.defaultDisplayCategory=item.label;
+						this.selectCategoriesShow=false;
+					},
+					// 刷新二维码
+					reloadQrcode() {
+						var that=this;
+						getImg(that);
+						/* this.mbId = mbId();
+						var that = this;
+						ajax("/popularize/code/getMemeberPopularizeCode?id=" + mbId(), {}, function(res) {
+							var data = JSON.stringify(res.popularizeCode);
+							data = JSON.parse(data);
+							// 0 会员
+							if(that.judgingAccountStatus == 0){
+								 that.QRCodeImg_hy=data[0].memberQrcode;
+							// 1 代理	
+							}else{
+								 that.QRCodeImg_dl=data[0].agentQrcode;
+							};
+						}, "GET"); */
+					},
+					// 普通开户
+					confirmRegFn(){
+						var mbName = $("#mbName").val();
+						var wxRate = $("#wxRate").val();
+						var zfbRate = $("#zfbRate").val();
+						var ylRate = $("#ylRate").val();
+						var ysfRate = $("#ysfRate").val();
+						var zfblRate = $("#zfblRate").val();
+						var qqRate = $("#qqRate").val();
+						var wxBankRate = $("#wxBankRate").val();
+						var wxPhoneRate = $("#wxPhoneRate").val();
+						var mbTel = $("#mbTel").val();
+						var agencyLevel= this.judgingAccountStatus;
+						ajax("/member/add-member", {
+							"parentId": mbId(),
+							"wxRate": wxRate,
+							"zfbRate": zfbRate,
+							"ylRate": ylRate,
+							"ysfRate": ysfRate,
+							"zfblRate": zfblRate,
+							"qqRate": qqRate,
+							"wxBankRate":wxBankRate,
+							"wxPhoneRate":wxPhoneRate,
+							"mbName": mbName,
+							"agencyLevel": agencyLevel,
+							"mbTel": mbTel
+						}, function(data) {
+							if(data.ok){
+								mui.alert(data.message," ","确定",function(){},"div");
+							}else{
+								mui.alert(data.message," ","确定",function(){},"div");
+							}
+						}, "POST");
+					},
+					// 链接开户
+					generateLinkRegFn(){
+						var wxRate = $("#wxRate").val();
+						var zfbRate = $("#zfbRate").val();
+						var ylRate = $("#ylRate").val();
+						var ysfRate = $("#ysfRate").val();
+						var zfblRate = $("#zfblRate").val();
+						var qqRate = $("#qqRate").val();
+						var wxBankRate = $("#wxBankRate").val();
+						var wxPhoneRate = $("#wxPhoneRate").val();
+						var agencyLevel= this.judgingAccountStatus;
+						// console.log(agencyLevel);
+						ajax("/popularize/code/popularizeQrCode", {
+							"parentId": mbId(),
+							"wxRate": wxRate,
+							"zfbRate": zfbRate,
+							"ylRate": ylRate,
+							"ysfRate": ysfRate,
+							"zfblRate": zfblRate,
+							"qqRate": qqRate,
+							"wxBankRate":wxBankRate,
+							"wxPhoneRate":wxPhoneRate,
+							"baseUrl": "http://"+api+"/static/",
+							"agencyLevel": agencyLevel,
+						}, function(data) {
+							if(data.ok){
+								mui.alert(data.message," ","确定",function(){},"div");
+							}else{
+								mui.alert(data.message," ","确定",function(){},"div");
+							}
+						}, "POST");
+					},
+					// 保存图片到手机方法一:
+					downloadIamge(imgsrc, name) {//下载图片地址和图片名
+					  var image = new Image();
+					  // 解决跨域 Canvas 污染问题
+					  image.setAttribute("crossOrigin", "anonymous");
+					  image.onload = function() {
+					    var canvas = document.createElement("canvas");
+					    canvas.width = image.width;
+					    canvas.height = image.height;
+					    var context = canvas.getContext("2d");
+					    context.drawImage(image, 0, 0, image.width, image.height);
+					    var url = canvas.toDataURL("image/png"); //得到图片的base64编码数据
+					 
+					    var a = document.createElement("a"); // 生成一个a元素
+					    var event = new MouseEvent("click"); // 创建一个单击事件
+					    a.download = name || "photo"; // 设置图片名称
+					    a.href = url; // 将生成的URL设置为a.href属性
+					    a.dispatchEvent(event); // 触发a的单击事件
+					  };
+					  image.src = imgsrc;
+					},
+					// downs(QRCodeImg_dl,'dl');
+					downs(url,name){
+						var that=this;
+						getImg(that);
+						// console.log("=====downs-img========");
+						// console.log(that.QRCodeImg_dl);
+						// console.log(that.QRCodeImg_hy);
+						
+						// this.downloadIamge(this.pic.url, 'pic');
+						// this.downloadIamge(that.QRCodeImg_dl, 'dl');
+						this.downloadIamge(url,name);
+					},
+					
+					// 保存图片到手机方法二:
+					// downloadCodeImg(QRCodeImg_dl,'dl2')
+					downloadCodeImg(url,name){
+						var that=this;
+						getImg(that);
+						// console.log("=====downloadCodeImg-img========");
+						// console.log(that.QRCodeImg_dl);
+						// console.log(that.QRCodeImg_hy);
+						//console.log('下载图片');
+			
+			        	var a = document.createElement('a')
+			        	a.download = name || 'pic'
+			        	// 设置图片地址
+						//a.href = codeIMG;
+						// a.href = that.QRCodeImg_dl;
+						a.href = url;
+			        	a.click();
+		            },
+		
+					// 保存图片到手机方法三:
+					changeImg(url,name){
+						var that=this;
+						getImg(that);
+						console.log("=====changeImg-img========");
+						console.log(that.QRCodeImg_dl);
+						console.log(that.QRCodeImg_hy);
+			        	console.log('下载图片');
+						saveAs(url,name);
+					},
+				},
+				created: function() {
+					var that = this;
+					this.reloadQrcode();
+					ajax("/member/rateInfo?mbId=" + mbId(), {}, function(res) {
+						if(res.ok){
+							that.accountOpening2[0].rate = res.wxRate;
+							that.accountOpening2[1].rate = res.zfbRate;
+							that.accountOpening2[2].rate = res.ysfRate;
+							that.accountOpening2[3].rate = res.ylRate;
+							that.accountOpening2[4].rate = res.zfbh5Rate;
+							that.accountOpening2[5].rate = res.qqRate;
+							that.accountOpening2[6].rate = res.wxBankRate;
+							that.accountOpening2[7].rate = res.wxPhoneRate;
+							console.log(JSON.stringify(res));
+						}
+					}, "GET");
+				},
+			});
+			
+			// 获取后台二维码
+			function getImg(that){
+				that.mbId = mbId();
+				ajax("/popularize/code/getMemeberPopularizeCode?id=" + mbId(), {}, function(res) {
+					if(res.ok){
+						var data = JSON.stringify(res.popularizeCode);
+						data = JSON.parse(data);
+						// console.log("============"+res);
+						// console.log("============"+data[0].agentQrcode)
+						// 0 会员
+						if(that.judgingAccountStatus == 0){
+							 that.QRCodeImg_hy=data[0].memberQrcode;
+						// 1 代理	
+						}else{
+							 that.QRCodeImg_dl=data[0].agentQrcode;
+						};
+					}else{
+						mui.toast(res.message);
+					}
+				}, "GET");
+			};
+			
+			// 保存图片到相册
+			var triggerEvent = "touchstart"; //指定下载方式
+			function saveAs(Url,name){
+			    var blob=new Blob([''], {type:'application/octet-stream'});
+			    var url = URL.createObjectURL(blob);
+			    var a = document.createElement('a');
+			    a.href = Url;
+			    // a.download = Url.replace(/(.*\/)*([^.]+.*)/ig,"$2").split("?")[0];
+				a.download = name || 'pic'
+			    var e = document.createEvent('MouseEvents');
+			    e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+			    a.dispatchEvent(e);
+			    URL.revokeObjectURL(url);
+			};
+			
+			function downloadImg(){
+				var imgs = document.getElementsByTagName("img");
+				console.log(imgs);
+				for(var i = 0,o;o = imgs[i];i++){
+					o.addEventListener(triggerEvent,function(){
+						var url = this.getAttribute("src");
+						console.log(url);
+						saveAs(url);
+					},false);
+				};
+			};
+			// downloadImg();
+		</script>
+	</body>
+</html>

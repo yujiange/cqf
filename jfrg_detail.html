@@ -1,0 +1,223 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>认购明细</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style type="text/css">
+			.bottom-fix .line {
+				padding-right: 1px;
+			}
+
+			.bottom-fix .btn-blue {
+				border-radius: 0;
+				border-top-left-radius: 3px;
+				border-top-right-radius: 3px;
+			}
+
+			.mui-input-row .mui-input-right {
+				top: 14px;
+			}
+			#ok_fk,#ok_rg{cursor:pointer}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">认购明细</h1>
+		</header>
+
+		<div class="mui-content">
+			<form class="mui-input-group" id="form">
+				<div class="mui-input-row">
+					<label>认购编号：</label>
+					<input type="text" name="rg_id" disabled value="RG1005551231">
+					<span class="mui-input-right"><a class="btn-xs">复制</a></span>
+				</div>
+				<div class="mui-input-row">
+					<label>转入码：</label>
+					<input type="text" name="transfer_code" disabled value="RG1005551231">
+					<span class="mui-input-right"><a class="btn-xs">复制</a></span>
+				</div>
+
+				<div class="mui-input-row" name="type1">
+					<label>币种类型：</label>
+					<input type="text" name="usdt" disabled value="0">
+					<span class="mui-input-right"><a class="btn-xs">复制</a></span>
+				</div>
+
+				<div class="mui-input-row" name="type2">
+					<label>户名：</label>
+					<input type="text" name="wdAccountName" disabled value="0">
+					<span class="mui-input-right"><a class="btn-xs">复制</a></span>
+				</div>
+				<div class="mui-input-row">
+					<label id="carNumOrUsdt">卡号：</label>
+					<input type="text" name="wdAccountId" disabled value="0">
+					<span class="mui-input-right"><a class="btn-xs">复制</a></span>
+				</div>
+				<div class="mui-input-row" name="type2">
+					<label>开户支行：</label>
+					<input type="text" name="wdBankNameAccount" disabled value="0">
+					<span class="mui-input-right"><a class="btn-xs">复制</a></span>
+				</div>
+				<div class="mui-input-row">
+					<label>可认购金额：</label>
+					<input type="text" name="krg" disabled value="10000元">
+				</div>
+				<div class="mui-input-row">
+					<label>每份金额：</label>
+					<input type="text" name="mfje" disabled value="10000元">
+				</div>
+				<div class="mui-input-row" id="wdone">
+					<label>币数（份）：</label>
+					<input type="text" class="bs" name="wdOne" disabled value="45">
+				</div>
+				<div class="mui-input-row">
+					<label>认购份数：</label>
+					<input type="number" class="mui-input-clear" name="rg_je" placeholder="请输入认购份数">
+				</div>
+				<div class="t-center red m_20" style="padding-bottom: 50px;">*银行卡付款时，请将转入码加到转款备注中！</div>
+			</form>
+		</div>
+
+		<nav class="mui-bar mui-bar-tab bottom-fix">
+			<div class="mui-row">
+				<div class="mui-col-xs-6 line"><button type="button" class="btn-blue" id="ok_rg">确认认购</button></div>
+				<div class="mui-col-xs-6"><button type="button" class="btn-blue" id="ok_fk">确认付款</button></div>
+			</div>
+		</nav>
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var rg = null;
+			var transfer_code = null;
+			mui.init(
+
+			);
+			var wd;
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				rg = JSON.parse(localStorage.getItem("jfrg_" + self.wdId));
+				console.log("---->" + JSON.stringify(rg));
+
+				transfer_code = randomString(6);
+				$("[name='rg_id']").val(rg.wdId);
+				$('[name="hll"]').val(rg.wdRate);
+				$('[name="krg"]').val(rg.wdPlanmoney - rg.wdOne);
+				$('[name="transfer_code"]').val(transfer_code);
+				$("[name='rg.je']").val(rg.je);
+				$("input").blur(function() {
+
+				});
+				var mfje = rg.wdPlanmoney / rg.wdAll;
+				$('[name="mfje"]').val(mfje);
+				if (rg.currencyId == "1") {
+					$('[name="usdt"]').val("USDT");
+					wd = rg.wdAll - rg.wdAmount;
+					$('#carNumOrUsdt').text("USDT账号:");
+					$('[name="wdOne"]').val(rg.wdOne);
+					$('[name="type2"]').hide();
+					$('[name="type1"]').show();
+				} else {
+					$('[name="wdAccountName"]').val(rg.wdAccountName);
+					$('[name="wdAccountId"]').val(rg.wdAccountId);
+					$('[name="wdBankNameAccount"]').val(rg.wdBankNameAccount);
+					$('#carNumOrUsdt').text("卡号:");
+					$('#wdone').hide();
+					$('#rgbs').hide();
+					$('[name="type2"]').show();
+					$('[name="type1"]').hide();
+				}
+			});
+
+			function randomString(len) {
+				len = len || 32;
+				var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';
+				var maxPos = $chars.length;
+				var pwd = '';
+				for (i = 0; i < len; i++) {
+					pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+				}
+				return pwd;
+			}
+
+			function empty() {
+				var num = $('[name="rg_je"]').val()
+				if (num == '') {
+					mui.alert("认购份数不能为空.");
+					return true;
+				}
+				console.log(wd);
+				if (num > wd) {
+					mui.alert("认购份数不能大于剩余份数。");
+					return true;
+				}
+				return false;
+			}
+
+			var soId = "";
+
+			$(function() {
+				// 确认认购
+				var code = 0;
+				$("#ok_rg").on("tap",function() {
+					if (code == 0) {
+						if (empty()) {
+							return;
+						}
+
+						var rgje = parseInt($('[name="rg_je"]').val());
+						var totalMoney = parseInt($('[name="mfje"]').val()) * rgje;
+						console.log(rgje + "============>" + totalMoney);
+
+						var url = "/member/subscription-order/save?wdId=" + rg.wdId + "&mbId=" + mbId() + "&soCny=" + totalMoney +
+							"&soNumber=" + rgje + "&soRate=" + rg.wdRate + "&transferCode=" + transfer_code;
+						ajax(url, {}, function(data) {
+							if (data.ok == true) {
+								console.log(JSON.stringify(data));
+								mui.alert("认购成功，请完成付款后再点击确认付款！");
+								code = 1;
+								soId = data.soId;
+							} else {
+								mui.alert(data.message);
+							}
+						}, "POST");
+					} else {
+						mui.alert("请勿重复认购");
+					}
+				});
+
+				// 确认付款
+				$("#ok_fk").on("tap",function() {
+						if (code == 1) {
+							if (empty()) {
+								return;
+							}
+							ajax("/member/subscription-order/confirm?soId=" + soId, {}, function(data) {
+								if (data.ok == true) {
+									mui.alert("确认付款成功！");
+									sts = 1;
+								}
+								//          create_view("jfrg", "jfrg.html", "", {})
+								//						mui.back(function() {
+								create_view("jfrg", "jfrg.html", "", {})
+								plus.webview.currentWebview().close();
+								//						});
+							}, "POST")
+						}else{
+							mui.alert("请认购后再确认付款");
+						}
+				})
+			});
+		</script>
+	</body>
+
+</html>

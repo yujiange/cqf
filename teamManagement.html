@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>团队管理</title>
+	<link rel="stylesheet" href="css/mui.css">
+	<script src="js/jquery-2.1.0.js"></script>
+	<script src="js/vue-2.6.10.js"></script>
+	<script src="lib/element-ui/element-ui.js"></script>
+	<link rel="stylesheet" href="lib/element-ui/element-ui.css">
+	<link rel="stylesheet" href="css/public.css">
+	<style>
+		body{color: #000;}
+		input[type="text"],input[type="number"]{margin-bottom: 0;width: auto;height: auto;padding: 0;font-size:14px;/* padding: 10px 15px; */}
+		.sectionBlock{padding: 10px 5%;}
+		.content{margin: 44px 0 0 0;}
+		
+		.teamManagementTab{}
+		.teamManagementTab li{width: 50%;padding: 10px 0;border-bottom: 2px solid #e8eef2;}
+		.teamManagementTab li.active{/* background: rgba(49,124,223,1);color: #fff; */border-bottom: 2px solid #059cf6;}
+		
+		/* 团队管理	start */
+		/* .teamManagement{border: 1px solid red;} */
+		.teamManagementItemt{/* min-height: 200px; */}
+		.teamManagementList{border-bottom: 1px solid #ccc;/* background: lightgreen; */}
+		/* .teamManagementList:not(:first-child){border-bottom: 1px solid #ccc;} */
+		/* .teamManagementList:nth-of-type(even){background: lightblue;} */
+		.teamManagementList>div:not(:first-child){margin: 10px 0 0 0;}
+		.teamManagementList>div>span{display: block;width: 33%;/* background: orange; */}
+		.teamManagementList>div>span:nth-of-type(odd){/* background: pink; */}
+		.teamManagementList>div>span:not(:first-child){text-align: center;}
+		.teamManagementList>div>span:last-child{text-align: right;}
+		.agentLevel{display: inline-block;border: 1px solid #ccc;padding: 2px 4px;}
+		.btns{display: inline-block;padding: 2px 4px;border: 1px solid rgba(49,124,223,1);background: rgba(49,124,223,1);color: #fff;}
+		.modify{display: inline-block;padding: 2px 4px;border: 1px solid rgba(49,124,223,1);color: rgba(49,124,223,1);}
+		.modify.active{background: rgba(49,124,223,1);color: #fff;}
+		
+		/* .returnPointsItem{border: 1px solid red;} */
+		.returnPointsItem{border-bottom: 1px solid #ccc;}
+		/* .returnPointsItem:nth-of-type(even){background: lightblue;}
+		.returnPointsItem:last-child{border-bottom: 1px solid #ccc;}
+		.returnPointsItem>div{background: lightgreen;}
+		.returnPointsItem>div:nth-of-type(even){background: lightblue;} */
+		.returnPointsItem>div:first-child{width: 28%;}
+		.returnPointsItem>div:nth-of-type(2){width: 60%;}
+		.returnPointsItem>div:last-child{width: 12%;text-align: right;}
+		.returnPointsItem input{padding:0 20px;border: none;background: none;}
+		.warning-tip{
+			width: 90%;
+			margin: 10px auto;
+			display: block;
+			color:rgba(242,11,26,1);
+			vertical-align: middle;
+		}
+		.warning-tip span{
+			line-height: 24px;
+			height: 24px;
+			display: inline-block;
+		}
+		.warning-tip span:first-child{
+			font-size: 18px;
+			margin-right: 5px;
+			margin-bottom: 0;
+		}
+		
+		.preservation.active {
+		    background: rgba(49,124,223,1);
+		    color: #fff;
+		}
+		
+		.preservation {
+		    width: 50%;
+		    display: block;
+		    margin: 30px auto;
+		    height: 42px;
+			text-align: center;
+		    font-size: 15px;
+		    border-radius: 25px;
+		    border: 1px solid rgba(49,124,223,1);
+		    /* background: none;
+			 color: rgba(49,124,223,1);*/
+			background: rgba(49,124,223,1);
+			color: #fff;
+		}
+		/* 团队管理	end */
+		
+		/* 团队报表	start */
+		.sectionMain{padding: 20px 5%;}
+		/* .sectionMain:nth-of-type(1){border: 1px solid blue;} */
+		
+		.el-date-editor--daterange.el-input__inner {
+		    /* width: 350px;  width: 75%;*/
+			width: 100%;
+		}
+		.el-date-editor .el-range-separator {
+		   /* width: 10%; */
+		    /* background: #f00; */
+			width: 20%;
+		}
+		
+		/* 头部查询	start */
+		.searchQuery{border-bottom: 1px solid #ccc;}
+		.searchQuery>*{display: block;/* width: 25%; width: 50%; background: pink;*/}
+		/* .searchQuery>*:nth-of-type(even){background: lightgreen;border: 2px solid red;} */
+		/* .searchQuery input,.searchQuery button{height: 30px;} */
+		.dateText{/* width: 10%; */width: auto;}
+		.dateItem{width: 85%;height: 40px;}
+		input[type="text"].inputName{width: 80%;height: 40px;}
+		.searchQueryBtn{}
+		.headbottom{margin: 10px 0 0;}
+		
+		/* 日期选择框input父级div */
+		.el-date-editor.el-input{font-size:14px;text-align: center;display: block;width: 96%;margin: 0 auto;/* border: 1px solid blue; */}
+		/* 日期选择框 */
+		.el-input--prefix .el-input__inner,.el-input--suffix .el-input__inner {
+			/* padding-left: 30px;
+			padding-right: 30px; */
+			padding: 0px;
+			height: 30px;
+			text-align: center;
+		}
+		/* 隐藏日期选择框小图标 */
+		/* .el-input__icon{display: none;width: 0px;height: 0;line-height: 0;font-size: 0;} */
+		/* 输入框 */
+		input[type="text"].inputName{display: block;/* width: 96%; height: 40px;*/margin: 0 auto;padding:0 10px;}
+		/* 按钮 */
+		.searchQueryBtn{display: block;margin: 0 auto;}
+		/* 头部查询	end */
+		
+		.teamReportList{padding: 15px 5%;border-bottom: 1px solid #ccc;}
+		.teamReportList>div:not(:first-child){margin: 10px 0 0 0;}
+		.leftText{margin-left: 5px;}
+		.width_50{display: block;width: 50%;}
+		.width_25{display: block;width: 25%;}
+		.testBg{background: #b28118;}
+		.textBg .width_50{background: red;}
+		.textBg .width_50:nth-of-type(even){background: blue;}
+		
+		.agentInfo{}
+		.agentAmout span{display: block;width: 50%;}
+		.agentLevels{border: 1px solid #0000FF;color: #0000FF;padding: 2px 4px;}
+		.agentLevels.active{background: rgba(49,124,223,1);color: #fff;}
+		/* 团队报表	end */
+		
+		
+		
+	</style>
+</head>
+<body>
+	<div id="wrap" class="font_14"  v-cloak>
+		<!-- 团队管理	start -->
+		<div class="teamManagement" v-if="!teamManagementTabFlag">
+			<!-- 我的团队	start -->
+			<template v-if="!returnPointsShow">
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<h1 class="mui-title">我的团队</h1>
+				</header>
+				<div class="font_14 content">
+					<ul class="centers itemFlex teamManagementTab">
+						<li v-text="item.text" :class="{'active':teamManagementActive==index}" v-for="(item,index) in teamManagementTab" v-key="index" @click="teamManagementTabFn(item,index)"></li>
+					</ul>
+					
+					<div class="teamManagementItemt">
+						<div class="sectionBlock teamManagementList" v-for="(item,index) in teamManagementList" v-key="index">
+							<div class="justify-content itemFlex">
+								<span v-text="item.mbName"></span>
+								<span>
+									<span class="agencyLevel" v-if="item.agencyLevel">代理</span>
+									<span class="agencyLevel" v-if="!item.agencyLevel">会员</span>
+								</span>
+								<span class="emptyElement" style="height: 0;overflow: hidden;"></span>
+							</div>
+							<div class="justify-content itemFlex">
+								<span v-text="availableBalanceText"></span>
+								<span v-text="item.mbIntegral - item.mbFreezeIntefral"></span>
+								<span>
+									<span class="btns" v-text="administration" @click="administrationBtn(item, index)"></span>
+								</span>
+							</div>
+							<div class="justify-content itemFlex">
+								<span v-text="lastLogon"></span>
+								<span v-text="item.loginTime"></span>
+								<!-- <span>
+									<span class="btns" v-text="recharge" @click="rechargeFn"></span>
+								</span> -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</template>
+			<!-- 我的团队	end -->
+			
+			<!-- 修改费率	start -->
+			<template v-if="returnPointsShow==1">
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-icon mui-icon-left-nav mui-pull-left" @click="returnPointsShowFlag"></a>
+					<h1 class="mui-title">修改费率</h1>
+				</header>
+				<div class="font_14 content">
+					<div class="flex justify-content itemFlex sectionBlock returnPointsItem" v-for="(item,index) in accountOpening" v-key="index">
+						<div>
+							<span class="btnStyle" v-text="item.text+' : '"></span>
+						</div>
+						<div>
+							<!-- :value="item.val" -->
+							<input type="text" :id="item.id" readonly="readonly" :value="item.val" v-if="!index">
+							<input type="number" :id="item.id" :placeholder="item.plh" :value="item.val" v-if="index">
+						</div>
+						<!-- :class="{'active':modifyActive==index}" -->
+						<div class="emptyElement"></div>
+						
+						<!-- <div v-if="index">
+							<span v-text="modify" class="modify" :class="{'active':!item.disabled}" @click="modifyActiveFlag(item,index)"></span>
+						</div> -->
+					</div>
+					<div class="warning-tip"><span class="mui-icon mui-icon-info"></span><span>费率单位:‰</span></span>
+				</div>
+				<!-- 修改费率后期开发 -->
+				<button class="preservation" v-text="preservation" @tap="preservationFn(accountOpening)"></button>
+			</template>
+			<!-- 管理汇率	end -->
+		</div>
+		<!-- 团队管理	end -->
+		
+		
+		<!-- 团队报表	start -->
+		<div class="teamManagement" v-if="teamManagementTabFlag==1">
+			<header class="mui-bar mui-bar-nav">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+				<h1 class="mui-title">团队报表</h1>
+			</header>
+			
+			<div class="content">
+				<ul class="centers itemFlex teamManagementTab">
+					<li v-text="item.text" :class="{'active':teamManagementActive==index}" v-for="(item,index) in teamManagementTab" v-key="index" @click="teamManagementTabFn(item,index)"></li>
+				</ul>
+				
+				<!-- 头部查询	start -->
+				<!-- justify-content itemFlex flexWrap -->
+				<div class="font_14 sectionMain searchQuery">
+					<div class="parentBlock">
+						<div class="subBlock_l centers dateText fl" v-text="dateText"></div>
+						<!-- 日期选择框	start -->
+						<div class="dateItem fr">
+							<template>
+							  <!-- type="daterange"
+							  type="datetimerange" -->
+							  <div class="block itemFlex">
+								<el-date-picker
+								  v-model="showDateValue"
+								  type="daterange"
+								  align="right"
+								  unlink-panels
+								  range-separator="至"
+								  :start-placeholder="startDate"
+								  :end-placeholder="endDate"
+								  format="yyyy-MM-dd"
+								  value-format="yyyy-MM-dd"
+								  :picker-options="pickerOptions">
+								</el-date-picker>
+							  </div>
+							</template>
+						</div>
+						<!-- 日期选择框	end -->
+						<div class="clear"></div>
+					</div>
+					
+					<div class="parentBlock headbottom">
+						<input id="name" class="font_14 inputName fl" type="text" placeholder="请输入用户名">
+						<button class="font_14 searchQueryBtn subBlock_r fr" @click="search()" v-text="searchQueryBtn"></button>
+						<div class="clear"></div>
+					</div>
+					
+				</div>
+				<!-- 头部查询	end -->
+				
+				<!-- sectionMain -->
+				<div class="font_14 teamReportMain">
+					<div class="teamReportList" v-for="(item,index) in teamReportList" v-key="index">
+						<div class="justify-content centers agentInfo">
+							<div class="flex centers width_50">
+								<span class="fl width_50" v-text="accountNumberText+' : '"></span>
+								<span class="fl width_50" v-text="item.memberName"></span>
+								<div class="clear"></div>
+							</div>
+							<div class="width_25">
+								<span class="agentLevels" v-if="item.agencyLevel">代理</span>
+								<span class="agentLevels" v-if="!item.agencyLevel">会员</span>
+							</div>
+						</div>
+						
+						<div class="justify-content centers agentAmout">
+							<span v-text="successfulAmountText"></span>
+							<span v-text="item.totalMoney"></span>
+							<span v-text="teamCommissionText"></span>
+							<span class="" v-text="item.commission"></span>
+						</div>
+						<!-- <div class="flex centers width_50">
+							<span class="fl width_50" v-text="transactionTimeText+' : '"></span>
+							<span class="fl width_50" v-text="item.transactionTime"></span>
+							<div class="clear"></div>
+						</div> -->
+					</div>
+					
+				</div>
+			</div>
+		</div>
+		<!-- 团队报表	end -->
+		
+	</div>
+	
+
+	<script src="js/mui.min.js"></script>
+	<script src="js/comm.js"></script>
+	<script>
+		var app=new Vue({
+			el:'#wrap',
+			data:{
+				teamManagementActive:0,
+				teamManagementTabFlag:0,//teamManagementTabFlag的值为0时,显示团队管理,teamManagementTabFlag为1时显示团队报表
+				teamManagementTab:[{
+					text:'团队管理'
+				},{
+					text:'团队报表'
+				}],
+				
+				// 团队管理	start
+				modifyActive:0,
+				returnPointsShow:0,
+				administration:'管理',
+				recharge:'充值',
+				modify:'修改',
+				preservation:'保存',
+				availableBalanceText:'可用余额',
+				lastLogon:'最后登录',
+				teamManagementList:[],
+				accountOpening:[{
+					id:'mbName',
+					text:'用户名',
+					val:'test',
+					data:{}
+				},{
+					id:'wxRate',
+					text:'微信费率',
+					plh:'微信费率调整',
+					val:''
+				},
+				{
+					id:'zfbRate',
+					text:'支付宝费率',
+					plh:'支付宝费率调整',
+					val:''
+				},
+				{
+					id:'ylRate',
+					text:'银联费率',
+					plh:'银联费率调整',
+					val:''
+				},
+				{
+					id:'ysfRate',
+					text:'云闪付费率',
+					plh:'云闪付费率调整',
+					val:''
+				},
+				{
+					id:'zfblRate',
+					text:'支付宝H5费率',
+					plh:'支付宝H5费率调整',
+					val:''
+				},
+				{
+					id:'qqRate',
+					text:'QQ费率',
+					plh:'QQ费率调整',
+					val:''
+				},
+				{
+					id:'wxBankRate',
+					text:'微信转卡费率',
+					plh:'微信转卡费率调整',
+					val:''
+				},
+				{
+					id:'wxPhoneRate',
+					text:'微信转手机号费率',
+					plh:'微信转手机号费率调整',
+					val:''
+				}],
+				// 团队管理	end
+				
+				// 团队报表	start
+				agencyList:['会员','代理'],
+				dateText:'日期',
+				// 日期		start
+				// valueDate: new Date(),//默认今天
+				valueDate:dateFormatter(new Date(),false),//默认今天
+				startDate:'开始日期',
+				endDate:'结束日期',
+				// showDateValue: '',
+				// showDateValue:['开始日期','结束日期'],
+				showDateValue:[dateFormatter(new Date(),false),dateFormatter(new Date(),false)],//默认今天
+				pickerOptions: {
+					shortcuts: [{
+						text: '最近一周',
+						onClick(picker) {
+						  const end = new Date();
+						  const start = new Date();
+						  start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+						  picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '最近一个月',
+						onClick(picker) {
+						  const end = new Date();
+						  const start = new Date();
+						  start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+						  picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '最近三个月',
+						onClick(picker) {
+						  const end = new Date();
+						  const start = new Date();
+						  start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+						  picker.$emit('pick', [start, end]);
+						}
+					}]
+				},
+				// 日期		end
+				
+				searchQueryBtn:'查询',
+				
+				accountNumberText:'账号',
+				successfulAmountText:'成功金额',
+				// transactionTimeText:'交易时间',
+				teamCommissionText:'团队佣金',
+				teamReportList:[],
+				// 团队报表	end
+				
+			},
+			methods:{
+				teamManagementTabFn(item,index){
+					this.teamManagementActive=index;
+					if(!index){
+						this.teamManagementTabFlag=0;
+					}else{
+						this.teamManagementTabFlag=1;
+					}
+					console.log(this.teamManagementTabFlag);
+				},
+				
+				// 团队管理	start
+				// 修改费率导航栏按钮
+				returnPointsShowFlag(){
+					this.returnPointsShow=0;
+				},
+				// 充值按钮
+				rechargeFn(){
+					window.location.href='firstCecharge.html';
+				},
+				// 管理按钮
+				administrationBtn(item, index){
+					this.returnPointsShow=1;
+					this.accountOpening[0].data = item;
+					this.accountOpening[0].val = item.mbName;
+					this.accountOpening[1].val = item.wxRate;
+					this.accountOpening[2].val = item.zfbRate;
+					this.accountOpening[3].val = item.ylRate;
+					this.accountOpening[4].val = item.ysfRate;
+					this.accountOpening[5].val = item.zfblRate;
+					this.accountOpening[6].val = item.qqRate;
+					this.accountOpening[7].val = item.wxBankRate;
+					this.accountOpening[8].val = item.wxPhoneRate;
+				},
+				// 修改按钮	PS:修改费率只能调高不能调低
+				modifyActiveFlag(item,index){
+					// this.modifyActive=index;
+					mui.alert('功能开发中...', ' ', '确定', function(e) {}, 'div')
+					// item.disabled=!item.disabled;
+				},
+				// 修改支付宝H5费率按钮
+				preservationFn(accountOpening){
+					var that = this;
+					var wxRate = $("#wxRate").val();
+					var zfbRate = $("#zfbRate").val();
+					var zfblRate = $("#zfblRate").val();
+					var ylRate = $("#ylRate").val();
+					var ysfRate = $("#ysfRate").val();
+					var qqRate = $("#qqRate").val();
+					var wxBankRate = $("#wxBankRate").val();
+					var wxPhoneRate = $("#wxPhoneRate").val();
+					var url = "/member/updateLowerRate";
+					if(!wxRate){
+						mui.toast('微信费率不能为空');
+						return false;
+					}
+					if(!zfbRate){
+						mui.toast('支付宝费率不能为空');
+						return false;
+					}
+					if(!zfblRate){
+						mui.toast('支付宝H5费率不能为空');
+						return false;
+					}
+					if(!ysfRate){
+						mui.toast('云闪付费率不能为空');
+						return false;
+					}
+					if(!qqRate){
+						mui.toast('QQ费率不能为空');
+						return false;
+					}
+					if(!wxBankRate){
+						mui.toast('微信转卡不能为空');
+						return false;
+					}
+					if(!wxPhoneRate){
+						mui.toast('QQ费率转手机号不能为空');
+						return false;
+					}
+					
+					ajax(url, {
+						"mbId": accountOpening[0].data.mbId,
+						"parentId":mbId(),
+						"wxRate":wxRate,
+						"zfbRate":zfbRate,
+						"zfblRate":zfblRate,
+						"ylRate":ylRate,
+						"ysfRate":ysfRate,
+						"qqRate":qqRate,
+						"wxBankRate":wxBankRate,
+						"wxPhoneRate":wxPhoneRate
+						
+					}, function(res) {
+						if(!res.ok){
+							mui.toast(res.message);
+						}else{
+							mui.alert(res.message, ' ', '确定', function(e) {
+								if(!e.ok){
+									mui.toast(e.message);
+								}
+								that.returnPointsShow = 0;
+								getList(that);
+							}, 'div');
+						}
+					}, "POST");
+					
+				},
+				// 团队管理		undefined
+				// 团队报表	start
+				search(){
+					var that = this;
+					var name= $("#name").val();
+					var startTime = this.showDateValue[0];
+					var endTime = this.showDateValue[1];
+					var url = "/member/grabegg-info/getNewTeamReport?memberId="+mbId();
+					if(startTime != null && startTime != ''){
+						url = url + "&startTime=" + startTime;
+					}
+					if(endTime != null && endTime != ''){
+						url = url + "&endTime=" + endTime;
+					}
+					ajax(url, {}, function(res) {
+						var data = JSON.stringify(res);
+						// console.log(data);
+						// 判断数据是否为 undefined
+						// console.log("--------------------="+data);
+						if(data == undefined){
+							that.teamReportList = [];
+						}else{
+							that.teamReportList = JSON.parse(data);
+						}
+					}, "POST");
+				},
+				// 团队报表	end
+			},
+			created: function() {
+				var that = this;
+				// 团队管理	start
+				getList(that);
+				// 团队管理	end
+				
+				// 团队报表	start
+				var name= $("#name").val();
+				console.log(name);
+				var startTime = this.showDateValue[0];
+				var endTime = this.showDateValue[1];
+				var url = "/member/grabegg-info/getNewTeamReport?memberId="+mbId();
+				if(name != null && name != ''){
+					url = url + "&name=" + name;
+				}
+				if(startTime != null && startTime != ''){
+					url = url + "&startTime=" + startTime;
+				}
+				if(endTime != null && endTime != ''){
+					url = url + "&endTime=" + endTime;
+				}
+				ajax(url, {}, function(res) {
+					var data = JSON.stringify(res);
+					// console.log(data);
+					// 判断数据是否为 undefined
+					console.log("--------------------="+data);
+					if(data == undefined){
+						that.teamReportList = [];
+					}else{
+						that.teamReportList = JSON.parse(data);
+					}
+				}, "POST");
+				// 团队报表	end
+				
+			}
+		});
+		
+		function getList(that){
+			ajax("/member/myTeam", {
+				"mbId": mbId()
+			}, function(res) {
+				var data = JSON.stringify(res);
+				// 判断数据是否为 undefined
+				console.log(data)
+				if(data == undefined){
+					that.teamManagementList = [];
+				}else{
+					that.teamManagementList = JSON.parse(data);
+				}
+			}, "POST");
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>新增代理账号</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<link rel="stylesheet" href="css/mui.picker.min.css" />
+		<style>
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">新增代理账号</h1>
+		</header>
+
+
+		<div class="mui-content">
+			<form class="mui-input-group" id="form">
+				<div class="mui-input-row">
+					<label>用户名：</label>
+					<input type="text" class="mui-input-clear" name="user" id="user" placeholder="请输入用户名">
+				</div>
+				<div class="mui-input-row">
+					<label>密码：</label>
+					<input type="password" class="mui-input-password" name="pass" id="pass" placeholder="请输入新密码">
+				</div>
+				<div class="mui-input-row">
+					<label>确认密码：</label>
+					<input type="password" class="mui-input-password" name="y_pass" id="y_pass" placeholder="请输入确认新密码">
+				</div>
+				<div class="mui-input-row">
+					<label>微信返利率：</label>
+					<input type="number" name="wxRate" id="wxRate" placeholder="请输入微信返利率">
+					<span class="mui-input-right">‰</span>
+				</div>
+
+				<div class="mui-input-row">
+					<label>支付宝返利率：</label>
+					<input type="number" name="zfbRate" id="zfbRate" placeholder="请输入支付宝返利率">
+					<span class="mui-input-right">‰</span>
+				</div>
+
+				<div class="mui-input-row">
+					<label>银联返利率：</label>
+					<input type="number" name="ylRate" id="ylRate" placeholder="请输入银联返利率">
+					<span class="mui-input-right">‰</span>
+				</div>
+
+				<div class="mui-input-row">
+					<label>云闪付返利率：</label>
+					<input type="number" name="ysfRate" id="ysfRate" placeholder="请输入云闪付返利率">
+					<span class="mui-input-right">‰</span>
+				</div>
+
+				<div class="mui-input-row">
+					<label>联系人：</label>
+					<input type="text" class="mui-input-clear" name="lxr" id="lxr" placeholder="请输入联系人">
+				</div>
+				<div class="mui-input-row">
+					<label>联系电话：</label>
+					<input type="tel" class="mui-input-clear" name="phone" id="phone" placeholder="请输入联系电话">
+				</div>
+				<div class="mui-input-row">
+					<label>是否启用：</label>
+					<input type="text" class="mui-input-z" name="status" id="status" placeholder="请选择是否启用" value="是">
+					<span class="mui-icon mui-icon-arrowdown"></span>
+				</div>
+			</form>
+		</div>
+		<nav class="mui-bar mui-bar-tab bottom-fix"><button type="button" class="btn-blue" style="cursor:pointer" id="submit">提交</button></nav>
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/mui.picker.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/mui.poppicker.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init()
+			$(function() {
+				//初始化 pick
+				var userPicker = new mui.PopPicker();
+				userPicker.setData([{
+					value: 0,
+					text: "是"
+				}, {
+					value: 1,
+					text: '否'
+				}]);
+				//点击文本框弹出选择器
+				var showUserPickerButton = document.getElementById('status');
+				showUserPickerButton.addEventListener('tap', function(event) {
+					userPicker.show(function(items) {
+						var val = items[0].value;
+
+						showUserPickerButton.value = val;
+						if (val == 1) {
+							showUserPickerButton.value = '否';
+						} else {
+							showUserPickerButton.value = '是';
+						}
+						showUserPickerButton.value = items[0].text;
+
+					});
+				}, false);
+				$("#submit").on("tap", function() {
+					//文本框是否为空
+					if (empty()) {
+						return false;
+					}
+					/*//两次密码是否一致
+					if (!ed("y_pass", "pass")) {
+						return false;
+					}*/
+					ajax("/member/add-member", {
+						"parentId": mbId(),
+						"mbName": $("#user").val(),
+						"mbPwd": $("#pass").val(),
+						"wxRate": $("#wxRate").val(),
+						"zfbRate": $("#zfbRate").val(),
+						"ylRate": $("#ylRate").val(),
+						"ysfRate": $("#ysfRate").val(),
+						"mbLinkman": $("#lxr").val(),
+						"mbTel": $("#phone").val()
+					}, function(data) {
+						if (data.ok) {
+							mui.alert('新增代理账号成功.',' ','确定',function (e) {
+								create_view("index","index.html");
+								plus.webview.currentWebview().close();
+							},'div')
+						} else {
+							mui.alert(data.message);
+							window.reload();
+						}
+					}, "GET")
+				})
+			})
+		</script>
+	</body>
+
+</html>

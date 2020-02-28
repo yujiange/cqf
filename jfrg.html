@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>积分认购</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style>
+			.rg_detail{cursor:pointer}
+		</style>
+	</head>
+
+	<body class="b_white">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">积分认购</h1>
+		</header>
+
+		<div class="mui-content" id="refreshContainer">
+			<div class="main_white">
+			</div>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init({
+
+						pullRefresh: {
+							container: "#refreshContainer",
+							up: { //上拉加载分页
+								auto: true, //可选,默认false.首次加载自动上拉刷新一次
+								callback: getList //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+							},
+							down: {
+								auto: true, //可选,默认false.首次加载自动上拉刷新一次
+								callback: function() {
+									// ajax("", {}, function () {
+									// 	this.endPulldownToRefresh();  // 上拉结束，true时表示没有数据了
+									// })
+									this.endPulldownToRefresh(true);
+								}
+							}
+						}
+									});
+						//			mui.back=function(){
+						//				console.log("触发放回")
+						//				create_view("index", "index.html", {}, {});
+						//			}
+
+
+						function getList() {
+							// 获取数据循环列表
+							ajax("/member/withdrawal/get_all_withdrawal", {}, function(data) {
+								if(data.length == 0) {
+									mui("#refreshContainer").pullRefresh().endPullupToRefresh(true);
+									return;
+								}
+								mui("#refreshContainer").pullRefresh().endPullupToRefresh(true);
+								var html = "";
+								for(var i = 0; i < data.length; i++) {
+									var rg = data[i];
+
+									if((rg.wdAll - rg.wdAmount) == 0) {
+										continue;
+									}
+			                        var descText="人民币"
+			                        if(rg.currencyId == 0){
+			                        	descText="人民币";
+			                        }else{
+			                        	descText="USDT";
+			                        }
+									localStorage.setItem("jfrg_" + rg.wdId, JSON.stringify(rg));
+									html += '<div class="items">';
+									html += '<div class="mui-row">';
+									html += '<div class="mui-col-xs-5 tit"><img src="images/i_6.png" >编号</div>';
+									html += '<div class="mui-col-xs-7 cont">' + rg.wdId + '</div>';
+									html += '</div>';
+									html += '<div class="mui-row">';
+				                    html += '<div class="mui-col-xs-5 tit"><img src="images/i_6_2.png" >类型</div>';
+				                    html += '<div class="mui-col-xs-7 cont">' + descText + '</div>';
+				                    html += '</div>';
+									html += '<div class="mui-row">';
+									html += '<div class="mui-col-xs-5 tit"><img src="images/i_7.png" >总金额</div>';
+									html += '<div class="mui-col-xs-7 cont">' + rg.wdPlanmoney + '</div>';
+									html += '</div>';
+									html += '<div class="mui-row">';
+									html += '<div class="mui-col-xs-5 tit"><img src="images/i_8.png" >余额</div>';
+									html += '<div class="mui-col-xs-7 cont">' + (rg.wdAll - rg.wdAmount)*(rg.wdPlanmoney/rg.wdAll) + '</div>';
+									html += '</div>';
+									if((rg.wdAll - rg.wdAmount) == 0) {
+										html += '<div class="m_20 t-center"><a class="btn-ms" href="jfrg_detail.html" disabled>认购</a></div>';
+									} else {
+										html += '<div class="m_20 t-center"><a class="btn-ms rg_detail"  href="javascript:" target="' + rg.wdId + '">认购</a></div>';
+									}
+									html += '</div>';
+								}
+								$(".main_white").append(html);
+							}, "GET");
+						}
+
+						$(document).ready(function() {
+							//				getList();
+							$('.main_white').on("tap", ".rg_detail", function() {
+								var wdId = $(this).attr("target");
+								create_view("jfrg_detail", "jfrg_detail.html", {}, {
+									"wdId": wdId
+								});
+								//plus.webview.currentWebview().close();
+
+							});
+						})
+		</script>
+	</body>
+
+</html>

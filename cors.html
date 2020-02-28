@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			* {font-size: 14px; padding: 0.2em; line-height: 2; margin: 0.2em; width: 100%;}
+		</style>
+	</head>
+	<body>
+		<div>http://192.168.3.33/check?token=0def84aa-bc9c-4f8e-9a9b-a284cbc4f400</div>
+		<div>http://192.168.3.33/member/login-info</div>
+		<input id="http"  placeholder="http" value="http://192.168.3.33/check?token=0def84aa-bc9c-4f8e-9a9b-a284cbc4f400" />
+		<input id="token" placeholder="token为空表示不传递" value="" />
+	
+		<button id="btn1">get跨域请求测试</button>
+		<pre id="pre1"></pre>
+		<script type="text/javascript">
+			var http = document.querySelector("#http");
+			var token = document.querySelector("#token");
+			var btn1 = document.querySelector("#btn1");
+			var pre1 = document.querySelector("#pre1");
+			btn1.addEventListener("tap",function(){
+				var xhr = new XMLHttpRequest();
+				
+				xhr.onreadystatechange = function(){
+					pre1.innerHTML+="\nreadyState:"+xhr.readyState+"\tstatus:"+xhr.status;
+					if(xhr.readyState==4){
+							pre1.innerHTML+="\n"+xhr.responseText;
+					}
+				}
+				xhr.open("GET",http.value);
+				if(token.value!=""){
+					xhr.setRequestHeader("Authorization","Bearer "+token.value);
+				}
+				xhr.send();
+			})
+		</script>
+	</body>
+</html>

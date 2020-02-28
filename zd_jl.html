@@ -1,0 +1,301 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>订单记录</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style type="text/css">
+			.mui-segmented-control {
+				border: none;
+				border-radius: 0;
+			}
+
+			.mui-segmented-control .mui-control-item {
+				line-height: 50px;
+				border: none;
+				background: #fff;
+				color: #333;
+				font-size: 20px;
+			}
+
+			.mui-control-item .line {
+				display: block;
+				width: 100%;
+				height: 5px;
+				line-height: 0;
+				background-color: #efeef3;
+			}
+
+			.mui-segmented-control .mui-control-item.mui-active {
+				background: #fff;
+				color: #000;
+			}
+
+			.mui-control-item.mui-active .line {
+				background-image: -moz-linear-gradient(90deg, rgb(125, 181, 232) 0%, rgb(178, 209, 238) 100%);
+				background-image: -webkit-linear-gradient(90deg, rgb(125, 181, 232) 0%, rgb(178, 209, 238) 100%);
+				background-image: -ms-linear-gradient(90deg, rgb(125, 181, 232) 0%, rgb(178, 209, 238) 100%);
+			}
+
+			.table-list {
+				padding: 5px 0;
+			}
+
+			.table-list:before {
+				height: 0;
+			}
+
+			.table-list .mui-table-view-cell {
+				height: auto;
+				font-size: 14px;
+				color: #000;
+				line-height: 2;
+			}
+
+			.table-list .mui-table-view-cell:after {
+				right: 15px;
+			}
+
+			.bottom-fix {
+				display: flex;
+				flex-direction: row;
+				justify-content: space-between;
+			}
+
+			.bottom-fix button {
+				width: 100%;
+			}
+
+			button {
+				cursor: pointer
+			}
+			#rep_view{
+				display: flex;
+				flex-direction: row;
+				justify-content: flex-end;
+			}
+			.replenish{
+				background-color: #00A1E9;
+				color: #FFFFFF; 
+				border: none;
+				/* z-index: 999; */
+			}
+			
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">订单记录</h1>
+		</header>
+
+		<!--tab选项卡-->
+		<div class="mui-content">
+			<div id="segmentedControl" class="mui-segmented-control">
+				<a class="mui-control-item mui-active" href="#item1">待确认<span class="line"></span></a>
+				<a class="mui-control-item" href="#item2">已完成<span class="line"></span></a>
+			</div>
+			
+			<div>
+				<!-- 待确认 -->
+				<div id="item1" class="mui-control-content mui-active">
+					<!--<ul class="mui-table-view table-list">
+						<li class="mui-table-view-cell">
+							<div class="mui-row">
+								<div class="mui-col-xs-12">状态: <span class="orange">待收款</span></div>
+								<div class="mui-col-xs-6">抓单编号: <span class="status">201902260001</span></div>
+								<div class="mui-col-xs-6">抓单时间: <span class="status">2019-01-12</span></div>
+								<div class="mui-col-xs-6">支付方式: <span class="status">微信支付</span></div>
+								<div class="mui-col-xs-6">抓单金额: <i class="red">12.88</i></div>
+							</div>
+						</li>
+					</ul>-->
+					<nav class="mui-bar mui-bar-tab bottom-fix" id="buttom-view">
+						<!-- <button type="button" class="btn-blue" id="cancel-btn">订单未付款</button> -->
+						<button type="button" class="btn-blue" id="submit-btn">确认收款</button>
+					</nav>
+				</div>
+				<!-- 已完成 -->
+				<div id="item2" class="mui-control-content">
+					<!--<ul class="mui-table-view table-list">
+						<li class="mui-table-view-cell">
+							<div class="mui-row">
+								<div class="mui-col-xs-12">状态: <span class="green">已完成</span></div>
+								<div class="mui-col-xs-6">抓单编号: <span class="status">201902260001</span></div>
+								<div class="mui-col-xs-6">抓单时间: <span class="status">2019-01-12</span></div>
+								<div class="mui-col-xs-6">支付方式: <span class="status">微信支付</span></div>
+								<div class="mui-col-xs-6">抓单金额: <i class="red">12.88</i></div>
+							</div>
+						</li>
+						<li class="mui-table-view-cell">
+							<div class="mui-row">
+								<div class="mui-col-xs-12">状态: <span class="green">已完成</span></div>
+								<div class="mui-col-xs-6">抓单编号: <span class="status">201902260001</span></div>
+								<div class="mui-col-xs-6">抓单时间: <span class="status">2019-01-12</span></div>
+								<div class="mui-col-xs-6">支付方式: <span class="status">微信支付</span></div>
+								<div class="mui-col-xs-6">抓单金额: <i class="red">12.88</i></div>
+							</div>
+						</li>
+					</ul>-->
+				</div>
+			</div>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init({
+				pullRefresh: {
+					container: "#item2",
+					up: { //上拉加载分页
+						// auto: true,//可选,默认false.首次加载自动上拉刷新一次
+						callback: getList(1, "#item2") //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					},
+					down: {
+						auto: true, //可选,默认false.首次加载自动上拉刷新一次
+						callback: function() {
+							// ajax("", {}, function () {
+							// 	this.endPulldownToRefresh();  // 上拉结束，true时表示没有数据了
+							// })
+							this.endPulldownToRefresh();
+						}
+					},
+					container: "#item1",
+					up: { //上拉加载分页
+						// auto: true,//可选,默认false.首次加载自动上拉刷新一次
+						callback: getList(0, "#item1") //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					},
+					down: {
+						auto: true, //可选,默认false.首次加载自动上拉刷新一次
+						callback: function() {
+							this.endPulldownToRefresh();
+						}
+					}
+				},
+				beforeback: function() {
+					//获得父页面的webview
+					var list = plus.webview.currentWebview().opener();
+					//触发父页面的自定义事件(refresh),从而进行刷新
+					mui.fire(list, 'refresh');
+					//返回true,继续页面关闭逻辑
+					return true;
+				}
+			});
+
+			function getList(status, selTab) {
+				// 获取数据循环列表
+				ajax("/member/grabegg-info/new-findByStatus?mbId=" + mbId() + "&status=" + status, {}, function(data) {
+
+					/*if (data.length == 0) {
+            mui("#refreshContainer").pullRefresh().endPullupToRefresh(true);
+            return;
+          }
+          mui("#refreshContainer").pullRefresh().endPullupToRefresh(true);*/
+					if (data.length === 0 && status === 0) {
+						$("#buttom-view").hide();
+					} else {
+						// $("#btn-blue").show();
+					}
+
+					var html = "";
+					html += '<ul class="mui-table-view table-list">';
+					for (var i = 0; i < data.length; i++) {
+						var rg = data[i];
+
+						html += '<li class="mui-table-view-cell">';
+						html += '<div class="mui-row">';
+
+						if (0 == rg.grabeggStatus) {
+							html += '<div class="mui-col-xs-12">状态: <span class="green">待支付</span></div>';
+						} else if (1 == rg.grabeggStatus) {
+							html += '<div class="mui-col-xs-12">状态: <span class="green">会员确认已支付</span></div>';
+						} else if (2 == rg.grabeggStatus) {
+							html += '<div class="mui-col-xs-12">状态: <span class="green">支付已取消</span></div>';
+						} else if (3 == rg.grabeggStatus){
+							html += '<div class="mui-col-xs-12">状态: <span class="green">玩家确认已付款</span></div>';
+						} else {
+							html += '<div class="mui-col-xs-6">状态: <span class="green">订单异常</span></div>';
+							html += "<div class='mui-col-xs-6' id='rep_view'><button class='replenish' onclick=upid('"+rg.grabeggId+"') type='button'>补单</button></div>";
+						}
+						html += '<div class="mui-col-xs-12">抓单编号: <span class="status">' + rg.grabeggId + '</span></div>';
+						html += '<div class="mui-col-xs-12">抓单时间: <span class="status">' + format(rg.grabeggTime) + '</span></div>';
+						if (rg.ptId == 1) {
+							html += '<div class="mui-col-xs-6">支付方式: <span class="status">微信支付</span></div>';
+						} else if (rg.ptId == 2) {
+							html += '<div class="mui-col-xs-6">支付方式: <span class="status">支付宝</span></div>';
+						} else if (rg.ptId == 3) {
+							html += '<div class="mui-col-xs-6">支付方式: <span class="status">银联</span></div>';
+						} else {
+							html += '<div class="mui-col-xs-6">支付方式: <span class="status">云闪付</span></div>';
+						}
+
+						html += '<div class="mui-col-xs-6">抓单金额: <i class="red">' + rg.grabeggMoney + '</i></div>';
+
+						html += '</div>';
+						html += '</li>';
+
+					}
+					html += '</ul>';
+
+					$(selTab).append(html);
+
+				}, "GET")
+			}
+
+			
+
+			$("#submit-btn").on("tap", function() {
+				var btnArray = ['取消', '确定'];
+				 mui.prompt(' ','确认金额','确认收款金额',['取消','确认'],function (e) {
+					if (e.index == 1) {
+						ajax("/member/grabegg-info/member_confirm_receipt", {
+							"memberId": mbId(),
+							"money": e.value
+						}, function(data) {
+							if (data.ok == true) {
+								mui.alert("确认收款成功！");
+								plus.webview.currentWebview().close("index");
+								create_view("index", "index.html", "", {});
+								plus.webview.currentWebview().close();
+							} else {
+								mui.alert(data.message);
+							}
+						}, "GET");
+					}
+				},'div')
+			});
+			$("#cancel-btn").on("tap", function() {
+				ajax("/member/grabegg-info/new-member_cancel_receipt", {
+					"memberId": mbId(),
+				}, function(data) {
+					if (data.ok == true) {
+						mui.alert("订单取消成功！");
+						create_view("index", "index.html", "", {});
+						plus.webview.currentWebview().close();
+					} else {
+						mui.alert(data.message);
+					}
+				}, "GET");
+			})
+			function upid(id){
+				console.log(id);
+				ajax("/member/grabegg-info/supplements",{
+					"id":id
+				},function(res){
+					console.log(JSON.stringify(res));
+					mui.alert(res.message,' ','确定',function (e) {
+						$("#item2").empty();
+						getList(1, "#item2");
+					},'div')
+				},"POST");
+			}
+		</script>
+	</body>
+
+</html>

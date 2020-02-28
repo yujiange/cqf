@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>代理账号信息</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style>
+			.main_white {
+				margin-bottom: 50px;
+			}
+			#Rate p{
+				text-align: center;
+			}
+		</style>
+	</head>
+
+	<body class="b_white">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">代理账号信息</h1>
+		</header>
+		<div class="mui-content" id="refreshContainer">
+			<div id="Rate">
+				<p>本账号费率：微信:<span id="wxRate"></span> 支付宝:<span id="zfbRate"></span> 银联:<span id="ylRate"></span> 云闪付:<span id="ysfRate"></span></p>
+			</div>
+			<div class="main_white">
+			</div>
+			<!-- <nav class="mui-bar mui-bar-tab bottom-fix">
+				<a class="btn-blue" href="dlzh_add.html">新增代理账号</a>
+			</nav> -->
+
+			<script src="js/mui.min.js"></script>
+			<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+			<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+
+			<script type="text/javascript">
+				mui.init();
+				$("#wxRate").append(localStorage.getItem("wxRate"));
+				$("#zfbRate").append(localStorage.getItem("zfbRate"));
+				$("#ylRate").append(localStorage.getItem("ylRate"));
+				$("#ysfRate").append(localStorage.getItem("ysfRate"));
+				var mbId = mbId();
+				ajax("/member/MemberChildInfo", {
+					"mbId": mbId
+				}, function(data) {
+					if(data != null) {
+
+						//						$.each(data, function(index, coment) {
+						for(var i = 0; i < data.length; i++) {
+							var coment = data[i];
+							console.log(coment.mbId)
+							localStorage.setItem("dlzh_" + coment.mbId, JSON.stringify(coment));
+							var flag = "";
+							var inter;
+							if(!coment.mbStatus && coment.mbStatus == 0 ){
+								flag = "已启用";
+							}else{
+								flag = "未启用";
+							}
+							if(!coment.mbIntegral){
+								inter = 0
+							}else{
+								inter = coment.mbIntegral
+							}
+
+							$(".main_white").append(
+								'<div class="items">' +
+								'<div class="mui-row">' +
+								'<div class="mui-col-xs-6 tit"><img src="images/i_1.png">会员名称</div>' +
+								'<div class="mui-col-xs-6 cont" style="text-align: center;"> ' + coment.mbName + '</div>' +
+								'</div>' +
+								'<div class="mui-row">' +
+								'<div class="mui-col-xs-6 tit"><img src="images/i_2.png">积分</div>' +
+								'<div class="mui-col-xs-6 cont" style="text-align: center;"> ' + inter + '</div>' +
+								'</div>' +
+								'<div class="mui-row">' +
+								'<div class="mui-col-xs-6 tit"><img src="images/i_3.png">微信奖励率</div>' +
+								'<div class="mui-col-xs-6 cont" style="text-align: center;"> ' + coment.wxRate + '‰</div>' +
+								'</div>' +
+								'<div class="mui-row">' +
+								'<div class="mui-col-xs-6 tit"><img src="images/i_3.png">支付宝奖励率</div>' +
+								'<div class="mui-col-xs-6 cont" style="text-align: center;"> ' + coment.zfbRate + '‰</div>' +
+								'</div>' +
+								'<div class="mui-row">' +
+								'<div class="mui-col-xs-6 tit"><img src="images/i_3.png">云闪付奖励率</div>' +
+								'<div class="mui-col-xs-6 cont" style="text-align: center;"> ' + coment.ysfRate + '‰</div>' +
+								'</div>' +
+								'<div class="mui-row">' +
+								'<div class="mui-col-xs-6 tit"><img src="images/i_3.png">银联奖励率</div>' +
+								'<div class="mui-col-xs-6 cont" style="text-align: center;"> ' + coment.ylRate + '‰</div>' +
+								'</div>' +
+								'<div class="mui-row">' +
+								'<div class="mui-col-xs-6 tit"><img src="images/i_4.png">联系电话</div>' +
+								'<div class="mui-col-xs-6 cont" style="text-align: center;"> ' + coment.mbTel + '</div>' +
+								'</div>' +
+								'<div class="mui-row">' +
+								'<div class="mui-col-xs-6 tit"><img src="images/i_5.png">是否启用</div>' +
+								'<div class="mui-col-xs-6 cont" style="text-align: center;"> ' + flag + '</div>' +
+								'</div>' +
+								'<div class="m_20 t-center"><a class="btn-ms xg" herf="javascript:" target="' + coment.mbId + '" >修改</a></div>' +
+								'</div>');
+						}
+						//						});
+					}
+				}, "POST");
+
+				$(".main_white").on('tap', '.xg', function() {
+					console.log("click")
+					var nmbId = $(this).attr("target");
+					console.log(nmbId);
+					create_view("dlzh_edit", "dlzh_edit.html", {},{
+						"nmbId":nmbId
+					});
+					plus.webview.currentWebview().close();
+				})
+			</script>
+	</body>
+
+</html>

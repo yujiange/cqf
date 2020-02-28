@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>帮助说明</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="css/mui.min.index.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<script src="js/jquery-2.1.0.js"></script>
+		<script src="js/vue-2.6.10.js"></script>
+		<style>
+			#wrap{margin: 44px 0 100px;}
+			.helpNoteList{padding: 30px 5%;min-height: 200px;}
+			.helpNoteList>div{line-height: 26px;}
+		</style>
+	</head>
+	<body>
+		<div id="wrap"  v-cloak>
+			<header class="mui-bar mui-bar-nav">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+				<h1 class="mui-title">帮助说明</h1>
+			</header>
+			
+			<div class="content">
+				<div id="context" class="helpNoteList">
+					<div v-for="(item,index) in helpNoteList" v-key="index" v-html="item.helpContext">
+						<!-- 接收后台数据文本框 -->
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- 重连遮罩层	start -->
+		<!-- @touchmove.prevent -->
+		<div class="stopBlock">
+			<!-- 重连时禁止用户操作界面 -->
+			<div class="centers content">
+				<h3 class="centers title txt_2">温馨提示!</h3>
+				<p class="font_20 green txt_1">您已断开连接,已为您重连&nbsp;<span class="red txt_1 counts"></span>&nbsp;次</p>
+			</div>
+		</div>
+		<!-- 重连遮罩层	end -->
+		<script src="js/mui.min.js"></script>
+		<script src="js/comm.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			var app=new Vue({
+				el:'#wrap',
+				data:{
+					helpNoteList:[]
+				},
+				methods:{
+					post:function(){
+					//发送 post 请求
+						this.$http.post("http://" + api,{helpReference:1}).then(function(res){
+							console.log(JSON.stringify(res));    
+						},function(res){
+							console.log(res.status);
+						});
+					}
+				},
+				created: function() {
+					var that = this;
+					var memberId = localStorage.getItem("mbId");
+					var html='';
+					ajax("/app/getHelps?helpReference=1", {}, function(res) {
+						var data = JSON.stringify(res);
+						// console.log(data);
+						// 判断数据是否为 undefined
+						if(data == undefined){
+							that.helpNoteList = [];
+						}else{
+							that.helpNoteList = JSON.parse(data);
+						}
+					}, "GET");
+				}
+			});
+		</script>
+	</body>
+</html>

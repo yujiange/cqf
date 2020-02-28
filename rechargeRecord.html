@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>充值记录</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" href="css/public.css">
+		<script src="js/jquery-2.1.0.js"></script>
+		<script src="js/vue-2.6.10.js"></script>
+		<style>
+			.cashOutBox{margin:44px 0 80px 0;}
+			.cashOutItem{color: #949494;/* width: 92%;margin: 0 auto; */padding: 20px 4%;border-bottom: 1px solid #ccc;}
+			/* .cashOutItem:first-child{border-top: 1px solid #ccc;} */
+			.cashOutList:nth-of-type(2){margin-top: 4px;}
+			.cashOutList>span:nth-of-type(2){margin-left: 4px;}
+			.caynColor{/* color: #333; */color: #f20918;}
+		</style>
+	</head>
+	<body>
+		<div id="wrap" v-cloak>
+			<header class="mui-bar mui-bar-nav">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+				<h1 class="mui-title">充值记录</h1>
+			</header>
+			<div class="cashOutBox">
+				<div class="justify-content font_14 cashOut cashOutItem" v-for="(item,index) in cashOutItem" v-key="index">
+					<div class="cashOutListBox" >
+						<div class="flex cashOutList" v-for="(list,subIndex) in cashOutTitle" v-key="subIndex">
+							<span v-text="list+' : '"></span>
+							<span class="font_14 bold caynColor" v-if="!subIndex" v-text="item.money"></span>
+							<span class="font_14" v-if="subIndex==1" v-text="item.updateTime"></span>
+						</div>
+					</div>
+					<div v-if="!item.status" v-text="cashOutState[0]"></div>
+					<div v-if="item.status==1" v-text="cashOutState[1]"></div>
+					<div v-else-if="item.status=='-1'" v-text="cashOutState[2]"></div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- 重连遮罩层	start -->
+		<!-- @touchmove.prevent -->
+		<div class="stopBlock">
+			<!-- 重连时禁止用户操作界面 -->
+			<div class="centers content">
+				<h3 class="centers title txt_2">温馨提示!</h3>
+				<p class="font_20 green txt_1">您已断开连接,已为您重连&nbsp;<span class="red txt_1 counts"></span>&nbsp;次</p>
+			</div>
+		</div>
+		<!-- 重连遮罩层	end -->
+		<script src="js/mui.js"></script>
+		<script src="js/comm.js"></script>
+		<script type="text/javascript">
+			var app=new Vue({
+				el:'#wrap',
+				data:{
+					cashOutTitle:['申请金额','操作日期'],
+					cashOutState:['待审核中','充值成功','充值失败'],
+					cashOutItem:[]
+				},
+				created: function () {
+					var that=this;
+					var memberId = localStorage.getItem("mbId");
+					ajax("/memberRecharge/list?memberId="+mbId(), {}, function(res){
+						var data = JSON.stringify(res.MemberRechargeList);
+						// 判断数据是否为 undefined
+						if(data == undefined){
+							that.cashOutItem = [];
+						}else{
+							that.cashOutItem=JSON.parse(data);
+						}
+					}, "POST");
+				}
+			})
+			
+			mui.init();
+		</script>
+	</body>
+
+</html>

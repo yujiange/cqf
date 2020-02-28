@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>激活收款方式</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style type="text/css">
+			.oper { margin-top: 3px; font-size: 14px; text-align: right; color: #999; }
+			.oper span { margin-left: 10px;}
+		</style>
+	</head>
+
+	<body class="b_white">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">激活收款方式</h1>
+		</header>
+
+		<div class="mui-content" id="refreshContainer">
+			<div class="mui-row main_white main_pay" id="main_white">
+				<!--<div class="mui-col-xs-6">
+					<!-- 已激活加active样式 
+            <a class="link">
+              <div class="img"><img src="images/pay_wx.png" ></div>
+              <div class="oper"><span>未激活</span><span>启用</span></div>
+            </a>
+          </div>
+          <div class="mui-col-xs-6">
+            <a class="link active">
+              <div class="img"><img src="images/pay_zfb.png" ></div>
+              <div class="oper"><span>已激活</span><span>停用</span></div>
+            </a>
+          </div>  
+          <div class="mui-col-xs-6">
+            <a class="link">
+              <div class="img"><img src="images/pay_yl.png" ></div>
+              <div class="oper"><span>未激活</span><span>启用</span></div>
+            </a>
+          </div>
+          <div class="mui-col-xs-6">
+  					<a class="link active">
+  						<div class="img"><img src="images/pay_sf.png" ></div>
+  						<div class="oper"><span>已激活</span><span>停用</span></div>
+  					</a>
+  				</div>
+				
+				-->
+			</div>
+		</div>
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init({
+        pullRefresh  : {
+          container: "#refreshContainer",
+          up : {  //上拉加载分页
+            auto: true,//可选,默认false.首次加载自动上拉刷新一次
+            callback : getList //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+          }, 
+          down : {
+            auto: true,//可选,默认false.首次加载自动上拉刷新一次
+            callback : function (){
+              // ajax("", {}, function () {
+              //  this.endPulldownToRefresh();  // 上拉结束，true时表示没有数据了
+              // })
+              this.endPulldownToRefresh(true);
+            } 
+          },
+        },
+				beforeback: function() {
+					//获得父页面的webview
+					var list = plus.webview.currentWebview().opener();
+					//触发父页面的自定义事件(refresh),从而进行刷新
+					mui.fire(list, 'refresh');
+					//返回true,继续页面关闭逻辑
+					return true;
+				}
+      });
+      
+      function getList () {
+        $(".main_white").empty();
+        // 获取数据循环列表
+        ajax("/member/pay-account/list?mbId="+mbId(), {}, function (data) {
+          if (data.length == 0) {
+            mui("#refreshContainer").pullRefresh().endPullupToRefresh(true);
+            return;
+          }
+          mui("#refreshContainer").pullRefresh().endPullupToRefresh(true);
+          var html = "";
+          for (var i=0; i<data.length; i++) {
+            var rg = data[i];
+            
+            html +='<div class="mui-col-xs-6" onclick="itemClick('+ i +')">';
+            if(rg == true) {
+               html += '<a class="link active">';
+            } else {
+               html += '<a class="link">';
+            }
+            
+            if(0 == i) {
+              html +=   '<div class="img"><img src="images/pay_wx.png" ></div>';
+            } else if(1 == i) {
+              html +=   '<div class="img"><img src="images/pay_zfb.png" ></div>';
+            } else if(2 == i) {
+              html +=   '<div class="img"><img src="images/pay_yl.png" ></div>';
+            } else {
+              html +=   '<div class="img"><img src="images/pay_sf.png" ></div>';
+            }
+            
+            if(rg == true) {
+               html +='<div class="oper"><span>已激活</span><span>停用</span></div>';
+            } else {
+               html +='<div class="oper"><span>未激活</span><span>启用</span></div>';
+            }
+            
+            html += '</a>';
+            html +=   '</div>';
+            
+          }
+          $(".main_white").append(html);
+        }, "GET");
+      }
+      
+      function itemClick(ptid) {
+        console.log(ptid);
+        var url = "/member/pay-account/save?ptId="+(ptid+1)+"&mbId="+mbId();
+        var self = this;
+        ajax(url, {}, function(data) {
+          if(data.ok) {
+            $(".main_white").empty();
+            this.getList();
+          } else {
+            mui.alert(data.message);
+          }
+        }, "GET");
+      }
+      
+		</script>
+	</body>
+
+</html>

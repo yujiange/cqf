@@ -1,0 +1,158 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>邀请链接生成</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style type="text/css">
+			.bottom-fix .line {
+				padding-right: 1px;
+			}
+
+			.bottom-fix .btn-blue {
+				border-radius: 0;
+				border-top-left-radius: 3px;
+				border-top-right-radius: 3px;
+			}
+
+			.mui-input-row .mui-input-right {
+				top: 14px;
+			}
+
+			#ok_fk,
+			#ok_rg {
+				cursor: pointer
+			}
+
+			#bt_view {
+				margin: 30px auto;
+				width: 100%;
+				height: 70px;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: space-around;
+			}
+
+			#bt_view button {
+				width: 30%;
+				height: 60px;
+				background: #00A1E9;
+				color: #FFFFFF;
+				border-radius: 5px;
+				border: none;
+			}
+			#Rate p{
+				text-align: center;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">邀请链接生成</h1>
+		</header>
+
+		<div class="mui-content">
+			<div id="Rate">
+				<p>本账号费率：微信:<span id="wxRate"></span> 支付宝:<span id="zfbRate"></span> 银联:<span id="ylRate"></span> 云闪付:<span id="ysfRate"></span></p>
+			</div>
+			<form class="mui-input-group" id="form">
+				<div class="mui-input-row">
+					<label>微信费率：</label>
+					<input type="number" name="wxRate" class="mui-input-clear" placeholder="请输入微信的金额(‰)">
+				</div>
+				<div class="mui-input-row">
+					<label>支付宝费率：</label>
+					<input type="number" class="mui-input-clear" name="zfbRate" placeholder="请输入支付宝的费率(‰)">
+				</div>
+				<div class="mui-input-row">
+					<label>银联费率：</label>
+					<input type="number" class="mui-input-clear" name="ylRate" placeholder="请输入银联的费率(‰)">
+				</div>
+				<div class="mui-input-row">
+					<label>云闪付费率：</label>
+					<input type="number" class="mui-input-clear" name="ysfRate" placeholder="请输入云闪付的费率(‰)">
+				</div>
+				<!-- <div class="t-center red m_20" style="padding-bottom: 20px;">*请填写正确的账户信息</div> -->
+			</form>
+		</div>
+		<div id="bt_view">
+			<button type="button" class="recharge">生成链接</button>
+		</div>
+
+
+		<!-- 重连遮罩层	start -->
+		<!-- @touchmove.prevent -->
+		<div class="stopBlock">
+			<!-- 重连时禁止用户操作界面 -->
+			<div class="centers content">
+				<h3 class="centers title txt_2">温馨提示!</h3>
+				<p class="font_20 green txt_1">您已断开连接,已为您重连&nbsp;<span class="red txt_1 counts"></span>&nbsp;次</p>
+			</div>
+		</div>
+		<!-- 重连遮罩层	end -->
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init({
+				// beforeback: function() {
+				// 	//获得父页面的webview
+				// 	var list = plus.webview.currentWebview().opener();
+				// 	//触发父页面的自定义事件(refresh),从而进行刷新
+				// 	mui.fire(list, 'refresh');
+				// 	//返回true,继续页面关闭逻辑
+				// 	return true;
+				// }
+			});
+			var swxRate = parseInt(localStorage.getItem("wxRate"));
+			var szfbRate = parseInt(localStorage.getItem("zfbRate"));
+			var sylRate = parseInt(localStorage.getItem("ylRate"));
+			var sysfRate = parseInt(localStorage.getItem("ysfRate"));
+			$("#wxRate").append(swxRate);
+			$("#zfbRate").append(szfbRate);
+			$("#ylRate").append(sylRate);
+			$("#ysfRate").append(sysfRate);
+			$(".recharge").on("tap", function() {
+				var wxRate = parseInt($("[name='wxRate']").val());
+				var zfbRate = parseInt($("[name='zfbRate']").val());
+				var ylRate = parseInt($("[name='ylRate']").val());
+				var ysfRate = parseInt($("[name='ysfRate']").val());
+				if (wxRate != "" && zfbRate != "" && ylRate != "" && ysfRate != "") {
+					if (wxRate <= swxRate && zfbRate <= szfbRate && ylRate <= sylRate && ysfRate <= sysfRate) {
+						ajax("/member/proxyRate", {
+							"parentId": mbId(),
+							"wxRate": wxRate,
+							"zfbRate": zfbRate,
+							"ylRate": ylRate,
+							"ysfRate": ysfRate
+						}, function(res) {
+							console.log(JSON.stringify(res));
+							if (res.ok) {
+								mui.alert('链接生成成功已复制到剪切板', ' ', '确定', function(e) {}, 'div')
+								copy_fun("http://"+ip+"/static/register.html?parentId="+mbId()+"&mes="+res.rateStr);
+							} else {
+								mui.alert(res.message, ' ', '确定', function(e) {}, 'div')
+							}
+						}, "POST");
+					} else {
+						mui.alert('设置的费率不能大于自身费率',' ','确定',function (e) {},'div')
+					}
+				} else {
+					mui.alert('费率不能为空', ' ', '确定', function(e) {}, 'div')
+				}
+			})
+			// $(".recharge_list").on("tap", function() {
+			// 	create_view("tx_list", "tx_list.html");
+			// })
+		</script>
+	</body>
+
+</html>

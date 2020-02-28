@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>收银台</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="css/mui.min.index.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<script src="js/jquery-2.1.0.js"></script>
+		<script src="js/vue-2.6.10.js"></script>
+		<style>
+			#wrap{margin: 44px 0 100px;/* border: 1px solid red;min-height: 300px; */}
+			.content{color: #000;/* min-height: 200px;border: 1px solid green; */}
+			.paymentTitle{margin: 74px auto 5px;}
+			.QRCodeName{color: #CC6600;}
+			.QRCodeImg {width: 56%;height: auto;display: block;margin: 20px auto 20px;/* border: 1px solid red; */}
+			.remainingTime{margin:0 0 10px 0;}
+			
+			#timer,#warring{background: lightgreen;min-height: 30px;}
+			#warring{background: lightblue;}
+		</style>
+	</head>
+	<body>
+		<div id="wrap">
+			<header class="mui-bar mui-bar-nav">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+				<h1 class="mui-title">打开app扫一扫下方二维码进行付款</h1>
+			</header>
+			
+			<div class="font_14 centers content">
+				<div class="paymentTitle">
+					<span class="font_18 QRCodeName">{{QRCodeName}}</span>
+					<span>付款<span>{{paymentAmount}}</span>元</span>
+				</div>
+				<img class="QRCodeImg" :src="QRCodeImg" alt="">
+				<div class="remainingTime">剩余<span class="remainingTimeMain">{{remainingTime}}</span></div>
+				<div class="cancelOrder">{{cancelOrder}}</div>
+			</div>
+			
+		</div>
+		
+		
+		
+		<!-- 重连遮罩层	start -->
+		<!-- @touchmove.prevent -->
+		<div class="stopBlock">
+			<!-- 重连时禁止用户操作界面 -->
+			<div class="centers content">
+				<h3 class="centers title txt_2">温馨提示!</h3>
+				<p class="font_20 green txt_1">您已断开连接,已为您重连&nbsp;<span class="red txt_1 counts"></span>&nbsp;次</p>
+			</div>
+		</div>
+		<!-- 重连遮罩层	end -->
+		
+		<script src="js/mui.min.js"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init();
+			var app=new Vue({
+				el:'#wrap',
+				data:{
+					QRCodeName:'支付宝',
+					paymentAmount:666,
+					QRCodeImg:'images/QRCode.png',
+					remainingTime:'0时05分00秒',
+					cancelOrder:'取消订单'
+				},
+				methods:{
+					
+				},
+				// created:function(){}
+				created(){
+					
+				}
+			});
+			
+			
+			//带天数的倒计时
+			// var maxtime = 60 * 60; //一个小时，按秒计算，自己调整!  
+			 var maxtime = 60 * 10; //一个小时，按秒计算，自己调整!
+             function CountDown() {
+                 if (maxtime >= 0) {
+					 day = Math.floor(maxtime / (60 * 60 * 24));
+					 hour = Math.floor(maxtime / (60 * 60)) - (day * 24);
+					 minute = Math.floor(maxtime / 60) - (day * 24 * 60) - (hour * 60);
+					 second = Math.floor(maxtime) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
+					 
+					 if (day <= 9) day = '0' + day;
+					 if (hour <= 9) hour = '0' + hour;
+					 if (minute <= 9) minute = '0' + minute;
+					 if (second <= 9) second = '0' + second;
+					 
+					 if(maxtime>60 * 60 * 24){
+						 dates=day+"天"+hour+"小时"+minute+"分钟"+second+"秒";
+					 }else if(maxtime>60*60){
+						 dates=hour+"小时"+minute+"分钟"+second+"秒";
+					 }else if(maxtime>60){
+						 dates=minute+"分钟"+second+"秒";
+					 }else{
+						 dates=second+"秒";
+					 };
+					 
+					 /* // 只计算分秒
+                     minutes = Math.floor(maxtime / 60);
+                     seconds = Math.floor(maxtime % 60);
+					 msg = "距离结束还有" + minutes + "分" + seconds + "秒";
+                     // document.all["timer"].innerHTML = msg;
+					 // $('.remainingTimeMain').text(msg); */
+					 
+					 $('.remainingTimeMain').text(dates);
+                     // if (maxtime == 5 * 60)alert("还剩5分钟");
+					 if (maxtime == 5 * 60)mui.toast('还剩5分钟',{duration:'short',type:'div'});
+					 // 提示10秒倒计时
+					 // for(var i=10;i>-1;i--)
+					 for(var i=10;i>0;i--){
+						 // console.log(i);
+						 if (maxtime == i)mui.toast('还剩'+i+'秒钟',{duration:'short',type:'div'});
+					 };
+                         --maxtime;
+                 } else{
+                     clearInterval(timer);
+                     // alert("时间到，结束!");
+					 mui.toast('时间到，结束!',{duration:'short',type:'div'})
+                 }
+             }
+             timer = setInterval("CountDown()", 1000); 
+		</script>
+	</body>
+</html>

@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title> 首页</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<script src="js/jquery-2.1.0.js"></script>
+		<script src="js/vue-2.6.10.js"></script>
+		<link rel="stylesheet" href="lib/element-ui/element-ui.css">
+		<script src="lib/element-ui/element-ui.js"></script>
+		<link rel="stylesheet" href="css/mui.min.index.css" />
+		<link rel="stylesheet" href="css/public.css" />
+
+		<!-- 轮播	start -->
+		<link rel="stylesheet" type="text/css" href="css/banner.css">
+		<link rel="stylesheet" type="text/css" href="css/swipeslider.css">
+		<!-- 轮播	end -->
+		<style type="text/css">
+			#scroll {
+				margin: 170px auto 0;
+				width: 94%;
+				height: 40px;
+				background-color: rgba(255, 255, 255, 0.6);
+				border-radius: 5px;
+				display: flex;
+				justify-content: flex-start;
+				align-items: center;
+			}
+
+			#scrollBox {
+				height: 21px;
+				overflow: hidden;
+				padding-left: 20px;
+			}
+
+			.notice {
+				width: 16px;
+				height: 14px;
+			}
+
+			.mainBox {
+				min-height: 200px;
+				width: 76%;
+				margin: 10px auto 110px;
+			}
+
+			.icon_1 {
+				width: 37px;
+				height: 37px;
+			}
+
+			.urlText {
+				color: #466077;
+				margin-left: 14px;
+			}
+
+			.gray {
+				color: #8e99a3;
+			}
+
+			.integral {
+				margin-top: 6px;
+			}
+
+			.integral>div {
+				padding: 4px;
+			}
+
+			.integral>div,
+			.listWrap .listBox>div {
+				width: 50%;
+			}
+
+			.integral .num {
+				margin-left: 10px;
+			}
+
+			.listWrap {
+				margin-top: 20px;
+			}
+
+			.listWrap .listBox:not(:last-child) {
+				border-bottom: 1px solid #f1f1f1;
+			}
+
+			.listWrap .listBox>div {
+				padding: 10px 0;
+				/* padding: 17px 0; */
+			}
+
+			.integral>div:nth-of-type(2),
+			.listBox>div:nth-of-type(2) {
+				border-left: 1px solid #f1f1f1;
+			}
+
+			.listBox .icon_2 {
+				width: 30px;
+				height: 30px;
+				margin-right: 20px;
+			}
+
+			.paymentMethod {
+				margin-top: 20px;
+			}
+
+			a.paymentMethodItem {
+				color: #838287;
+			}
+			.paymentMethodItem .pays_wx {
+				width: 45px;
+				height: 40px;
+			}
+			.paymentMethod img{width: 40px;height: 40px;}
+			.paymentMethod .pays_zfb {
+				width: 40px;
+				height: 40px;
+			}
+
+			.paymentMethod .pays_ysf {
+				width: 39px;
+				height: 39px;
+			}
+
+			.paymentMethod .pays_yl {
+				width: 40px;
+				height: 40px;
+			}
+			.paymentMethod .pays_de {
+				width: 40px;
+				height: 40px;
+			}
+
+			.paymentMethodName {
+				margin-top: 12px;
+			}
+			.startCollecting {
+				display: block;
+				width: 239px;
+				height: 40px;
+				border-radius: 25px;
+				margin: 25px auto 25px;
+				border: none;
+				background: rgba(49, 124, 223, 1);
+				color: white;
+			}
+
+			.startCollecting.active {
+				background: #f00;
+			}
+			.mui-popup-backdrop{
+				z-index: 1000;
+			}
+		</style>
+		<script src="js/mui.min.js"></script>
+	</head>
+
+	<body id="body">
+		<div id="wrap" v-cloak>
+			<!-- 轮播	start -->
+			<section>
+				<div id="full_feature" class="swipslider">
+					<ul class="sw-slides">
+						<li class="sw-slide" v-for="(item,index) in banners" v-key="index">
+							<img :src="item.url" alt="Summer beach concept">
+						</li>
+					</ul>
+				</div>
+			</section>
+			<!-- 轮播	end -->
+
+			<!-- 文字滚动通知栏	start -->
+			<div id="scroll">
+				<img class="notice" :src="noticeImg" alt="">
+				<div id="scrollBox">
+					<!-- 通知信息滚动栏 -->
+				</div>
+			</div>
+			<!-- 文字滚动通知栏	end -->
+
+			<!-- 中间主体内容	start -->
+			<div class="mainBox">
+				<div class="itemFlex">
+					<img class="icon_1" :src="adminImg" alt="">
+					<span class="font_13 urlText" id="urlText" v-text="urlText"></span>
+				</div>
+
+				<div class="justify-content integral">
+					<div v-for="(item,index) in integral" v-key="index" :class="[!index?'':'itemCenter']">
+						<span class="font_12 gray" v-text="item.text"></span>
+						<span class="font_14 bold num" :id="item.id" v-text="item.number"></span>
+					</div>
+				</div>
+
+				<!-- listWrap 	start -->
+				<div class="listWrap">
+					<div class="justify-content listBox" v-for="(item,index) in listBox" v-key="index">
+						<div v-for="(list,subIndex) in item.lists" v-key="subIndex" :class="[!subIndex?'itemFlex':'itemCenter']">
+							<img class="icon_2" :src="list.url" alt="">
+							<div class="flexColumn">
+								<span class="font_16 bold" :id="list.id" v-text="list.number"></span>
+								<span class="font_13 gray" v-text="list.text"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- listWrap 	end -->
+
+				<div class="justify-content paymentMethod">
+					<a :href="item.linkUrl" class="flexColumn paymentMethodItem" v-for="(item,index) in paymentMethod" v-key="index">
+						<img :class="{'pays_wx':!index,'pays_zfb':index==1,'pays_ysf':index==2,'pays_yl':index==3,'pays_de':index==4}" :src="item.url" alt="">
+						<span class="paymentMethodName font_12" v-text="item.text"></span>
+					</a>
+				</div>
+
+				<button class="font_15 bold startCollecting" :disabled="disabledStatus" :class="{'active':startCollectingActive}"
+				 @click="startCollectingJump" v-text="startCollecting" type="button"></button>
+
+			</div>
+			<!-- 中间主体内容	end -->
+
+			<!-- 底部导航	start -->
+			<div class="justify-content footTab">
+				<div class="justify-content footTabList">
+					<a class="flexColumn tablist" v-for="(item,index) in footTab" v-key="index" @tap="footTarActive(item,index)">
+						<el-badge :value="orderNums" class="item" v-if="index==1">
+							<img class="footBarImg" :src="item.urlActive" alt="" v-if="footActive==index">
+							<img class="footBarImg" :src="item.url" alt="" v-else-if="footActive!==index">
+							<span class="font_12 " :class="{'active':footActive==index}" v-text="item.text"></span>
+						</el-badge>
+						<div v-else-if="index!=1" :id="item.id">
+							<img class="footBarImg" :src="item.urlActive" alt="" v-if="footActive==index">
+							<img class="footBarImg" :src="item.url" alt="" v-else-if="footActive!==index">
+							<span class="font_12 " :class="{'active':footActive==index}" v-text="item.text"></span>
+						</div>
+					</a>
+				</div>
+			</div>
+			<!-- 底部导航	end -->
+		</div>
+
+
+		<script src="js/comm.js" charset="utf-8"></script>
+		<script type="text/javascript" src="js/swipeslider.min.js"></script>
+		<script type="text/javascript">
+			var app = new Vue({
+				el: '#wrap',
+				data: {
+					orderNums: 0,
+					footActive: 0,
+					noticeImg: 'images/icon_gg.png',
+					adminImg: 'img/personalUser.png',
+					urlText: 'admin.com',
+					startCollecting: '开始收款',
+					startCollectingActive: false,
+					disabledStatus: false,
+					startCollectingFlag: 0,
+					banners: [{
+						url: 'img/newBanner01.png',
+					}, {
+						url: 'img/newBanner02.png',
+					}, {
+						url: 'img/newBanner03.png',
+					}, {
+						url: 'img/newBanner04.png',
+					}],
+
+					integral: [{
+						id: 'mb_integral',
+						text: '总积分',
+						number: '0'
+					}, {
+						id: 'mb_able_integral',
+						text: '可用积分',
+						number: '0'
+					}],
+					listBox: [{
+						lists: [{
+							id: 'today_money',
+							url: 'img/icon_1.png',
+							number: '0',
+							text: '今日收款'
+						}, {
+							id: 'team_sum_money',
+							url: 'img/icon_2.png',
+							number: '0',
+							text: '团队收款'
+						}]
+					}, {
+						lists: [{
+							id: 'today_earnings',
+							url: 'img/icon_3.png',
+							number: '0',
+							text: '今日收益'
+						}, {
+							id: 'team_sum_earnings',
+							url: 'img/icon_4.png',
+							number: '0',
+							text: '团队收益'
+						}]
+					}],
+					paymentMethod: [{
+						show: true,
+						linkUrl: 'weChatPayEntrance.html',
+						url: 'images/pays_wx.png',
+						text: '微信'
+					}, {
+						show: true,
+						linkUrl: 'alipayPayEntrance.html',
+						url: 'images/pays_zfb.png',
+						text: '支付宝'
+					}, {
+						show: true,
+						linkUrl: 'cloudPayEntrance.html',
+						url: 'images/pays_ysf.png',
+						text: '云闪付'
+					}, {
+						show: true,
+						linkUrl: 'bankCardPayEntrance.html',
+						url: 'images/pays_yl.png',
+						text: '银行卡'
+					}, {
+						show: true,
+						linkUrl: 'qqEntrance.html',
+						url: 'images/pays_qq.png',
+						text: 'qq通道'
+					}],
+
+					footTab: [{
+						id: 'footIndex',
+						link: 'index.html',
+						url: 'images/bar_sy.png',
+						urlActive: 'images/bar_syActive.png',
+						text: '首页'
+					}, {
+						id: 'footOrders',
+						link: 'orders.html',
+						url: 'images/bar_dd.png',
+						urlActive: 'images/bar_ddActive.png',
+						text: '订单'
+					}, {
+						id: 'footKefu',
+						link: '##',
+						url: 'images/bar_kf.png',
+						urlActive: 'images/bar_kfActive.png',
+						text: '客服'
+					}, {
+						id: 'footMy',
+						link: 'my.html',
+						url: 'images/bar_wd.png',
+						urlActive: 'images/bar_wdActive.png',
+						text: '我的'
+					}],
+				},
+				created: function() {
+					this.orderNums = getConfirmOrderNum().total;
+					timer2 = setTimeout(outLoginFn, 3000);
+					if (placeSatus == '1') {
+						this.startCollectingActive = true;
+						this.startCollecting = "取消收款";
+					}else if (placeSatus == '0'){
+						this.startCollectingActive = false;
+						this.startCollecting = "开始收款";
+					}
+					// app 更新
+					$(function(){
+						mui.plusReady(function(){
+							plusReady(true);
+						});
+					})
+					freshMemberInfo();
+				},
+				methods: {
+					toggle: function(item) {
+						item.show = !item.show;
+					},
+					footTarActive(item, index) {
+						if(this.footActive!=index){
+							this.footActive = index;
+							if(index==2){
+								console.log("placeSatus:"+getGetPlaceSatus());
+								if(getGetPlaceSatus() == "1"){
+									mui.confirm('正在收款，进入客服会取消收款','提示',['确定','取消'],function (e) {
+										if(!e.index){
+											if (navigator.onLine){ //正常工作
+												window.location.href="http://p.qiao.baidu.com/cps/chat?siteId=13858268&userId=28798369";
+											}else { //执行离线状态时的任务
+												// mui.toast('您已断开网络连接,请您重新联网后重试',{duration:'short',type:'div'});
+												window.location.href="brokenNetTips.html";
+											}
+										}
+									})
+								}else{
+									if (navigator.onLine){ //正常工作
+										window.location.href="http://p.qiao.baidu.com/cps/chat?siteId=13858268&userId=28798369";
+									}else { //执行离线状态时的任务
+										// mui.toast('您已断开网络连接,请您重新联网后重试',{duration:'short',type:'div'});
+										window.location.href="brokenNetTips.html";
+									}
+								}
+								
+							}else{
+								window.location.href = item.link;
+							}
+						}
+					},
+					startCollectingJump() {
+						if (!this.startCollectingActive) {
+							this.startCollecting = "取消收款";
+							this.startCollectingActive = true;
+							// 抓单操作 GetPlace
+							setGetPlaceSatus('1');
+							console.log(getGetPlaceSatus());
+							getPlace();
+						} else {
+							this.startCollecting = "开始收款";
+							this.startCollectingActive = false;
+							// 取消操作
+							setGetPlaceSatus('0');
+							if(ws)
+								ws.close();
+							else 
+								outgraber();
+						}
+					}
+				}
+			});
+			<!-- 轮播	start -->
+			$(window).load(function() {
+				$('#full_feature').swipeslider();
+				$('#content_slider').swipeslider({
+					transitionDuration: 600,
+					autoPlayTimeout: 10000,
+					sliderHeight: '300px'
+				});
+				$('#responsiveness').swipeslider();
+				$('#customizability').swipeslider({
+					transitionDuration: 1500,
+					autoPlayTimeout: 4000,
+					timingFunction: 'cubic-bezier(0.38, 0.96, 0.7, 0.07)',
+					sliderHeight: '30%',
+				});
+			});
+			<!-- 轮播	end -->
+		</script>
+		<script charset="utf-8">
+			mui.init({
+				keyEventBind: {//首页返回键处理      // //处理逻辑：1秒内，连续两次按返回键，则退出应用；
+					backbutton: true //开启back按键监听
+				}
+			});
+			
+			// window.addEventListener('refresh', function(e) { //执行刷新
+			// 	location.reload();
+			// });
+			var speed = 50;
+			var delay = 1000;
+			var height = 21;
+			var time;
+
+			function Dron_ScrollBox(uid) {
+				var area = document.getElementById(uid);
+				area.innerHTML += area.innerHTML;
+
+				function scroll() {
+					if (area.scrollTop % height == 0) {
+						clearInterval(time);
+						setTimeout(start, delay);
+					} else {
+						area.scrollTop++;
+						if (area.scrollTop >= area.scrollHeight / 2) {
+							area.scrollTop = 0;
+						}
+					}
+				}
+
+				function start() {
+					time = setInterval(scroll, speed);
+					area.scrollTop++;
+				}
+				setTimeout(start, delay);
+			}
+			Dron_ScrollBox('scrollBox');
+			var first = null;
+
+			var slider = mui("#slider");
+			slider.slider({
+				interval: 3000
+			});
+
+			$("#jfrg").on("tap", function() {
+				create_view("jfrg", "jfrg.html", {});
+			})
+			$("#zd_jl").on("tap", function() {
+				create_view('zd_jl', 'zd_jl.html', {});
+			})
+			$("#my").on("tap", function() {
+				create_view("my", "my.html", {});
+				// plus.webview.currentWebview().close("index");
+			})
+			$("#dlzh_add").on("tap", function() {
+				create_view("dlzh_add", "dlzh_add.html", {});
+			})
+			$("#sk_active").on("tap", function() {
+				create_view("sk_active", "sk_active.html");
+			})
+			$("#gm_active").on("tap", function() {
+				create_view("gm_active", "gm_active.html");
+			})
+			$("#cz").on("tap", function() {
+				create_view("cz", "cz.html");
+			})
+			$("#tx_active").on("tap", function() {
+				create_view("tx_active", "tx_active.html");
+			})
+			$(".off").on("tap", function() {
+				mui.alert('此功能暂未开放', ' ', '确定', function(e) {}, 'div')
+			})
+			$("#notice").on("tap", function() {
+				window.location.href="notice.html";
+			})
+			$("#scroll").on("tap", function() {
+				window.location.href="notice.html";
+			})
+			$("#strategy").on("tap", function() {
+				create_view("strategy", "strategy.html")
+			})
+
+
+			mui.plusReady(function() {
+				// ***当前功能mui.back封装的有，无需再开发
+				//首页返回键处理
+				//处理逻辑：1秒内，连续两次按返回键，则退出应用；
+				// var first = null;
+				// plus.key.addEventListener('backbutton', function() {
+				// 	//首次按键，提示‘再按一次退出应用’
+				// 	if (!first) {
+				// 		first = new Date().getTime();
+				// 		mui.toast('再按一次退出应用');
+				// 		setTimeout(function() {
+				// 			first = null;
+				// 		}, 1000);
+				// 	} else {
+				// 		if (new Date().getTime() - first < 1000) {
+				// 			plus.runtime.quit();
+				// 		}
+				// 	}
+				// }, false);
+				mui.back = function() {
+					//首次按键，提示  再按一次退出应用
+					if (!first) {
+						first = new Date().getTime(); //记录第一次按下回退键的时间
+						mui.toast('再按一次退出应用'); //给出提示
+						//      history.go( - 1) //回退到上一页面
+						setTimeout(function() { //1s中后清除
+								first = null;
+							},
+							1000);
+					} else {
+						if (new Date().getTime() - first < 1000) { //如果两次按下的时间小于1s，
+							if(ws)
+								ws.close();
+							plus.runtime.quit(); //那么就退出app
+						}
+					}
+				};
+				
+				get_infos();
+				get_notice();
+				plus.webview.currentWebview().setPullToRefresh({support:false});//关闭当前页面对于刷新控件的支持
+			});
+			$(".gm_btn").on("tap", function(view) {
+				var vid = view.currentTarget.id;
+				create_view("gm_active", "gm_active.html", {}, {
+					"vid": vid
+				});
+			});
+
+			function get_infos() {
+				that = this;
+				ajax("/member/getMemberInfo", {
+					"mbId": mbId()
+				}, function(res) {
+					var data = res.homePageList[0];
+					$("#urlText").text(data.memberName);
+					
+					$("#mb_able_integral").text(data.mbIntegral);
+					$("#mb_integral").text(add(data.mbIntegral, data.freezeIntegral));
+					$("#today_money").text(data.todayMoney);
+					$("#today_earnings").text(data.todayEarnings);
+					$("#team_sum_earnings").text(data.teamSumEarnings);
+					$("#team_sum_money").text(data.teamSumMoney);
+
+					// 设置积分
+					localStorage.setItem("mbIntegral", data.mbIntegral);
+					localStorage.setItem("freezeIntegral", data.freezeIntegral);
+					localStorage.setItem("commission", data.commission);
+				}, "POST")
+			};
+
+			function get_notice() {
+				ajax("/notice/index", {}, function(res) {
+					var data = res.result;
+					var html = "";
+					for (var i = 0; i < data.length; i++) {
+						html += "<div><a herf='#' target='_blank'>通知:" + data[i].title + "</a></div>";
+					}
+					$("#scrollBox").append(html);
+				}, "GET")
+			}
+			
+		</script>
+	</body>
+</html>

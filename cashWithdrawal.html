@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>提现</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" href="css/public.css">
+		<script src="js/jquery-2.1.0.js"></script>
+		<script src="js/vue-2.6.10.js"></script>
+		<style>
+			body{background: #fff;}
+			.content{margin: 44px 0 232px;}
+			.cashWithdrawalWrap{}
+			.cashWithdrawalIfno{width: 50%;margin: 75px auto 30px;}
+			
+			.cashWithdrawalList{width: 50%;margin: 0px auto;}
+			input.inputAmount,.cashWithdrawalList .cashWithdrawalBtn{display: block;width: 100%;height: 40px;line-height: 40px;border-radius:8px;border: 1px solid rgba(37,111,249,1);color: rgba(37,111,249,1);}
+			input.inputAmount{color: #000;}
+			.cashWithdrawalList .cashWithdrawalBtn:not(:first-child){margin: 30px 0 0 0;}
+			.cashWithdrawalList .cashWithdrawalBtn.active{background: rgba(37,111,249,1);color: #fff;}
+			.mui-popup-input input{
+				width: 70%;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="wrap" v-cloak>
+			<header class="mui-bar mui-bar-nav">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+				<h1 class="mui-title">提现</h1>
+			</header>
+			
+			<div class="content">
+				<div class="cashWithdrawalWrap">
+					<div class="font_14 flex justify-content cashWithdrawalIfno">
+						<div>
+							<span v-text="guarantee+' : '"></span>
+							<span id="guaranteeAmout" v-text="guaranteeAmout"></span>
+						</div>
+						<div>
+							<span v-text="commission+' : '"></span>
+							<span id ="commissionAmout" v-text="commissionAmout"></span>
+						</div>
+					</div>
+					
+					<div class="cashWithdrawalList">
+						<!-- <input id="money" type="number" class="inputAmount" :placeholder="inputAmount"> -->
+						<div class="font_15 centers cashWithdrawalBtn" :class="{'active':flagActive==index}" v-for="(item,index) in cashWithdrawalList" v-key="index" @click="flagActiveFn(item,index)" v-text="item.text"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<script src="js/mui.js"></script>
+		<script src="js/comm.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			
+			var app=new Vue({
+				el:'#wrap',
+				data:{
+					guarantee:'保证金',
+					guaranteeAmout:9999,
+					commission:'佣金',
+					commissionAmout:99.99,
+					flagActive:0,
+					inputAmount:'输入金额提现',
+					cashWithdrawalList:[{
+						text:'转入保证金'
+					},{
+						text:'保证金提现到银行卡'
+					}],
+					
+					footTab:[{
+						link:'index.html',
+					    url:'images/bar_sy.png',
+					    text:'首页'
+					},{
+						link:'orders.html',
+					    url:'images/bar_dd.png',
+					    text:'订单'
+					},{
+						link:'##',
+					    url:'images/bar_kf.png',
+					    text:'客服'
+					},{
+						link:'my.html',
+					    url:'images/bar_wd.png',
+					    text:'我的'
+					}],
+				},
+				methods:{
+					flagActiveFn(item,index){
+						this.flagActive=index;
+						var that = this;
+						if(!index){
+							// 转入保证金
+							var url = '/check/submitApplications';
+							if(Number(that.commissionAmout)>=50){
+								ajax(url, {
+									mbId:mbId()
+								}, function(res) {
+									freshMemberInfo();
+									that.guaranteeAmout = mbIntegral();
+									that.commissionAmout = commission();
+									mui.alert(res.msg, "", function() {
+									}, "div");
+									
+								}, "POST");
+							}else{
+								console.log();
+								mui.toast('提现不能低于50！');
+							}
+							
+						}else if(index==1){
+							// 保证金提现到银行卡
+							window.location.href="tx.html";
+						};
+					},
+				},
+				created: function() {
+					this.guaranteeAmout = mbIntegral();
+					this.commissionAmout = commission();
+				}
+			})
+		</script>
+	</body>
+
+</html>

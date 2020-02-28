@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>个人资料</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style>
+			.tips {
+				margin: 6px 0 0;
+			}
+			
+			.btn-box {
+				margin: 20px 15px;
+			}
+			#submit-btn{cursor:pointer}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">个人资料</h1>
+		</header>
+
+		<div class="mui-content">
+			<form class="mui-input-group" id="form">
+				<div class="mui-input-row">
+					<label>用户名：</label>
+					<input type="text" name="memberName" placeholder="请输入用户名" readonly="readonly">
+					<input type="text" class="mui-input-clear" id="mbId" name="mbId" hidden>
+				</div>
+				<div class="mui-input-row">
+					<label>微信昵称：</label>
+					<input type="text" class="mui-input-clear" name="wxNickName" placeholder="请输入微信昵称">
+				</div>
+				<div class="mui-input-row">
+					<label>微信实名：</label>
+					<input type="text" class="mui-input-clear" name="wxRealName" placeholder="请输入微信实名">
+				</div>
+				<div class="mui-input-row">
+					<label>支付宝昵称：</label>
+					<input type="text" class="mui-input-clear" name="zfbNickname" placeholder="请输入支付宝昵称">
+				</div>
+				<div class="mui-input-row">
+					<label>支付宝实名：</label>
+					<input type="text" class="mui-input-clear" name="zfbRealName" placeholder="请输入支付宝实名">
+				</div>
+				<div class="mui-input-row">
+          <label>银行卡户名：</label>
+          <input type="text" class="mui-input-clear" name="cardName" placeholder="请输入银行卡户名">
+        </div>
+				<div class="mui-input-row">
+					<label>银行卡号：</label>
+					<input type="text" class="mui-input-clear" name="cardNumber" placeholder="请输入银行卡户名">
+				</div>
+				<div class="mui-input-row">
+					<label>开户支行：</label>
+					<input type="text" class="mui-input-clear" name="openingBank" placeholder="请输入开户行">
+				</div>
+				<div class="mui-input-row">
+					<label>云闪付实名：</label>
+					<input type="text" class="mui-input-clear" name="ysfRealname" placeholder="请输入云闪付实名">
+				</div>
+			</form>
+			<div class="tips"><span class="blue">&nbsp;*</span>&nbsp;填写资料必须准确有效，请谨慎提交</div>
+			<div class="btn-box"><button type="button" class="btn-blue" id="submit-btn">确认修改</button></div>
+		</div>
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js"></script>
+		<script src="js/comm.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			$("#mbId").val(mbId());
+			var mbId = mbId();
+			$(function() {
+
+				ajax("/member/findOfMemberInfo", {"mbId": mbId}, function(data) {
+					if(data != null) {
+						$("[name='memberName']").val(data.memberName);
+						$("[name='wxNickName']").val(data.wxNickName);
+						$("[name='wxRealName']").val(data.wxRealName);
+						$("[name='zfbNickname']").val(data.zfbNickname);
+						$("[name='zfbRealName']").val(data.zfbRealName);
+						$("[name='cardName']").val(data.cardName);
+						$("[name='cardNumber']").val(data.cardNumber);
+						$("[name='openingBank']").val(data.openingBank);
+						$("[name='ysfRealname']").val(data.ysfRealname);
+					}
+				}, "POST")
+
+				$("#submit-btn").on("tap",function() {
+					/*if(empty()) {
+						return;
+					}*/
+					ajax("/member/member_info", getFormData($('#form')), function(data) {
+						if(data.ok) {
+							mui.alert("提交成功.");
+							history.go(-1);
+						} else {
+							mui.alert(data.message);
+						}
+					}, "POST")
+				})
+			})
+		</script>
+	</body>
+
+</html>

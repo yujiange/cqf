@@ -1,0 +1,18 @@
+body{background: #fff;}
+#wrap{margin:0 0 62px 0;}
+.appNameImage{ display: block;margin: 90px auto 0;width: 157px;height: 51px;}
+.flexRow{display: flex;flex-direction:row;align-items:center;}
+
+.registrationReset{width: 80%;margin: 35px auto 0;}
+.registrationReset_List{padding: 12px 0;border-bottom: 1px solid #e8eef2;}
+.iconImg{max-width: 10%;min-width: 19px;height: 20px;}
+.registrationReset_List .iconImg img{display: inline-block;width: 15px;height: 18px;}
+.registrationReset_List .infoVal{width: 90%;font-size:14px;margin-left: 2px;border: none;margin-bottom: 0;}
+input.verificaCode{border-radius:25px;font-size:14px;border: none;background: rgba(49,124,223,1);color: #fff;}
+
+.btnList{margin: 30px 0;}
+input.btns{display: block;width: 100%;height: 42px;color: rgba(49,124,223,1);font-size:15px;border-radius:25px;border: 1px solid rgba(49,124,223,1);background: none;}
+input.btns.active{background: rgba(49,124,223,1);color: #fff;}
+/*input.btns:hover{background: rgba(49,124,223,1);}*/
+input.btns:nth-of-type(2){margin: 8px 0 8px;}
+.forgetPassword{text-align: center;font-size: 15px;}

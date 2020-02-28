@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>修改代理账号</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<link rel="stylesheet" href="css/mui.picker.min.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">修改代理账号</h1>
+		</header>
+
+		<div class="mui-content">
+			<form class="mui-input-group" id="form">
+				<div class="mui-input-row">
+					<label>用户名：</label>
+					<input type="text" name="user" placeholder="请输入用户名" disabled>
+				</div>
+				<div class="mui-input-row">
+					<label>微信奖励率：</label>
+					<input type="number" name="wxRate" placeholder="请输入微信奖励率">
+					<span class="mui-input-right">‰</span>
+				</div>
+				<div class="mui-input-row">
+					<label>支付宝奖励率：</label>
+					<input type="number" name="zfbRate" placeholder="请输入支付宝奖励率">
+					<span class="mui-input-right">‰</span>
+				</div>
+				<div class="mui-input-row">
+					<label>银联奖励率：</label>
+					<input type="number" name="ylRate" placeholder="请输入银联奖励率">
+					<span class="mui-input-right">‰</span>
+				</div>
+				<div class="mui-input-row">
+					<label>云闪付奖励率：</label>
+					<input type="number" name="ysfRate" placeholder="请输入云闪付奖励率">
+					<span class="mui-input-right">‰</span>
+				</div>
+				<div class="mui-input-row">
+					<label>联系人：</label>
+					<input type="text" class="mui-input-clear" name="lxr" disabled placeholder="请输入联系人">
+				</div>
+				<div class="mui-input-row">
+					<label>联系电话：</label>
+					<input type="tel" class="mui-input-clear" name="phone" disabled placeholder="请输入联系电话">
+				</div>
+				<!--<div class="mui-input-row">
+					<label>是否启用：</label>
+					<input type="text" class="mui-input-z" name="status" id="status" placeholder="请选择是否启用" value="是">
+					<span class="mui-icon mui-icon-arrowdown"></span>
+				</div>-->
+			</form>
+		</div>
+		<nav class="mui-bar mui-bar-tab bottom-fix"><button type="button" class="btn-blue" style="cursor:pointer" id="submit-btn">提交</button></nav>
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/mui.picker.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/mui.poppicker.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init();
+
+			var rg;
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				console.log(self.nmbId);
+				rg = JSON.parse(localStorage.getItem("dlzh_" + self.nmbId));
+				console.log("aoudhsaiuhsdauhd");
+				console.log(JSON.stringify(rg));
+				$("[name='user']").val(rg.mbName);
+				$("[name='wxRate']").val(rg.wxRate);
+				$("[name='zfbRate']").val(rg.zfbRate);
+				$("[name='ylRate']").val(rg.ylRate);
+				$("[name='ysfRate']").val(rg.ysfRate);
+				$("[name='lxr']").val(rg.mbLinkman);
+				$("[name='phone']").val(rg.mbTel);
+			});
+
+			//				var userPicker = new mui.PopPicker();
+			//				userPicker.setData([{
+			//					value: 1,
+			//					text: "是"
+			//				}, {
+			//					value: 0,
+			//					text: '否'
+			//				}]);
+			//				// 点击文本框弹出选择器
+			//				var showUserPickerButton = document.getElementById('status');
+			//				showUserPickerButton.addEventListener('tap', function(event) {
+			//					userPicker.show(function(items) {
+			//						var val = items[0].value;
+			//						showUserPickerButton.value = items[0].text;
+			//					});
+			//				}, false);
+
+			$("#submit-btn").on("tap", function() {
+				console.log("click");
+				var wxRate = $("[name='wxRate']").val();
+				var zfbRate = $("[name='zfbRate']").val();
+				var ylRate = $("[name='ylRate']").val();
+				var ysfRate = $("[name='ysfRate']").val();
+				var lxr = $("[name='lxr']").val();
+				var phone = $("[name='phone']").val();
+
+				if (wxRate < rg.wxRate) {
+					mui.alert("不能降低子会员的微信奖励率.", " ", "确定", function() {}, "div");
+					return;
+				}
+				if (zfbRate < rg.zfbRate) {
+					mui.alert("不能降低子会员的支付宝奖励率.", " ", "确定", function() {}, "div");
+					return;
+				}
+				if (ylRate < rg.ylRate) {
+					mui.alert("不能降低子会员的银联奖励率.", " ", "确定", function() {}, "div");
+					return;
+				}
+				if (ysfRate < rg.ysfRate) {
+					mui.alert("不能降低子会员的云闪付奖励率.", " ", "确定", function() {}, "div");
+					return;
+				}
+				if (wxRate > localStorage.getItem("wxRate")) {
+					mui.alert("不能高于父账号的微信奖励率.", " ", "确定", function() {}, "div");
+					return;
+				}
+				if (zfbRate > localStorage.getItem("zfbRate")) {
+					mui.alert("不能高于父账号的支付宝奖励率.", " ", "确定", function() {}, "div");
+					return;
+				}
+				if (ylRate > localStorage.getItem("ylRate")) {
+					mui.alert("不能高于父账号的银联奖励率.", " ", "确定", function() {}, "div");
+					return;
+				}
+				if (ysfRate > localStorage.getItem("ysfRate")) {
+					mui.alert("不能高于父账号的云闪付奖励率.", " ", "确定", function() {}, "div");
+					return;
+				}
+
+				ajax("/member/memberUpdate", {
+					"mbId": rg.mbId,
+					"wxRate": wxRate,
+					"zfbRate": zfbRate,
+					"ylRate": ylRate,
+					"ysfRate": ysfRate,
+					"mbLinkman": lxr,
+					"mbTel": phone
+				}, function(res) {
+					console.log(JSON.stringify(res))
+					if (res.ok) {
+						mui.alert('修改成功',' ','确定',function (e) {
+							create_view("index", "index.html", {});
+							plus.webview.currentWebview().close();
+						},'div')
+					} else{
+						mui.alert(res.message,' ','确定',function (e) {},'div')
+					}
+				}, "POST")
+			});
+		</script>
+	</body>
+
+</html>

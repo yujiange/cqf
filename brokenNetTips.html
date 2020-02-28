@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>客服断网提示</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" href="css/public.css">
+		<script src="js/jquery-2.1.0.js"></script>
+		<style>
+			.stopBlock{display: block;}
+			.brokenNetTips{display: block;background: #fff;}
+			.startCollecting,.retryBtn {
+			    display: block;
+			    /* width: 239px; */
+				width: 80%;
+			    height: 40px;
+			    line-height: 40px;
+			    border-radius: 25px;
+			    margin: 25px auto 25px;
+			    border: none;
+			    background: rgba(49,124,223,1);
+			    color: white;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="centers brokenNetTips stopBlock">
+			<header class="mui-bar mui-bar-nav">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+				<h1 class="mui-title">客服</h1>
+			</header>
+			
+			
+			<div class="centers content">
+				<h3 class="centers title txt_2">温馨提示!</h3>
+				<p class="font_20 green txt_1">检测到您当前已断开网络连接,请您重新联网后重试</p>
+			</div>
+			
+			<!-- <div class="centers content">
+				<h3 class="centers title txt_2">温馨提示!</h3>
+				<p class="font_20 green txt_1">您已断开网络连接,已为您重连&nbsp;<span class="red txt_1 counts"></span>&nbsp;次</p>
+			</div> -->
+			
+			<div class="font_18 retryBtn">重试</div>
+			
+		</div>
+		<script src="js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			// javascript判断机器是否联网的2种方法
+			console.log(navigator.onLine);
+			function detectionNetworkingStatus(){
+				if (navigator.onLine){ //正常工作
+					window.location.href="http://p.qiao.baidu.com/cps/chat?siteId=13858268&userId=28798369";
+				}else { //执行离线状态时的任务
+					// mui.toast('您已断开网络连接,已为您重连'+reLinkNum+'次',{duration:'short',type:'div'});
+					mui.toast('您已断开网络连接,请您重新联网后重试',{duration:'short',type:'div'});
+				};
+			};
+			detectionNetworkingStatus();
+			
+			function networkingInit(){
+				// 当然，如果想支持的更兼容，可以使用如下2个事件：online和offline。当网络从离线变为在线或者从在线变为离线时，分别触发这两个事件。这两个事件在window对象上触发。 
+				// 为了检测应用是否离线，在页面加载后，最好先通过navigator.onLine取得初始的状态。
+				var EventUtil = { 
+					addHandler: function (element, type, handler) { 
+						if (element.addEventListener) { 
+							element.addEventListener(type, handler, false); 
+						} else if (element.attachEvent) { 
+							element.attachEvent("on" + type, handler); 
+						} else { 
+							element["on" + type] = handler; 
+						} 
+					} 
+				}; 
+				
+				EventUtil.addHandler(window, "online", function () { 
+					// 在线
+					// alert('Online---1');
+					console.log("Online"); 
+					window.location.href="http://p.qiao.baidu.com/cps/chat?siteId=13858268&userId=28798369";
+				}); 
+				EventUtil.addHandler(window, "offline", function () { 
+					// 脱机
+					// alert('Offline---2');
+					console.log("Offline"); 
+					mui.toast('您已断开网络连接,请您重新联网后重试',{duration:'short',type:'div'});
+					window.location.href="login.html";
+				}); 
+			};
+			networkingInit();
+			
+			
+			$('.retryBtn').click(function(){
+				detectionNetworkingStatus();
+				// networkingInit();
+			});
+			
+			// console.log("llws连接成功!" + new Date().toUTCString());
+		</script>
+	</body>
+
+</html>

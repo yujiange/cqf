@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>传奇富收银台--系统自动获取</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style type="text/css">
+			.mui-content { padding-bottom: 10px; }
+			.mui-input-group { padding: 25px 35px 35px 20px; }
+			.mui-input-group .mui-input-row { padding: 0; }
+			a{cursor:pointer}
+		</style>
+	</head>
+
+	<body class="b_white">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">传奇富收银台</h1>
+		</header>
+<!--
+		<div class="mui-content">
+			<form class="mui-input-group" id="form">
+				<div class="mui-input-row">
+					<label>用户姓名：</label>
+					<input type="text" class="mui-input-clear" name="user" placeholder="请输入用户姓名">
+				</div>
+				<div class="mui-input-row">
+					<label>支付金额：</label>
+					<input type="number" class="mui-input-clear" name="amount" placeholder="请输入支付金额">
+				</div>
+			</form>
+		</div>
+-->
+		<div class="mui-row main_pay">
+			<div class="pay-tit">传奇富支付支付选择</div>
+			<div class="mui-col-xs-6">
+				<a class="link active zhifu" href="javascript:" target="4">
+					<div class="img"><img src="images/pay_sf.png"></div>
+				</a>
+			</div>
+			<div class="mui-col-xs-6">
+				<a class="link active zhifu" href="javascript:" target="3">
+					<div class="img"><img src="images/pay_yl.png" ></div>
+				</a>
+			</div>
+			<div class="mui-col-xs-6">
+				<a class="link active zhifu" href="javascript:" target="1">
+					<div class="img"><img src="images/pay_wx.png"  ></div>
+				</a>
+			</div>
+			<div class="mui-col-xs-6">
+				<a class="link active zhifu"  href="javascript:" target="2">
+					<div class="img"><img src="images/pay_zfb.png"></div>
+				</a>
+			</div>
+		</div>
+
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			function getQueryString(name) { 
+				 var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+				var reg_rewrite = new RegExp("(^|/)" + name + "/([^/]*)(/|$)", "i");
+				var r = window.location.search.substr(1).match(reg);
+				var q = window.location.pathname.substr(1).match(reg_rewrite);
+				if(r != null){
+					return unescape(r[2]);
+				}else if(q != null){
+					return unescape(q[2]);
+				}else{
+					return null;
+				}
+			} 
+			
+			$(document).ready(function() {
+				$(".zhifu").on("tap",function() {
+					var platformId = getQueryString("platformId");
+					var grabeggMorderNumber = getQueryString("grabeggMorderNumber");
+					var grabeggMoney = getQueryString("grabeggMoney");
+					
+					console.log("platformId:" + platformId + ", grabeggMorderNumber:"+ grabeggMorderNumber + ",grabeggMoney:" + grabeggMoney);
+					
+					var ptId =  $(this).attr("target");
+					
+					$.ajax({
+						"type":"POST",
+						"url":"http://60.250.141.169:8005/pay",
+						"data":{
+							"platformId": platformId,
+							"ptId":ptId,
+							"grabeggMorderNumber": grabeggMorderNumber,
+							"grabeggMoney": grabeggMoney,
+							"remark":''
+						},
+						"success":function(res) {
+							alert("支付成功.");
+							//window.location.href="zf_jg.html";
+						}
+					})
+				});
+			});
+		</script>
+	</body>
+
+</html>

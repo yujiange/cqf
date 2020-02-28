@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>消息通知</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style type="text/css">
+			.mui-table-view-cell {
+				height: auto;
+			}
+
+			.mui-pull-right {
+				width: 90px;
+				margin-left: 10px;
+			}
+
+			.mui-media-body {
+				height: 46px;
+				line-height: 46px;
+			}
+
+			.mui-media-body .name {
+				display: inline-block;
+				background-color: #d9d9d9;
+				padding: 0 15px;
+				border-radius: 8px;
+				font-size: 14px;
+				line-height: 22px;
+				color: #525252;
+				vertical-align: middle;
+			}
+
+			.num {
+				font-size: 140%;
+			}
+
+			.type {
+				color: #000;
+				font-size: 15px;
+			}
+
+			.click {
+				cursor: pointer
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">消息通知</h1>
+		</header>
+
+		<div class="mui-content" id="refreshContainer">
+			<ul class="mui-table-view" id="jfForm">
+				
+			</ul>
+		</div>
+		
+		<!-- 重连遮罩层	start -->
+		<!-- @touchmove.prevent -->
+		<div class="stopBlock">
+			<!-- 重连时禁止用户操作界面 -->
+			<div class="centers content">
+				<h3 class="centers title txt_2">温馨提示!</h3>
+				<p class="font_20 green txt_1">您已断开连接,已为您重连&nbsp;<span class="red txt_1 counts"></span>&nbsp;次</p>
+			</div>
+		</div>
+		<!-- 重连遮罩层	end -->
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init({
+				beforeback: function() {
+					//获得父页面的webview
+					var list = plus.webview.currentWebview().opener();
+					//触发父页面的自定义事件(refresh),从而进行刷新
+					mui.fire(list, 'refresh');
+					//返回true,继续页面关闭逻辑
+					return true;
+				}
+			});
+			var mbId = mbId();
+			$(document).ready(function() {
+				ajax("/notice/list", {
+					"mbId": mbId
+				}, function(data) {
+					$.each(data.result, function(index, coment) {
+						$("#jfForm").append('' +
+							'<li class="mui-table-view-cell click" name="click" id=' + coment.id + '>' +
+							'<div class="mui-pull-left"><span class="name">' + coment.title + '</span><br/><span class="date">' +
+							format(coment.createTime) + '</span></div>' +
+							'</li>');
+					});
+				}, "GET");
+				
+				$(".mui-table-view").on("tap",".click", function(view) {
+					console.log("click");
+					var vid = view.currentTarget.id;
+					create_view("notice_info", "notice_info.html", {}, {
+						"vid": vid
+					})
+				})
+			})
+		</script>
+	</body>
+
+</html>

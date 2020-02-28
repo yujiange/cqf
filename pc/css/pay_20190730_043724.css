@@ -1,0 +1,145 @@
+body,
+div,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+form,
+fieldset,
+input,
+select,
+button,
+textarea,
+p,
+blockquote,
+th,
+td,
+code,
+img {
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: 'Microsoft Yahei', '\5b8b\4f53', sans-serif, tahoma, arial, 'Hiragino Sans GB';
+  font-size: 16px;
+  line-height: 1.42857143;
+  color: #787878;
+  background-color: #f6f3ea;
+}
+a {
+  color: #666;
+  text-decoration: none;
+  outline: 0;
+}
+a:hover,
+a:visited,
+a:active {
+  text-decoration: none;
+  outline: 0;
+}
+ul{
+  list-style: none;
+}
+label {
+  font-weight: normal;
+}
+small {
+  font-size: 80%;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+code,
+kbd,
+pre,
+samp {
+  font-family: courier new, courier, monospace;
+}
+button {
+  border: 0 none;
+}
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  vertical-align: middle;
+  outline: none;
+}
+textarea {
+  resize: none;
+}
+fieldset,
+img,
+html,
+body,
+iframe {
+  border: 0 none;
+}
+::-webkit-input-placeholder {
+  color: #a9a9a9;
+}
+:-moz-placeholder {
+  color: #a9a9a9;
+}
+::-moz-placeholder {
+  color: #a9a9a9;
+}
+:-ms-input-placeholder {
+  color: #a9a9a9;
+}
+.clearfix:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+.fr {
+  float: right;
+}
+.fl {
+  float: left;
+}
+.container {
+  margin: 0 auto;
+  width: 946px;
+}
+.red { color:#f42e3f;}
+.gray { color:#b2b2b2;}
+.topbar { background-color: #fafafa; height: 28px; line-height: 28px; border-bottom: 1px solid #ececec; font-size: 12px;color:#b2b2b2; }
+.topbar .user { color: #8e462e; }
+.topbar img { vertical-align: middle; margin-bottom: 1px; }
+.header { height: 76px; background-color: #fff; }
+.header .tit { padding-top: 28px; font-size: 20px; }
+.tips { padding: 30px 35px 5px; }
+.tips .tit { margin-bottom: 5px; font-size: 24px; }
+.tips ol { padding-left: 15px; font-size: 18px; line-height: 1.8; }
+.pays { background-color: #fff; padding: 20px 40px 60px; color: #000; }
+.pays .tit { height: 18px; line-height: 18px; border-left: 2px solid #da5a60; padding-left: 12px; }
+.pays .info { margin: 20px 0; background-color: #f6f3ea; padding: 0 14px 0 12px; line-height: 52px;}
+.pays .box { border: 1px solid #c60009; background: url(../images/pay_bg.png) no-repeat 654px 95px;}
+.pays .box .code { margin: 14px 132px 14px 148px; text-align: center; width: 158px; font-size: 18px; line-height: 30px; }
+.pays .box .jiantou { margin: 72px 0 25px; padding-left: 25px; background: url(../images/jiantou.png) no-repeat 0 5px; font-size: 15px; }
+.pays .box .times { border: 1px solid #000; padding: 1px 7px 2px; color: #f42e3f; font-size: 24px; }

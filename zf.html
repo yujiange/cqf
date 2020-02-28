@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>支付界面</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style>
+			.df {
+				justify-content: space-between;
+				height: 40px;
+				line-height: 40px;
+				margin: 20px 0;
+			}
+
+			.df div {
+				flex: 0.4;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				height: 50px;
+				line-height: 50px;
+			}
+
+			.df div:nth-of-type(2) {
+				flex: 2;
+			}
+
+			input {
+				margin-top: 10px;
+			}
+
+			.button {
+				display: flex;
+				justify-content: center;
+			}
+
+			.logo {
+				justify-content: center;
+			}
+
+			.logo img {
+				width: 50px;
+				height: 50px;
+			}
+
+			.content a {
+				display: block;
+				width: 80%;
+				height: 50px;
+				margin: 0 auto;
+				line-height: 50px;
+				text-align: center;
+				color: #333333;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">支付界面</h1>
+		</header>
+
+		<div class="h_100 m_20"></div>
+
+		<div class="logo m_20 w_95 df ai ju">
+			<img
+				src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1550651921460&di=f1484b68142155e1eb047943ce763a54&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201406%2F17%2F20140617231724_CZKat.jpeg" />
+		</div>
+
+		<div class="mui-content w_95">
+			选择支付方式
+			<div class="content m_20">
+				<a href="sk.html" class="b_grey">微信支付</a>
+			</div>
+
+			<div class="content m_20">
+				<a href="sk.html" class="b_grey">支付宝支付</a>
+			</div>
+
+			<div class="content m_20">
+				<a href="sk.html" class="b_grey">银行卡支付</a>
+			</div>
+
+			<div class="content m_20">
+				<a href="sk.html" class="b_grey">云闪付支付</a>
+			</div>
+
+		</div>
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init()
+		</script>
+	</body>
+
+</html>

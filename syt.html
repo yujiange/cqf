@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>传奇富收银台--手动填写</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style type="text/css">
+			.mui-content {
+				padding-bottom: 10px;
+			}
+			
+			.mui-input-group {
+				padding: 25px 35px 35px 20px;
+			}
+			
+			.mui-input-group .mui-input-row {
+				padding: 0;
+			}
+			
+			.zf_qr {
+				padding: 20px 0 8px 30px;
+				border-bottom: 1px solid #e6e6e6;
+				color: #4e4d4d;
+			}
+			
+			.mui-table-view {
+				padding: 10px 0 12px;
+				color: #4e4d4d;
+			}
+			
+			.mui-table-view-cell {
+				height: auto;
+				padding: 1px 30px;
+			}
+			
+			.mui-table-view-cell:after,
+			.mui-table-view:before,
+			.mui-table-view:after {
+				height: 0;
+			}
+			a{cursor:pointer}
+		</style>
+	</head>
+
+	<body class="b_white">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">传奇富收银台</h1>
+		</header>
+
+		<div class="mui-content">
+			<div class="b_white">
+				<div class="zf_qr">请输入您的支付信息：</div>
+				<form class="mui-input-group" id="form">
+					<div class="mui-input-row">
+						<label>用户姓名：</label>
+						<input type="text" name="user" id="user" placeholder="请输入用户名">
+					</div>
+					<div class="mui-input-row">
+						<label>支付金额：</label>
+						<input type="number" name="money" id="money" placeholder="请输入金额">
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="mui-row main_pay">
+			<div class="pay-tit">传奇富支付支付选择</div>
+			<div class="mui-col-xs-6">
+				<a class="link active" href="javascript:;" id="1" name='startGrebegg'>
+					<div class="img"><img src="images/pay_sf.png"></div>
+				</a>
+			</div>
+			<div class="mui-col-xs-6">
+				<a class="link active" href="javascript:;" id="2" name="startGrebegg">
+					<div class="img"><img src="images/pay_yl.png"></div>
+				</a>
+			</div>
+			<div class="mui-col-xs-6">
+				<a class="link active" href="javascript:;" id="3" name="startGrebegg">
+					<div class="img"><img src="images/pay_wx.png"></div>
+				</a>
+			</div>
+			<div class="mui-col-xs-6">
+				<a class="link active" href="javascript:;" id="4" name="startGrebegg">
+					<div class="img"><img src="images/pay_zfb.png"></div>
+				</a>
+			</div>
+		</div>
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init();
+			mui.plusReady(function() {})
+			var socket;
+			var clId = randomn(16);
+			if(typeof(WebSocket) == "undefined") {
+				console.log("您的浏览器不支持WebSocket");
+			} else {
+
+				console.log("您的浏览器支持WebSocket");
+				//实现化WebSocket对象，指定要连接的服务器地址与端口  建立连接  
+				socket = new WebSocket("ws://" + api + "/websocket/"+clId);
+				//打开事件  
+				socket.onopen = function() {
+					console.log("Socket 已打开");
+				};
+				//获得消息事件  
+				socket.onmessage = function(msg) {
+					console.log("---> 抓单获取的数据:" + msg.data);
+					//发现消息进入    开始处理前端触发逻辑
+					create_view("zf_jg", "zf_jg.html", "", {"orderInfo": msg.data});
+          //plus.webview.currentWebview().close();
+				};
+				//关闭事件  
+				socket.onclose = function() {
+					console.log("Socket已关闭");
+					var url = "/member/grabegg-info/cancel_grabegg?id=" + clId;
+					ajax(url, {}, function(data) {
+					}, "GET");
+				};
+				//发生了错误事件  
+				socket.onerror = function() {
+					console.log("Socket发生了错误");
+					//此时可以尝试刷新页面
+					var url = "/member/grabegg-info/cancel_grabegg?id=" + clId;
+					ajax(url, {}, function(data) {
+						if(data.ok) {
+							create_view("index", "index.html");
+						} else {
+							mui.alert("取消抓单失败.");
+						}
+					}, "GET");
+				}
+			}
+			
+			$('[name="startGrebegg"').on("tap",function(){
+				var id = this.id;
+				var gmoney = $("#money").val();
+				var remark = $("#user").val();
+				console.log("id:"+id+"----gnum:"+clId+"----gmoney:"+gmoney+"----reamrk:"+remark);
+				
+				$.post("http://192.168.0.163:8005/pay", {
+						"platformId": "1",
+						"ptId": id,
+						"grabeggMorderNumber": clId,
+						"grabeggMoney": gmoney,
+						"remark": remark
+					},
+					function(data) {
+						console.log(data);
+					}
+				);
+			})
+
+			function randomn(n) {
+				if(n > 21) return null
+				return parseInt((Math.random() + 1) * Math.pow(10, n - 1))
+			}
+
+			function clickTypes(x) {
+				types = 0;
+				types = x;
+			}
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,160 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>修改密码</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style>
+			.sectionBlock{width: 80%;margin: 0 auto;}
+			.mui-input-group:before{content:'';height: 0;display: none;}
+			.mui-bar-nav~.mui-content{background: #fff;}
+			.mui-input-group .mui-input-row:after{left: 0;}
+			/* position: absolute;right: 0;top: 50%;transform:translate(0,-50%); */
+			.mui-input-row .mui-input-password~.mui-icon-eye{width: 38px;height: 38px;line-height: 38px;position: absolute;right: 0;top: 50%;transform:translate(0,-50%);display: block;font-size:18px;}
+			/* .mui-icon-eye:before{background: blue;} */
+			input{font-size:14px;}
+			body {background-color: #fff;}
+			#submit-btn{cursor:pointer}
+			.mui-input-group .mui-input-row{padding: 12px 0;}
+			.appNameImage {
+			    display: block;
+			    margin: 45px auto;
+			    width: 157px;
+			    height: 51px;
+			}
+			.iconImg img {
+			    display: inline-block;
+			    width: 15px;
+			    height: 18px;
+			}
+			button.btns.active {
+			    background: rgba(49,124,223,1);
+			    color: #fff;
+			}
+			button.btns {
+			    display: block;
+			    width: 100%;
+			    height: 42px;
+			    color: rgba(49,124,223,1);
+			    font-size: 15px;
+			    border-radius: 25px;
+			    border: 1px solid rgba(49,124,223,1);
+			    background: none;
+				margin: 30px auto;
+			}
+		</style>
+	</head>
+	<body class="font_14">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">修改密码</h1>
+		</header>
+		<div class="sectionBlock mui-content">
+			<!-- <img src="images/appNameImage.png" alt="" class="appNameImage"> -->
+			
+			<form class="mui-input-group" id="form">
+				<div class="justify-content itemFlex mui-input-row">
+					<!-- <label>原密码：</label> -->
+					<div class="iconImg"><img src="images/icon_pass.png" alt=""></div>
+					<input type="password" class="mui-input-password" name="oldPassword" placeholder="请输入原密码">
+					<input type="text" class="mui-input-clear" id="mbId" name="mbId" hidden>
+				</div>
+				<div class="justify-content itemFlex mui-input-row">
+					<!-- <label>新密码：</label> -->
+					<div class="iconImg"><img src="images/icon_pass.png" alt=""></div>
+					<input type="password" class="mui-input-password" name="newPassword" placeholder="请输入新密码">
+				</div>
+				<div class="justify-content itemFlex mui-input-row">
+					<!-- <label>确认新密码：</label> -->
+					<div class="iconImg"><img src="images/icon_pass.png" alt=""></div>
+					<input type="password" class="mui-input-password" name="againPassword" placeholder="请输入确认新密码">
+				</div>
+			</form>
+		</div>
+		<nav class="sectionBlock mui-bar bottom-fix"><button type="button" class="btns active modify" id="submit-btn">确认修改</button></nav>
+
+
+		<!-- 重连遮罩层	start -->
+		<!-- @touchmove.prevent -->
+		<div class="stopBlock">
+			<!-- 重连时禁止用户操作界面 -->
+			<div class="centers content">
+				<h3 class="centers title txt_2">温馨提示!</h3>
+				<p class="font_20 green txt_1">您已断开连接,已为您重连&nbsp;<span class="red txt_1 counts"></span>&nbsp;次</p>
+			</div>
+		</div>
+		<!-- 重连遮罩层	end -->
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init()
+			var mbId = $("#mbId").val(mbId());
+			$(function() {
+				$("#submit-btn").on("tap",function() {
+					if(empty()) {
+						return
+					}
+					ajax("/member/password_change", getFormData($('#form')), function(data) {
+						if(data.ok) {
+							mui.alert("修改成功.");
+							localStorage.removeItem("token");
+							localStorage.removeItem("user");
+							closes();
+						} else {
+							mui.alert(data.message);
+						}
+					}, "POST")
+				})
+			})
+
+			function closes() {
+				if(mui.os.android) {
+					//				plus.runtime.quit();//退出程序
+					var curr = plus.webview.currentWebview();
+					//获取所有已经打开的webview窗口
+					var wvs = plus.webview.all();
+					console.log(wvs.length);
+					for(var i = 0, len = wvs.length; i < len; i++) {
+						//关闭除当前页面外的其他页面
+						if(wvs[i].getURL() == curr.getURL())
+							//遇到当前页跳过
+							continue;
+						//非当前页执行关闭
+						plus.webview.close(wvs[i]);
+					}
+					//				console.log(JSON.stringify(curr));
+					//打开login页面
+					plus.webview.open('login.html');
+					localStorage.removeItem("token");
+					localStorage.removeItem("mdId");
+					curr.close();
+					//				console.log(JSON.stringify(curr));''
+				} else if(mui.os.ios) {
+					var curr = plus.webview.currentWebview();
+					//获取所有已经打开的webview窗口
+					var wvs = plus.webview.all();
+					for(var i = 0, len = wvs.length; i < len; i++) {
+						//关闭除当前页面外的其他页面
+						if(wvs[i].getURL() == curr.getURL())
+							//遇到当前页跳过
+							continue;
+						//非当前页执行关闭
+						plus.webview.close(wvs[i]);
+					}
+
+					curr.close();
+					//打开login页面
+					plus.webview.open('login.html');
+
+				}
+			}
+		</script>
+	</body>
+
+</html>

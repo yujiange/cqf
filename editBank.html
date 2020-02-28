@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>银行卡</title>
+		<link rel="stylesheet" href="css/mui.css">
+		<link rel="stylesheet" href="css/public.css">
+		<script src="js/jquery-2.1.0.js"></script>
+		<script src="js/vue-2.6.10.js"></script>
+		<style>
+			input[type="text"],input[type="number"]{margin-bottom: 0;height: auto;padding: 0;}
+			/* *{border: none!important;} */
+			body {background-color: #fff;color: #000;}
+			#wrap {position: relative;}
+			.content {margin: 44px 0 110px 0;}
+			.accountNumberList{padding: 20px 5%;border-bottom: 6px solid #ccc;}
+			.accountNumberList>div:not(:first-child){margin: 10px 0 0 0;}
+			.QRCodeImg{width: 37px;height: 37px;display: block;}
+			.newlyAdded{width: 80%;display: block;margin: 74px auto;
+				height: 42px;
+				color: rgba(49,124,223,1);
+				font-size: 15px;
+				border-radius: 25px;
+				border: 1px solid rgba(49,124,223,1);
+				background: none;
+			}
+			.newlyAdded.active{
+				background: rgba(49,124,223,1);
+				color: #fff;
+			}
+			button:enabled:active{background: none;}
+			button{padding: 0;}
+			.newAccount{margin-left: 5px;}
+			.newAccountSectionList{padding:10px 5%;border-bottom: 1px solid #ccc;}
+			.newAccountSectionList div.newAccountSection_l{width: 25%;}
+			.newAccountSectionList input{width: 75%;border: none;margin-left: 4px;}
+			.newAccountSectionList input[type="text"]{padding: 4px 6px;}
+			.userName{
+				margin-left: 15px;
+			}
+			.btns {
+				display: block;
+				width: 50%;
+				margin: 50px auto;
+				height: 42px;
+				color: rgba(49,124,223,1);
+				font-size: 15px;
+				border-radius: 25px;
+				border: 1px solid rgba(49,124,223,1);
+				background: none;
+			}
+			.btns.active{background: rgba(49,124,223,1);color: #fff;}
+			.openAndCloseBtn,.deleteBtn,.changeBtn{border: 1px solid rgba(49,124,223,1);color: rgba(49,124,223,1);padding:1px 6px;border-radius:6px;}
+			.openAndCloseBtn.active,.deleteBtn.active,.changeBtn.active{background: rgba(49,124,223,1);color: #fff;}
+		</style>
+	</head>
+	<body>
+		<!-- 购买新增 -->
+		<!-- 首页银行卡支付入口 -->
+		<div id="wrap" v-cloak>
+			<template v-if="!newAccountSectionShow">
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<h1 class="mui-title">银行卡</h1>
+				</header>
+				<div class="font_14 content">
+				
+					<!-- exhibitionSection 	start -->
+					<div class="exhibitionSection">
+						<!-- 类别列表	start -->
+						<div class="accountNumberDetails" v-show="isbank">
+							<!-- justify-content itemFlex -->
+							<div class="accountNumberList">
+								<div>
+									<span v-text="name+':'"></span>
+									<span class="userName" v-text="mz"></span>
+								</div>
+								<div>
+									<span v-text="cardName+':'"></span>
+									<span class="userName" v-text="kh"></span>
+								</div>
+								<div>
+									<span v-text="bankName+':'"></span>
+									<span class="userName" v-text="km"></span>
+								</div>
+								<div>
+									<span v-text="bankBranchName+':'"></span>
+									<span class="userName" v-text="zhm"></span>
+								</div>
+							</div>
+						</div>
+						<!-- 类别列表	end -->
+						
+						<button class="newlyAdded" :class="newlyAddedflag?'active':''" @click="newlyAddedFn">
+							<div class="itemCenter">
+								<span class="bold font_26" v-text="add"></span>
+								<span class="newAccount" v-text="newAccount"></span>
+							</div>
+						</button>
+					</div>
+					<!-- exhibitionSection 	end -->
+				</div>
+			</template>
+				
+			<template v-if="newAccountSectionShow==1">
+				<header class="mui-bar mui-bar-nav">
+					<!-- mui-action-back -->
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<h1 class="mui-title">银行卡</h1>
+				</header>
+			
+				<div class="font_14 content">
+					<!-- 新增newAccountSection 	start -->
+					<div class="newAccountSection">
+						<!-- justify-content -->
+						<div class="flex itemFlex newAccountSectionList" v-for="(item,index) in newAccountSectionTilte" v-key="index">
+							<div class="newAccountSection_l" v-text="item+' : '"></div>
+							<input type="hidden" class="bankId" v-model="upId">
+							<input class="font_14 bank_card_owner" v-model="upBankCardOwner" type="text" v-if="!index">
+							<!-- <input class="font_14 callMobileAlbum" type="file" accept="image/*" capture="camera" v-if="index==1"> -->
+							<input class="font_14 bank_name" type="text" v-model="upBankName" v-if="index==1">
+							<input type="number" class="font_14 bank_no" v-model="upBankNo" v-if="index==2">
+							<input type="text" class="font_14 bankBranchName" v-model="upbankBranchName" v-if="index==3">
+						</div>
+						
+						<!-- :class="{'active':btnsActive}" -->
+						<button type="button" class="btns bcBtn active" @click="btnsActiveFn" v-text="newAccount"></button>
+					</div>
+					<!-- 新增newAccountSection 	end -->
+				</div>
+			</template>	
+		</div>
+		
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/comm.js"></script>
+		<script>
+			var app = new Vue({
+				el: '#wrap',
+				data: {
+					getThisList:'',
+					bankCardTypeList:['储蓄卡','借记卡'],
+					judgingAccountStatus:1,//判断当前类型状态值,默认显示值为1,当值等于1为储蓄卡,2为信用卡
+					newAccountSectionTilte:['姓名','银行名称','卡号','支行名称'],
+					bankName:'银行名称',
+					newAccountSectionShow:0,
+					newlyAddedflag:0,
+					add: '+',
+					newAccount:'添加银行卡',
+					switchBtn:['开','关'],
+					name:'姓名',
+					cardName:'卡号',
+					bankBranchName:"支行名称",
+					upId: '',
+					upBankName:'',
+					upBankCardOwner:'',
+					upBankNo:'',
+					upbankBranchName:'',
+					mz:'',
+					kh:'',
+					km:'',
+					zhm:'',
+					isbank:false
+					
+				},
+				methods:{
+					// 新增账号按钮
+					newlyAddedFn(){
+						// this.newlyAddedflag=!this.newlyAddedflag;
+						this.newAccountSectionShow=1;
+						// this.newAccount ="更换银行卡";
+					},
+
+					// 保存
+					btnsActiveFn(){
+						var that=this;
+						if(that.isbank){
+							ajax("/memberWithdrawalBank/save", {
+								 "id": that.upId,
+								 "memberId": mbId(),
+								 "bankName": that.upBankName,
+								 "bankCardOwner":that.upBankCardOwner,
+								 "bankNo": that.upBankNo,
+								 "bankBranchName": that.upbankBranchName
+							}, function(res){
+								if(res.ok){
+									mui.alert(res.message," ","确定",function(){},"div");
+									that.newAccountSectionShow=0;
+									getLists(that);//重新获取后台数据
+								}else{
+									mui.alert(res.message," ","确定",function(){},"div");
+								}
+							}, "POST");
+						}else{
+							ajax("/memberWithdrawalBank/save", {
+								 "memberId": mbId(),
+								 "bankName": that.upBankName,
+								 "bankCardOwner":that.upBankCardOwner,
+								 "bankNo": that.upBankNo,
+								 "bankBranchName": that.upbankBranchName
+							}, function(res){
+								if(res.ok){
+									mui.alert(res.message," ","确定",function(){},"div");
+									that.newAccountSectionShow=0;
+									getLists(that);//重新获取后台数据
+								}else{
+									mui.alert(res.message," ","确定",function(){},"div");
+								}
+							}, "POST");
+						}
+						
+						
+						// alert(this.newAccountSectionShow);
+					}
+
+				},
+				created: function () {
+					var that=this;
+					getLists(that);
+				}
+			});
+			
+			mui.init({
+				beforeback: function() {
+				                   
+				                        var list = plus.webview.currentWebview().opener();　　　　
+				                        //refresh是A页面自定义事件
+				                        mui.fire(list, 'refresh2');
+				                        //返回true,继续页面关闭逻辑
+				                        return true;
+				                    }
+			});
+			
+			function getLists(that){
+				ajax("/memberWithdrawalBank/getListById?memberId="+mbId(), {}, function(res){
+
+					if(res.ok){
+						that.upId = res.bank.id;
+						that.mz= res.bank.bankCardOwner;
+						that.km= res.bank.bankName;
+						that.kh= res.bank.bankNo;
+						that.zhm= res.bank.bankBranchName;
+						app.newAccount ="更换银行卡";
+					}
+					that.isbank = res.ok;
+				}, "GET");
+			}
+		</script>
+	</body>
+</html>

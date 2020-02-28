@@ -1,0 +1,297 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>团队报表</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<script src="js/jquery-2.1.0.js"></script>
+		<script src="js/vue-2.6.10.js"></script>
+		<link href="css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+		<!-- <script src="lib/element-ui/element-ui.js"></script>
+		<link rel="stylesheet" href="lib/element-ui/element-ui.css"> -->
+		<link rel="stylesheet" href="css/public.css">
+		<style>
+			input[type="text"]{margin-bottom: 0;padding: 0;}
+			.content{margin: 44px 0;}
+			.sectionMain{padding: 10px 5%;}
+			/* .sectionMain:nth-of-type(1){border: 1px solid blue;} */
+			
+			.el-date-editor--daterange.el-input__inner {
+			    /* width: 350px;  width: 75%;*/
+				width: 100%;
+			}
+			.el-date-editor .el-range-separator {
+			   /* width: 10%; */
+			    /* background: #f00; */
+				width: 20%;
+			}
+			
+			/* 头部查询	start */
+			.searchQuery{border-bottom: 1px solid #ccc;}
+			.searchQuery>*{display: block;/* width: 25%; width: 50%; background: pink;*/}
+			/* .searchQuery>*:nth-of-type(even){background: lightgreen;border: 2px solid red;} */
+			/* .searchQuery input,.searchQuery button{height: 30px;} */
+			.dateText{/* width: 10%; */width: auto;}
+			.dateItem{width: 85%;height: 40px;}
+			input[type="text"].inputName{width: 80%;height: 40px;}
+			.searchQueryBtn{}
+			.headbottom{margin: 10px 0 0;}
+			
+			/* 日期选择框input父级div */
+			.el-date-editor.el-input{font-size:14px;text-align: center;display: block;width: 96%;margin: 0 auto;/* border: 1px solid blue; */}
+			/* 日期选择框 */
+			.el-input--prefix .el-input__inner,.el-input--suffix .el-input__inner {
+				/* padding-left: 30px;
+				padding-right: 30px; */
+				padding: 0px;
+				height: 30px;
+				text-align: center;
+			}
+			/* 隐藏日期选择框小图标 */
+			/* .el-input__icon{display: none;width: 0px;height: 0;line-height: 0;font-size: 0;} */
+			/* 输入框 */
+			input[type="text"].inputName{display: block;/* width: 96%; height: 40px;*/margin: 0 auto;padding:0 10px;}
+			/* 按钮 */
+			.searchQueryBtn{display: block;margin: 0 auto;}
+			/* 头部查询	end */
+			
+			.teamReportList{padding: 15px 5%;border-bottom: 1px solid #ccc;}
+			.teamReportList>div:not(:first-child){margin: 10px 0 0 0;}
+			.leftText{margin-left: 5px;}
+			.width_50{display: block;width: 50%;}
+			.width_25{display: block;width: 25%;}
+			.testBg{background: #b28118;}
+			.textBg .width_50{background: red;}
+			.textBg .width_50:nth-of-type(even){background: blue;}
+			
+			.agentInfo{}
+			.agentAmout span{display: block;width: 50%;}
+			.agentLevels{border: 1px solid #0000FF;color: #0000FF;padding: 2px 4px;}
+			.agentLevels.active{background: rgba(49,124,223,1);color: #fff;}
+		</style>
+	</head>
+	<body>
+		<div id="wrap">
+			<header class="mui-bar mui-bar-nav">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+				<h1 class="mui-title">团队报表</h1>
+			</header>
+			
+			<div class="content">
+				<!-- 头部查询	start -->
+				<!-- justify-content itemFlex flexWrap -->
+				<div class="font_14 sectionMain searchQuery">
+					<div class="parentBlock">
+						<div class="subBlock_l centers dateText fl">{{dateText}}</div>
+						<!-- 日期选择框	start -->
+						<div class="dateItem fr">
+							<template>
+							  <!-- type="daterange"
+							  type="datetimerange" -->
+							  <div class="block itemFlex">
+								<el-date-picker
+								  v-model="showDateValue"
+								  type="daterange"
+								  align="right"
+								  unlink-panels
+								  range-separator="至"
+								  :start-placeholder="startDate"
+								  :end-placeholder="endDate"
+								  format="yyyy-MM-dd"
+								  value-format="yyyy-MM-dd"
+								  :picker-options="pickerOptions">
+								</el-date-picker>
+							  </div>
+							</template>
+						</div>
+						<!-- 日期选择框	end -->
+						<div class="clear"></div>
+					</div>
+					
+					<div class="parentBlock headbottom">
+						<input id="name" class="font_14 inputName fl" type="text" placeholder="请输入用户名">
+						<button class="font_14 searchQueryBtn subBlock_r fr" @click="search()">{{searchQueryBtn}}</button>
+						<div class="clear"></div>
+					</div>
+					
+				</div>
+				<!-- 头部查询	end -->
+				
+				<!-- sectionMain -->
+				<div class="font_14 teamReportMain">
+					<div class="teamReportList" v-for="(item,index) in teamReportList" v-key="index">
+						<div class="justify-content centers agentInfo">
+							<div class="flex centers width_50">
+								<span class="fl width_50">{{accountNumberText}}:</span>
+								<span class="fl width_50">{{item.memberName}}</span>
+								<div class="clear"></div>
+							</div>
+							<div class="width_25">
+								<span class="agentLevels" v-if="item.agencyLevel<=9 && item.agencyLevel >=0 ">{{agencyList[item.agencyLevel]}} </span>
+								<span class="agentLevels" v-if="item.agencyLevel>9">代理</span>
+								<span class="agentLevels" v-if="item.agencyLevel<0">会员</span>
+							</div>
+						</div>
+						
+						<div class="justify-content centers agentAmout">
+							<span>{{successfulAmountText}}</span>
+							<span>{{item.totalMoney}}</span>
+							<span>{{teamCommissionText}}</span>
+							<span class="">{{item.commission}}</span>
+						</div>
+						<!-- <div class="flex centers width_50">
+							<span class="fl width_50">{{transactionTimeText}}:</span>
+							<span class="fl width_50">{{item.transactionTime}}</span>
+							<div class="clear"></div>
+						</div> -->
+					</div>
+					
+				</div>
+			</div>
+			
+			
+		</div>
+		
+
+		<!-- 重连遮罩层	start -->
+		<!-- @touchmove.prevent -->
+		<div class="stopBlock">
+			<!-- 重连时禁止用户操作界面 -->
+			<div class="centers content">
+				<h3 class="centers title txt_2">温馨提示!</h3>
+				<p class="font_20 green txt_1">您已断开连接,已为您重连&nbsp;<span class="red txt_1 counts"></span>&nbsp;次</p>
+			</div>
+		</div>
+		<!-- 重连遮罩层	end -->
+		<script src="js/mui.js"></script>
+		<script src="js/comm.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			var app=new Vue({
+				el:'#wrap',
+				data:{
+					agencyList:['会员','一级代理','二级代理','三级代理','四级代理','五级代理','六级代理','七级代理','八级代理','九级代理'],
+					dateText:'日期',
+					// 日期		start
+					// valueDate: new Date(),//默认今天
+					valueDate:dateFormatter(new Date(),false),//默认今天
+					startDate:'开始日期',
+					endDate:'结束日期',
+					// showDateValue: '',
+					// showDateValue:['开始日期','结束日期'],
+					showDateValue:[dateFormatter(new Date(),false),dateFormatter(new Date(),false)],//默认今天
+					pickerOptions: {
+						shortcuts: [{
+							text: '最近一周',
+							onClick(picker) {
+							  const end = new Date();
+							  const start = new Date();
+							  start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+							  picker.$emit('pick', [start, end]);
+							}
+						}, {
+							text: '最近一个月',
+							onClick(picker) {
+							  const end = new Date();
+							  const start = new Date();
+							  start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+							  picker.$emit('pick', [start, end]);
+							}
+						}, {
+							text: '最近三个月',
+							onClick(picker) {
+							  const end = new Date();
+							  const start = new Date();
+							  start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+							  picker.$emit('pick', [start, end]);
+							}
+						}]
+					},
+					// 日期		end
+					
+					searchQueryBtn:'查询',
+					
+					accountNumberText:'账号',
+					successfulAmountText:'成功金额',
+					// transactionTimeText:'交易时间',
+					teamCommissionText:'团队佣金',
+					teamReportList:[]
+					
+				},
+				methods:{
+					search(){
+						var that = this;
+						var name= $("#name").val();
+						var startTime = that.showDateValue[0];
+						var endTime = that.showDateValue[1];
+						var url = "/member/grabegg-info/getNewTeamReport?memberId="+mbId();
+						if(name != null && name != ''){
+							url = url + "&name=" + name;
+						}
+						if(startTime != null && startTime != ''){
+							url = url + "&startTime=" + startTime;
+						}
+						if(endTime != null && endTime != ''){
+							url = url + "&endTime=" + endTime;
+						}
+						ajax(url, {}, function(res) {
+							var data = JSON.stringify(res);
+							// console.log(data);
+							// 判断数据是否为 undefined
+							// console.log("--------------------="+data);
+							if(data == undefined){
+								that.teamReportList = [];
+							}else{
+								that.teamReportList = JSON.parse(data);
+							}
+						}, "POST");
+					}
+				},
+				created: function() {
+					var that = this;
+					var name= $("#name").val();
+					console.log(name);
+					var time= this.valueDate;
+					console.log(time);
+					var url = "/member/grabegg-info/getNewTeamReport?memberId="+mbId();
+					if(name != null && name != ''){
+						url = url + "&name=" + name;
+					}
+					if(time != null && time != ''){
+						url = url + "&time=" + time;
+					}
+					ajax(url, {}, function(res) {
+						var data = JSON.stringify(res);
+						// console.log(data);
+						// 判断数据是否为 undefined
+						console.log("--------------------="+data);
+						if(data == undefined){
+							that.teamReportList = [];
+						}else{
+							that.teamReportList = JSON.parse(data);
+						}
+					}, "POST");
+				}
+			})
+			// 转换日期默认值
+			function dateFormatter(str){//默认返回yyyy-MM-dd HH-mm-ss
+				var hasTime = arguments[1] != false ? true : false;//可传第二个参数false，返回yyyy-MM-dd
+				var d = new Date(str);
+				var year = d.getFullYear();
+				var month = (d.getMonth()+1)<10 ? '0'+(d.getMonth()+1) : (d.getMonth()+1);
+				var day = d.getDate()<10 ? '0'+d.getDate() : d.getDate();
+				var hour = d.getHours()<10 ? '0'+d.getHours() : d.getHours();
+				var minute = d.getMinutes()<10 ? '0'+d.getMinutes() : d.getMinutes();
+				var second = d.getSeconds()<10 ? '0'+d.getSeconds() : d.getSeconds();
+				if(hasTime){
+					return [year, month, day].join('-') + " " + [hour, minute, second].join(':');
+				}else{
+					return [year, month, day].join('-');
+				};
+			};
+		</script>
+	</body>
+
+</html>

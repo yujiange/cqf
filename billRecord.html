@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>流水</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" href="css/public.css" />
+		<script src="js/jquery-2.1.0.js"></script>
+		<script src="js/vue-2.6.10.js"></script>
+		<style>
+			.content{margin: 44px 0 100px;}
+			.historyOrdersBox{margin:0 0 80px 0;min-height: 300px;}
+			.historyOrdersItem{padding: 20px 4%;border-bottom: 1px solid #ccc;}
+			.historyOrdersList_l>span:nth-of-type(2),.leftText{margin-left: 4px;}
+			.operationdata{color: #000;}
+		</style>
+	</head>
+	<body>
+		<div id="wrap" v-cloak>
+			<header class="mui-bar mui-bar-nav">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+				<h1 class="mui-title">流水</h1>
+			</header>
+			
+			<div class="content">
+				<div class="historyOrdersBox">
+					<div class="font_14 historyOrdersItem" v-for="(item,index) in historyOrdersItem">
+						<div class="justify-content historyOrdersList" v-for="(list,subIndex) in historyOrdersList" v-key="index">
+							<div class="flex historyOrdersList_l">
+								<span class="operationName" v-if="list.nameLeft" v-text="list.nameLeft+' : '"></span>
+								<span class="bold operationdata" v-if="list.money" v-text="item.money"></span>
+								<span class="operationdata" v-if="list.orderTime" v-text="item.orderTime"></span>
+								<span class="operationdata" v-if="list.prevMoney" v-text="item.prevMoney"></span>
+							</div>
+							
+							<div class="flex historyOrdersList_r">
+								<div class="paysType" v-if="list.type" v-text="paysType[item.type-1]"></div>
+								<span v-if="list.nameRight" v-text="list.nameRight+' : '"></span>
+								<span class="leftText" v-if="list.afterMoney" v-text="item.afterMoney"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- 重连遮罩层	start -->
+		<!-- @touchmove.prevent -->
+		<div class="stopBlock">
+			<!-- 重连时禁止用户操作界面 -->
+			<div class="centers content">
+				<h3 class="centers title txt_2">温馨提示!</h3>
+				<p class="font_20 green txt_1">您已断开连接,已为您重连&nbsp;<span class="red txt_1 counts"></span>&nbsp;次</p>
+			</div>
+		</div>
+		<!-- 重连遮罩层	end -->
+		<script src="js/mui.js"></script>
+		<script src="js/comm.js"></script>
+		<script type="text/javascript">
+			var app=new Vue({
+				el:'#wrap',
+				data:{
+					paysType:['充值','佣金提现到保障金','保障金提现到银行卡','抓单','补单','补分','转让','提现失败回退','多付扣分', '少付补分'],
+					historyOrdersList:[{
+						nameLeft:'操作金额',
+						money:true,
+						type:true
+					},{
+						nameLeft:'操作日期',
+						orderTime:'2019-07-30 12:00'
+					},{
+						nameLeft:'操作前金额',
+						nameRight:'操作后金额',
+						prevMoney:true,
+						afterMoney:true,
+					}],
+						
+					historyOrdersItem:[]	
+				},
+				methods:{
+				},
+				created: function() {
+					var that = this;
+					ajax("/accounts/changeRecord?id="+mbId()+"&type=0", {}, function(res) {
+						var data = JSON.stringify(res.data);
+						that.historyOrdersItem = JSON.parse(data);
+						// 判断数据是否为 undefined
+						if(data == undefined){
+							that.historyOrdersItem = [];
+						}else{
+							that.historyOrdersItem = JSON.parse(data);
+						}
+					}, "GET");
+				}
+			});
+			mui.init();
+		</script>
+	</body>
+</html>

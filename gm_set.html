@@ -1,0 +1,374 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>个码设置</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style>
+			.view{
+				width: 100%;
+				display: flex;
+				margin-top: 50px;
+				flex-direction: row;
+				justify-content: space-around;
+				flex-wrap: wrap;
+			}
+			
+			.view span{
+				font-size: 1.25rem;
+				height: 1.25rem;
+			}
+			.gm{
+				width: 49.6%;
+				height: 12.5rem;
+				display: flex;
+				margin-top: 5px;
+				flex-direction: column;
+				justify-content: space-around;
+				align-items: center;
+				text-align: center;
+				cursor:pointer;
+			}
+			.imageBorder{
+				width: 100%;
+				height: 82%;
+				line-height: 12.5rem;
+				border: 1px dashed #d9d9d9;
+				border-radius: 6px;
+				display: block;
+			}
+			.gm .mui-icon{
+				font-size: 50px;
+				color: #aaa;
+			}
+			#bt_view {
+				margin: 0px auto;
+				width: 100%;
+				height: 70px;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: space-around;
+			}
+			#bt_view button{
+				width: 30%;
+				height: 60px;
+				background: #00A1E9;
+				color: #FFFFFF;
+				border-radius: 5px;
+				border: none;
+			}
+			#bt_view .img_status{
+				font-size: 20px;
+				color: red;
+			}
+		</style>
+	</head>
+
+	<body class="b_white">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title"></h1>
+		</header>
+		<div class="view">
+			<!-- <div id="1" class="gm">
+				<label class="imageBorder" for="head_img_change_1">
+					<span class="mui-icon mui-icon-plusempty"></span>
+				</label>
+				<input type="file" class="imgfile" style="display: none;" accept="image/*" id="head_img_change_1"/>
+			</div>
+			<div id="2" class="gm">
+				<label class="imageBorder" for="head_img_change_2">
+					<span class="mui-icon mui-icon-plusempty"></span>
+				</label>
+				<input type="file" class="imgfile" style="display: none;" accept="image/*" id="head_img_change_2" />
+			</div>
+			<div id="3" class="gm">
+				<label class="imageBorder" for="head_img_change_3">
+					<span class="mui-icon mui-icon-plusempty"></span>
+				</label>
+				<input type="file" class="imgfile" style="display: none;" accept="image/*" id="head_img_change_3" />
+			</div>
+			<div id="4" class="gm">
+				<label class="imageBorder" for="head_img_change_4">
+					<span class="mui-icon mui-icon-plusempty"></span>
+				</label>
+				<input type="file" class="imgfile" style="display: none;" accept="image/*" id="head_img_change_4" />
+			</div>
+			<div id="5" class="gm">
+				<label class="imageBorder" for="head_img_change_5">
+					<span class="mui-icon mui-icon-plusempty"></span>
+				</label>
+				<input type="file" class="imgfile" style="display: none;" accept="image/*" id="head_img_change_5" />
+			</div> -->
+			<!-- <div id="2000" class="gm">
+				<label class="imageBorder" for="head_img_change_2000">
+					<span class="mui-icon mui-icon-plusempty"></span>
+				</label>
+				<p><span>金额2000</span></p>
+				<input type="file" class="imgfile" style="display: none;" accept="image/*" id="head_img_change_2000" />
+			</div>
+			<div id="3000" class="gm">
+				<label class="imageBorder" for="head_img_change_3000">
+					<span class="mui-icon mui-icon-plusempty"></span>
+				</label>
+				<p><span>金额3000</span></p>
+				<input type="file" class="imgfile" style="display: none;" accept="image/*" id="head_img_change_3000" />
+			</div>
+			<div id="5000" class="gm">
+				<label class="imageBorder" for="head_img_change_5000">
+					<span class="mui-icon mui-icon-plusempty"></span>
+				</label>
+				<p><span>金额5000</span></p>
+				<input type="file" class="imgfile" style="display: none;" accept="image/*" id="head_img_change_5000" />
+			</div>
+			<div id="0" class="gm">
+				<label class="imageBorder" for="head_img_change_0">
+					<span class="mui-icon mui-icon-plusempty"></span>
+				</label>
+				<p><span>任意金额</span></p>
+				<input type="file" class="imgfile" style="display: none;" accept="image/*" id="head_img_change_0" />
+			</div> -->
+		</div>
+		<div id="bt_view">
+			<!-- <button type="button" class="recharge_list">充值记录</button> -->
+			<button type="button" class="recharge">确认上传</button>
+			<p><span class="img_status">
+			</span></p>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/comm.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				beforeback: function() {
+					//获得父页面的webview
+					var list = plus.webview.currentWebview().opener();
+					//触发父页面的自定义事件(refresh),从而进行刷新
+					mui.fire(list, 'refresh');
+					//返回true,继续页面关闭逻辑
+					return true;
+				}
+			});
+			var memberId = this.mbId();
+			var ptId;
+			var money;
+			var formData = new FormData();
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				ptId = self.ptId;
+				money = self.money;
+				console.log(ptId);
+				console.log(money);
+				formData.append("codeMoney", money);
+				formData.append("memberId", memberId);
+				formData.append("payTypeId", ptId);
+				var text;
+				if (money == 0) {
+					text = '任意金额'
+				} else {
+					text = money + '金额'
+				}
+				switch (ptId) {
+					case "1":
+						$(".mui-title").text(text + "微信个码设置");
+						break;
+					case "2":
+						$(".mui-title").text(text + "支付宝个码设置");
+						break;
+					case "3":
+						$(".mui-title").text(text + "银行卡设置");
+						break;
+					case "4":
+						$(".mui-title").text(text + "云闪付个码设置");
+						break;
+				}
+				var html = '';
+				if (money == 0) {
+					html += '<div id="1" class="gm">';
+					html += '<label class="imageBorder" for="head_img_change_1">';
+					html += '<span class="mui-icon mui-icon-plusempty"></span>';
+					html += '</label>';
+					html + '<p><span></span></p>'
+					html += '<input type="file" class="imgfile" style="display: none;" accept="image/*" id="head_img_change_1"/>';
+					html += '</div>';
+				} else {
+					for (var i = 1; i < 6; i++) {
+						html += '<div id="' + i + '" class="gm">';
+						html += '<label class="imageBorder" for="head_img_change_' + i + '">';
+						html += '<span class="mui-icon mui-icon-plusempty"></span>';
+						html += '</label>';
+						html +=
+							'<input type="file" name="tempCodeUrl" class="imgfile" style="display: none;" accept="image/*" id="head_img_change_' +
+							i + '"/>';
+						html += '</div>';
+					}
+				}
+				$(".view").append(html);
+				getImgsList();
+				// getImgList(ptId);
+				$(".imgfile").on("change", function(gm_image) {
+					var file = this.files[0];
+					console.log('click');
+					var vId = gm_image.currentTarget.id;
+					var num = vId.replace(/[^0-9]/g, "");
+					//初始化一个文件读取对象
+					var fr = new FileReader()
+					fr.onload = function(e) {
+						//在这里做你想做的事情
+						var view = $("#"+num);
+						view.find("label").empty();
+						view.find("label").append("<img src = "+e.target.result+" width='100%' height='100%'>");
+					}
+					fr.readAsDataURL(file);
+					formData.append("tempCodeUrl", file);
+				})
+			});
+
+			$(".recharge").on("tap", function() {
+				var authorization = localStorage.getItem("token");
+				plus.nativeUI.showWaiting("加载中...");
+				$.ajax({
+					url: "http://" + api + "/memberCode/new-save",
+					type: "post",
+					data: formData,
+					headers: {
+						"Authorization": "Bearer " + authorization
+					},
+					// crossDomain: true, //强制使用5+跨域
+					async: false,
+					processData: false,
+					contentType: false,
+					success: function(data) {
+						console.log(JSON.stringify(data));
+						plus.nativeUI.closeWaiting();
+						if (data.ok) {
+							mui.alert('上传成功', ' ', '确定', function(e) {
+								// plus.webview.currentWebview().close("gm_active");
+								create_view("index", "index.html");
+								plus.webview.currentWebview().close();
+							}, 'div')
+							// getImgList(ptId);
+						} else {
+							mui.alert(data.message, ' ', '确定', function(e) {
+							}, 'div')
+						}
+					},
+					error: function(err) {
+						plus.nativeUI.closeWaiting();
+						mui.alert("发生错误"+JSON.stringify(err),' ','确定',function (e) {
+						   e.index
+						},'div')
+						console.log("发生错误")
+						console.log(JSON.stringify(err));
+					}
+				})
+			})
+			function getImgsList(){
+				ajax("/memberCode/getMemberCode",{
+					"memberId":memberId,
+					"typeId":ptId,
+					"money":money
+				},function(res){
+					console.log(JSON.stringify(res));
+					var codeUrl = res.memberCode.codeUrl;
+					var imgsUrl = codeUrl.split(',')
+					if(imgsUrl.length>2){
+						for (var i = 1; i < imgsUrl.length; i++) {
+							var view = $("#"+i);
+							view.find("label").empty();
+							if(res.memberCode.status == 0 ){
+								view.find("label").append("<img onclick='underway()' src = " + imgsUrl[i-1] + " width='100%' height='100%'>");
+								// view.append("<p><span>审核中</span></p>");
+								$(".img_status").text("审核中")
+								view.find("input").remove();
+							}else if (res.memberCode.status == 1 ){
+								view.find("label").append("<img onclick='successYes()' src = " + imgsUrl[i-1] + " width='100%' height='100%'>");
+								// view.append("<p><span>审核通过</span></p>");
+								$(".img_status").text("审核通过")
+								view.find("input").remove();
+							}else{
+								view.find("label").append("<img src = '+ imgsUrl[i-1] +' width='100%' height='100%'>");
+								// view.append("<p><span>审核失败</span></p>");
+								$(".img_status").text("审核失败")
+							}
+						}
+						
+					}else{
+						var view = $("#1");
+						view.find("label").empty();
+						if(res.memberCode.status == 0 ){
+							view.find("label").append("<img onclick='underway()' src = " + imgsUrl[0] + " width='100%' height='100%'>");
+							$(".img_status").text("审核中")
+							view.find("input").remove();
+						}else if (res.memberCode.status == 1 ){
+							view.find("label").append("<img onclick='successYes()' src = " + imgsUrl[0] + " width='100%' height='100%'>");
+							$(".img_status").text("审核通过")
+							view.find("input").remove();
+						}else{
+							view.find("label").append("<img src = " + imgsUrl[0] + " width='100%' height='100%'>");
+							$(".img_status").text("审核失败")
+						}
+					}
+					if(res.memberCode.status < 0){
+						$(".recharge").show();
+					}else{
+						$(".recharge").hide();
+					}
+					
+				},"POST")
+			}
+			
+			//弃用
+			function getImgList(ptid) {
+				ajax("/memberCode/new-list", {
+					"typeId": ptid,
+					"memberId": memberId
+				}, function(data) {
+					console.log(JSON.stringify(data));
+					var memberCodeList = data.memberCodeList;
+					for (var i = 0; i < memberCodeList.length; i++) {
+						var list = memberCodeList[i];
+						var view = $("#" + list.codeMoney);
+						// var imgUrl = "http://192.168.0.9"+list.codeUrl;
+						// var imgUrl = "http://183.61.6.14"+list.codeUrl; //刘
+						var imgUrl = imgsapi + "" + list.codeUrl; //林
+						if (list.status == 0) {
+							// $("#"+list.codeMoney).addClass("underway");
+							view.find("p").empty();
+							view.find("p").append("<span>金额" + list.codeMoney + "</span><span style='color:red'>审核中</span>");
+							view.find("label").empty();
+							view.find("label").append("<img onclick='underway()' src = " + imgUrl + " width='100%' height='100%'>");
+							view.find("input").remove();
+						} else if (list.status == 1) {
+							view.find("p").empty();
+							view.find("p").append("<span>金额" + list.codeMoney + "</span><span style='color:green'>审核通过</span>");
+							view.find("label").empty();
+							view.find("label").append("<img onclick='successYes()' src = " + imgUrl + " width='100%' height='100%'>");
+							view.find("input").remove();
+						} else {
+							view.find("p").empty();
+							view.find("p").append("<span>金额" + list.codeMoney + "</span><span style='color:red'>审核不通过</span>")
+							view.find("label").empty();
+							view.find("label").append("<img src = " + imgUrl + " width='100%' height='100%'>");
+						}
+					}
+				}, "GET")
+			}
+
+			function underway() {
+				mui.alert("审核中无法进行操作！");
+			}
+
+			function successYes() {
+				mui.alert("审核通过不可重复上传！");
+			}
+		</script>
+	</body>
+
+</html>

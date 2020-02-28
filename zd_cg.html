@@ -1,0 +1,398 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>抓单成功</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style>
+			.tit {
+				margin: 10px 0 0;
+				font-size: 22px;
+			}
+			
+			.img {
+				width: 45%;
+				max-width: 300px;
+				margin: 15px 0 10px;
+			}
+			
+			.mui-table-view {
+				padding: 10px 0 5px;
+			}
+			
+			.mui-table-view-cell {
+				height: auto;
+				padding: 3px 15px;
+			}
+			
+			.mui-table-view-cell:after {
+				height: 0;
+			}
+			
+			.img_up {
+				width: 160px;
+				height: 160px;
+				line-height: 160px;
+				margin: 20px auto;
+				border: 1px dashed #d9d9d9;
+				border-radius: 6px;
+				position: relative;
+				overflow: hidden;
+				text-align: center;
+			}
+			
+			.img_up .mui-icon {
+				font-size: 50px;
+				color: #aaa;
+			}
+			.confirm{cursor:pointer}
+		</style>
+	</head>
+
+	<body class="b_white">
+		<header class="mui-bar mui-bar-nav">
+			<!--<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>-->
+			<h1 class="mui-title">抓单成功</h1>
+		</header>
+		<div class="mui-content">
+			<div class="main_white">
+				<div class="green tit t-center hid" id="success">恭喜您，抓单成功！</div>
+				<div class="pay">
+					<div class="t-center" id="desc_img"></div>
+					<p class="t-center grey">待支付...</p>
+				</div>
+				<ul class="mui-table-view m_20">
+					<li class="mui-table-view-cell">商户订单号：<span class="mui-pull-right" name="grabeggMorderNumber">45646456467</span></li>
+					<li class="mui-table-view-cell">抓单时间：<span class="mui-pull-right" name="currTime">2019-02-19</span></li>
+					<li class="mui-table-view-cell">支付方式：<span class="mui-pull-right" name="ptId">微信</span></li>
+					<li class="mui-table-view-cell">抓单金额：<span class="mui-pull-right red" name="grabeggMoney">80000</span></li>
+					<li hidden="hidden"><span name="platformId"></span><span name="remark"></span></li>
+					<p class="red">&nbsp;&nbsp;* 请尽快上传收款二维码，并仔细核对支付方式和金额</p>
+				</ul>
+				<div class="t-center red m_10">交易订单编号：<span name="grabeggId">201902270000</span></div>
+				<div class="img_up" id="img_up">
+					<label style="width: 100%;height: 100%;display: block;" id="imgs" for="head_img_change">
+						<span class="mui-icon mui-icon-plusempty"></span>
+					</label>
+
+				</div>
+				<input type="file" class="imgfile" style="display: none;" accept="image/*" id="head_img_change" />
+				<p class="t-center red" id="text_desc"> 请在 <span class="time grey">15</span> s内点击上传您的收款二维码</p>
+				<div class="t-center m_20 hid "><button class="btn-ms confirm">确认收款</button></div>
+			</div>
+			<canvas style="display: none;"></canvas>
+
+		</div>
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/comm.js"></script>
+		<script src="js/qiniu.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init({
+				keyEventBind: {
+					backbutton: false, //Boolean(默认true)关闭back按键监听
+				}
+			});
+			var memberId = this.mbId();
+			mui.back = function() {
+
+				create_view("index", "index.html");
+				plus.webview.currentWebview().close();
+			};
+
+			var stati = 0;
+
+			function scanedError() {
+				//提示鸣生
+				switch (plus.os.name) { //判断设备类型
+					case "iOS":
+						//indexOF()字符串查找从左向右查找，lastindexOf()从右向左查找
+						if (plus.device.model.indexOf("iPhone") >= 0) { //判断是否为iPhone  
+							plus.device.beep();
+							plus.device.vibrate();
+							console.log("设备蜂鸣中...");
+						} else {
+							console.log("此设备不支持蜂鸣");
+						}
+						break;
+					default:
+						plus.device.beep();
+						plus.device.vibrate();
+						console.log("设备蜂鸣中...");
+						break;
+				}
+				//播放
+				var player = null;
+				var flag = false;
+				if (stati == 0) {
+					mui.plusReady(function() {
+						if (plus.audio === 'undefined') {
+							mui.toast('权限没有啊');
+							return;
+						}
+						player = plus.audio.createPlayer("audio/dido.mp3");
+						var num = player.getDuration(); //获取音频总长度number 
+						setTimeout(function() { //延时获取，否则可能没有返回长度 
+							var num = player.getDuration();
+							console.log(num);
+						}, 1000)
+						var volume = plus.device.getVolume();
+						plus.device.setVolume(1)
+						stati = 1;
+						player.play(function(e) {
+							console.log('播放完成后，运行代码');
+							plus.device.setVolume(volume);
+							stati = 0;
+						}, function(e) {
+							console.log(e);
+						}, false);
+
+					})
+				}
+			};
+			var grabeggMorderNumber, grabeggMoney, grabeggId, currTime, platformId, remark, ptId, grabeggState, grabeggQrcode;
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				plus.webview.close("index");
+				rg = self.zdcg;
+				var rg_obj = JSON.parse(rg);
+				console.log(JSON.stringify(rg_obj));
+				grabeggMorderNumber = rg_obj.dto.grabeggMorderNumber;
+				grabeggId = rg_obj.dto.grabeggId;
+				grabeggMoney = rg_obj.dto.grabeggMoney;
+				currTime = rg_obj.dto.currTime;
+				platformId = rg_obj.dto.platformId;
+				remark = rg_obj.dto.remark;
+				ptId = rg_obj.dto.ptId;
+				grabeggQrcode = rg_obj.grabeggQrcode;
+				grabeggState = rg_obj.grabeggState;
+				$("[name='grabeggMorderNumber']").text(grabeggMorderNumber);
+				$('[name="grabeggMoney"]').text(grabeggMoney);
+				$('[name="grabeggId"]').text(grabeggId);
+				$('[name="currTime"]').text(currTime);
+				$('[name="platformId"]').text(platformId);
+				$('[name="remark"]').text(remark);
+				var html = '';
+				if ("1" == ptId) {
+					$('[name="ptId"]').text("微信");
+					html = '<img class="img" src="images/pay_wx.png" alt="">';
+					postCG();
+				} else if ("2" == ptId) {
+					$('[name="ptId"]').text("支付宝");
+					html = '<img class="img" src="images/pay_zfb.png" alt="">';
+					postCG();
+				} else if ("3" == ptId) {
+					$('[name="ptId"]').text("银联");
+					html = '<img class="img" src="images/pay_yl.png" alt="">';
+					clearInterval(set);
+					$("#text_desc").hide();
+					$("#head_img_change").hide();
+					$("#img_up").hide();
+					$(".hid").show();
+					scanedError();
+					//请求时直接域名加文件名，文件名filename,域名baseUrl
+					ajax("/member/grabegg-info/save_pepay_grabegg_info", {
+						"grabeggId": grabeggId,
+						"platformId": platformId,
+						"ptId": ptId,
+						"grabeggMorderNumber": grabeggMorderNumber,
+						"grabeggMoney": grabeggMoney,
+						"remark": remark,
+						// "grabeggQrcode": "",
+						"mbId": memberId,
+						"status": 1
+					}, function(res) {
+						var moneys = $("[name='grabeggMoney']").text();
+					}, "POST")
+				} else {
+					$('[name="ptId"]').text("云闪付");
+					html = '<img class="img" src="images/pay_sf.png" alt="">';
+					postCG();
+				}
+				$("#desc_img").append(html);
+			});
+			var isUpload = false;
+			var time = 60;
+			var set = setInterval(function() {
+				if (time > 0) {
+					time--;
+					$(".time").html(time);
+					scanedError();
+				} else {
+					clearInterval(set);
+					//清除定时器后
+					console.log("============定时器" + isOpened);
+					if (isOpened == false) {
+						mui.alert('会员超时未上传收款码，交易失败！', ' ', '确定', function(e) {
+							create_view("index", "index.html", "", {});
+							plus.webview.currentWebview().close();
+						}, 'div')
+					}
+				}
+			}, 1000);
+
+			/*$(".img_up").click(function(){
+				createUpload();
+			})*/
+			function postCG() {
+				if (grabeggState == true) {
+					if (grabeggQrcode.substring(0, 1) != "h") {
+						var imgUrl = imgsapi + "" + grabeggQrcode; //林
+						console.log("1212" + imgUrl);
+						Imgup(imgUrl);
+					} else {
+						console.log("9879797");
+						Imgup(grabeggQrcode);
+					}
+					scanedError();
+				}
+
+				function Imgup(imgUrl) {
+					clearInterval(set);
+					var img = "<img src = " + imgUrl + " width='100%' height='100%'>";
+					$("#imgs").html(img);
+					$(".pay").hide();
+					$(".hid").show();
+					$("input").remove();
+					isOpened = true;
+					times2 = 120;
+					$("#text_desc").html('请在<span id="times2">' + times2 + '</span>s内确认收款，否则交易失败！');
+					var set2 = setInterval(function() {
+						if (times2 > 0) {
+							times2--;
+							$("#times2").html(times2);
+						} else {
+							clearInterval(set2);
+							//清除定时器后
+							// create_view("index", "index.html", "", {});
+							// plus.webview.currentWebview().close();
+							ajax("/member/grabegg-info/new-member_cancel_receipt", {
+								"memberId": memberId,
+							}, function(data) {
+								if (data.ok == true) {
+									mui.alert('交易超时！玩家未支付，交易失败！', ' ', '确定', function(e) {
+										create_view("index", "index.html");
+										plus.webview.currentWebview().close();
+									}, 'div')
+								} else {
+									mui.alert(data.message, ' ', '确定', function(e) {
+										create_view("index", "index.html");
+										plus.webview.currentWebview().close();
+									}, 'div')
+								}
+							}, "GET");
+						}
+					}, 1000);
+				}
+			}
+
+
+
+			$('.imgfile').on('change', function() {
+				var file = this.files[0];
+				var config = {
+					region: qiniu.region.z2,
+					disableStatisticsReport: true,
+					checkByMD5: false,
+					concurrentRequestLimit: 5,
+				};
+				var putExtra = {
+					fname: "",
+					params: {},
+					mimeType: [] || null
+				};
+				var ptId = 1;
+				if ("微信" == $('[name="ptId"]').text()) {
+					ptId = 1;
+				} else if ("支付宝" == $('[name="ptId"]').text()) {
+					ptId = 2;
+				} else if ("银联" == $('[name="ptId"]').text()) {
+					ptId = 3;
+				} else if ("云闪付" == $('[name="ptId"]').text()) {
+					ptId = 4;
+				}
+				var authorization = localStorage.getItem("token");
+				var formData = new FormData();
+				formData.append("grabeggId", grabeggId);
+				formData.append("platformId", platformId);
+				formData.append("ptId", ptId);
+				formData.append("grabeggMorderNumber", grabeggMorderNumber);
+				formData.append("grabeggMoney", grabeggMoney);
+				formData.append("remark", remark);
+				formData.append("grabeggQrcode2", file);
+				formData.append("mbId", memberId);
+				formData.append("status", 1);
+				$.ajax({
+					url: "http://" + api + "/member/grabegg-info/save_pepay_grabegg_info",
+					type: "post",
+					data: formData,
+					headers: {
+						"Authorization": "Bearer " + authorization
+					},
+					// crossDomain: true, //强制使用5+跨域
+					async: false,
+					processData: false,
+					contentType: false,
+					success: function(data) {
+						if (data.ok) {
+							console.log(JSON.stringify(data));
+							clearInterval(set);
+							var iUrl = data.fileUrl;
+							if (iUrl.substring(0, 1) != "h") {
+								var imgUrl = imgsapi + "" + data.fileUrl;
+								Imgup(imgUrl);
+							} else {
+								var imgUrl = iUrl;
+								Imgup(imgUrl);
+							}
+
+						} else {
+							mui.alert(data.massege);
+						}
+
+					},
+					error: function(err) {
+						console.log(JSON.stringify(err))
+					}
+				})
+			});
+
+
+
+			/*确认收款*/
+			$(".confirm").on("tap", function(e) {
+
+				var zdzf = localStorage.getItem("zdzf");
+
+				//e.detail.gesture.preventDefault(); //修复iOS 8.x平台存在的bug，使用plus.nativeUI.prompt会造成输入法闪一下又没了
+				var btnArray = ['取消', '确定'];
+				mui.confirm('确认已收到款项?', ' ', ['取消', '确认'], function(e) {
+					if (e.index == 1) {
+						ajax("/member/grabegg-info/member_confirm_receipt", {
+							"memberId": memberId,
+							"money": grabeggMoney
+						}, function(data) {
+							if (data.ok == true) {
+								mui.alert('确认收款成功！', ' ', '确定', function(e) {
+									create_view("index", "index.html");
+									plus.webview.currentWebview().close();
+								}, 'div')
+							} else {
+								mui.alert(data.message);
+							}
+						}, "GET");
+					} else {
+
+					}
+				}, 'div')
+			});
+		</script>
+	</body>
+
+</html>

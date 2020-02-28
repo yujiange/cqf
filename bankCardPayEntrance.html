@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>银行卡</title>
+		<link rel="stylesheet" href="css/mui.css">
+		<link rel="stylesheet" href="css/public.css">
+		<script src="js/jquery-2.1.0.js"></script>
+		<script src="js/vue-2.6.10.js"></script>
+		<style>
+			input[type="text"],input[type="number"]{margin-bottom: 0;height: auto;padding: 0;}
+			/* *{border: none!important;} */
+			body {background-color: #fff;color: #000;}
+			#wrap {position: relative;}
+			.content {margin: 44px 0 110px 0;}
+			.accountNumberList{padding: 20px 5%;border-bottom: 6px solid #ccc;}
+			.accountNumberList>div:not(:first-child){margin: 10px 0 0 0;}
+			.QRCodeImg{width: 37px;height: 37px;display: block;}
+			.newlyAdded{width: 80%;display: block;margin: 74px auto;
+				height: 42px;
+				color: rgba(49,124,223,1);
+				font-size: 15px;
+				border-radius: 25px;
+				border: 1px solid rgba(49,124,223,1);
+				background: none;
+			}
+			.newlyAdded.active{
+				background: rgba(49,124,223,1);
+				color: #fff;
+			}
+			button:enabled:active{background: none;}
+			button{padding: 0;}
+			.newAccount{margin-left: 5px;}
+			.newAccountSectionList{padding:10px 5%;border-bottom: 1px solid #ccc;}
+			.newAccountSectionList div.newAccountSection_l{width: 25%;}
+			.newAccountSectionList input{width: 75%;border: none;margin-left: 4px;}
+			.newAccountSectionList input[type="text"]{padding: 4px 6px;}
+			.selectCategoriesMain{position: relative;width: 150px;height: 30px;padding: 6px 4px;}
+			.selectShowText{box-shadow:0 0 4px rgba(0,0,0,.5);padding:0 6px;position: absolute;top: 0;left: 0;width: 100%;height: 100%;border: 1px solid rgba(49,124,223,1);color: #000;}
+			.selectShowText span:nth-of-type(1){display:block;width: 80%;}
+			.selectShowText span:nth-of-type(2){display:none;width: 20%;text-align: right;}
+			.selectCategoriesMain{margin-left: 4px;}
+			.selectCategoriesMain .selectCategoriesItem{box-shadow:0 0 4px rgba(0,0,0,.5);z-index: 999;width: 100%;border: 1px solid rgba(49,124,223,1);border-top: none;background: #fff;position: absolute;top: 100%;left: 0;}
+			.selectCategoriesItem li{display: block;color: rgba(49,124,223,1);padding:6px 6px;}
+			.selectCategoriesItem li:not(:first-child){border-top: 1px solid rgba(49,124,223,1);}
+			.selectCategoriesItem li.active{background: rgba(49,124,223,1);color: #fff;}
+			.btns {
+				display: block;
+				width: 50%;
+				margin: 50px auto;
+				height: 42px;
+				color: rgba(49,124,223,1);
+				font-size: 15px;
+				border-radius: 25px;
+				border: 1px solid rgba(49,124,223,1);
+				background: none;
+			}
+			.btns.active{background: rgba(49,124,223,1);color: #fff;}
+			.openAndCloseBtn,.deleteBtn,.changeBtn{border: 1px solid rgba(49,124,223,1);color: rgba(49,124,223,1);padding:1px 6px;border-radius:6px;}
+			.openAndCloseBtn.active,.deleteBtn.active,.changeBtn.active{background: rgba(49,124,223,1);color: #fff;}
+		</style>
+	</head>
+	<body>
+		<!-- 购买新增 -->
+		<!-- 首页银行卡支付入口 -->
+		<div id="wrap" v-cloak>
+			<template v-if="!newAccountSectionShow">
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<h1 class="mui-title">银行卡</h1>
+				</header>
+				<div class="font_14 content">
+				
+					<!-- exhibitionSection 	start -->
+					<div class="exhibitionSection">
+						<!-- 类别列表	start -->
+						<div class="accountNumberDetails">
+							<!-- justify-content itemFlex -->
+							<div class="accountNumberList" v-for="(item,index) in accountNumberList" v-key="index">
+								<div>
+									<span v-text="name+':'"></span>
+									<span class="userName" v-text="item.bankCardOwner"></span>
+								</div>
+								<div  class="justify-content">
+									<div v-text="bankName+':'"></div>
+									<div class="changeBtn" @click="changeBtn(item,index)">修改</div>
+								</div>
+								<div  class="justify-content">  
+									<span v-text="item.bankName"></span>
+									<div class="deleteBtn" @click="deleteBtn(item,index)">删除</div>
+								</div>
+								<div  class="justify-content">
+									<div v-text="cardName"></div>
+									<div class="openAndCloseBtn" v-if="item.bankEnable==1 || item.bankEnable==null" @click="openAndCloseBtn(item,index)">打开</div>
+									<div class="openAndCloseBtn" v-if="item.bankEnable==0 || item.bankEnable==null" @click="openAndCloseBtn(item,index)">关闭</div>
+								</div>
+								<div class="justify-content">
+									<span v-text="item.bankNo"></span>
+									<span v-if="item.bankCardType==1" v-text="bankCardTypeList[0]"></span>
+									<span v-if="item.bankCardType==2" v-text="bankCardTypeList[1]"></span>
+								</div>
+							</div>
+						</div>
+						<!-- 类别列表	end -->
+						
+						<button class="newlyAdded" :class="newlyAddedflag?'active':''" @click="newlyAddedFn">
+							<div class="itemCenter">
+								<span class="bold font_26" v-text="add"></span>
+								<span class="newAccount" v-text="newAccount"></span>
+							</div>
+						</button>
+					</div>
+					<!-- exhibitionSection 	end -->
+				</div>
+			</template>
+				
+			<template v-if="newAccountSectionShow==1">
+				<header class="mui-bar mui-bar-nav">
+					<!-- mui-action-back -->
+					<a class="mui-icon mui-icon-left-nav mui-pull-left" @click="returnCurrentPage"></a>
+					<h1 class="mui-title">银行卡</h1>
+				</header>
+			
+				<div class="font_14 content">
+					<!-- 新增newAccountSection 	start -->
+					<div class="newAccountSection">
+						<!-- justify-content -->
+						<div class="flex itemFlex newAccountSectionList" v-for="(item,index) in newAccountSectionTilte" v-key="index">
+							<div class="newAccountSection_l" v-text="item+' : '"></div>
+							<input type="hidden" class="bankId" v-model="upId" style="display:none;">
+							<input class="font_14 bank_card_owner" v-model="upBankCardOwner" type="text" v-if="!index">
+							<!-- <input class="font_14 callMobileAlbum" type="file" accept="image/*" capture="camera" v-if="index==1"> -->
+							<input class="font_14 bank_name" type="text" v-model="upBankName" v-if="index==1">
+							<input type="number" class="font_14 bank_no" v-model="upBankNo" v-if="index==2">
+							<!-- 类别选择框	start -->
+							<div class="selectCategoriesList" v-if="index==3">
+								<div class="selectCategoriesMain">
+									<div class="flex itemFlex selectShowText bank_card_type" @click="selectCategoriesToggle">
+										<span v-text="defaultDisplayCategory"></span>
+										<span></span>
+									</div>
+									<!-- v-if="selectCategoriesShow" -->
+									<ul class="selectCategoriesItem" v-if="selectCategoriesShow">
+										<li v-for="(item,index) in options" :key="index" @click="judgingAccountStatusFn(item,index)" v-text="item.label"></li>
+									</ul>
+								</div>
+							</div>
+							<!-- 类别选择框	end -->
+						</div>
+						
+						<!-- :class="{'active':btnsActive}" -->
+						<button class="btns bcBtn active" @click="btnsActiveFn">保存</button>
+					</div>
+					<!-- 新增newAccountSection 	end -->
+				</div>
+			</template>	
+		</div>
+		
+		<!-- 重连遮罩层	start -->
+		<!-- @touchmove.prevent -->
+		<div class="stopBlock">
+			<!-- 重连时禁止用户操作界面 -->
+			<div class="centers content">
+				<h3 class="centers title txt_2">温馨提示!</h3>
+				<p class="font_20 green txt_1">您已断开连接,已为您重连&nbsp;<span class="red txt_1 counts"></span>&nbsp;次</p>
+			</div>
+		</div>
+		<!-- 重连遮罩层	end -->
+		<script src="js/mui.min.js"></script>
+		<script src="js/comm.js"></script>
+		<script>
+			var app = new Vue({
+				el: '#wrap',
+				data: {
+					getThisList:'',
+					bankCardTypeList:['储蓄卡','借记卡'],
+					judgingAccountStatus:1,//判断当前类型状态值,默认显示值为1,当值等于1为储蓄卡,2为信用卡
+					newAccountSectionTilte:['姓名','银行名称','卡号','银行卡类型'],
+					defaultDisplayCategory:'储蓄卡',//默认为储蓄卡
+					bankName:'银行名称',
+					selectCategoriesShow:false,
+					newAccountSectionShow:0,
+					newlyAddedflag:0,
+					add: '+',
+					newAccount:'新增账号',
+					switchBtn:['开','关'],
+					name:'姓名',
+					cardName:'卡号',
+					upId: '',
+					upBankName:'',
+					upBankCardOwner:'',
+					upBankNo:'',
+					accountNumberList:[],
+					
+					// 类别下拉框
+					options: [{
+					  status: '1',
+					  label: '储蓄卡'
+					}, {
+					  status: '2',
+					  label: '借记卡'
+					}],
+				},
+				methods:{
+					returnCurrentPage(){
+						this.newAccountSectionShow=0;
+						this.selectCategoriesShow=false;
+					},
+					// 新增账号按钮
+					newlyAddedFn(){
+						// this.newlyAddedflag=!this.newlyAddedflag;
+						this.newAccountSectionShow=1;
+					},
+					
+					// 修改
+					changeBtn(item,index){
+						this.getThisList = item;
+						// this.judgingAccountStatusFn(item.bankCardType);
+						this.upId=item.id,
+						this.upBankName=item.bankName,
+						this.upBankCardOwner=item.bankCardOwner,
+						this.upBankNo = item.bankNo,
+						this.defaultDisplayCategory=this.bankCardTypeList[item.bankCardType - 1];
+						// console.log("==============="+item.bankCardType);
+						this.newAccountSectionShow=1;
+					},
+					// 删除
+					deleteBtn(item,index){
+						var that = this
+						mui.confirm('是否确认删除？', appName, this.btnArray, function(e) {
+							// console.log(e.index)
+							if (e.index == 1) {
+								// 弹窗确定按钮
+								ajax("/memberBank/deleteById",{
+										"id": item.id
+									},
+									 function(res) {
+										 if(res.ok){
+											 mui.alert(res.message, ' ', '确定', function(e) {
+												 $(".deleteBtn").removeClass("active");
+											 	getLists(that);
+											 }, 'div')
+										 }
+								}, "POST");
+							};
+						});
+					},
+					// 开启与关闭
+					openAndCloseBtn(item,index){
+						var that = this
+						ajax("/memberBank/updateEnable",{
+							"id": item.id,
+							"bankEnable": item.bankEnable
+						},function(res){
+							// var thatObj=$('.categoryList').eq(index).find('.disableOrOpen');
+							if(res.ok){
+								$(".openAndCloseBtn").addClass("active");
+								getLists(that);
+							}else{
+								mui.alert(res.message, ' ', '确定', function(e) {
+									$(".openAndCloseBtn").removeClass("active");
+									getLists(that);
+								}, 'div')
+								
+							}
+						},"POST")
+					},
+					// 保存
+					btnsActiveFn(){
+						var that=this;
+						var bankName = $(".bank_name").val();
+						var bankNo = $(".bank_no").val();
+						var bankCardOwner = $(".bank_card_owner").val();
+						var bankId = $(".bankId").val();
+						var bankCardType = this.judgingAccountStatus;
+						// console.log(bankCardType);
+						ajax("/memberBank/save", {
+							 "id": bankId,
+							 "memberId": mbId(),
+							 "bankName": bankName,
+							 "bankCardOwner": bankCardOwner,
+							 "bankNo": bankNo,
+							 "bankCardType": bankCardType
+						}, function(res){
+							var data = JSON.stringify(res);
+							data = JSON.parse(data);
+							// console.log('data.ok'+data.ok);
+							if(data.ok){
+								mui.alert(data.message," ","确定",function(){},"div");
+								that.newAccountSectionShow=0;
+								getLists(that);//重新获取后台数据
+								that.upId='';
+								that.upBankName='';
+								that.upBankCardOwner='';
+								that.upBankNo = '';
+								that.defaultDisplayCategory = this.bankCardTypeList[0];
+							}else{
+								mui.alert(data.message," ","确定",function(){},"div");
+							}
+						}, "POST");
+						
+						// alert(this.newAccountSectionShow);
+					},
+					selectCategoriesToggle(){
+						this.selectCategoriesShow=!this.selectCategoriesShow;
+					},
+					judgingAccountStatusFn(item,index){
+						this.judgingAccountStatus=item.status;//获取状态值
+						this.defaultDisplayCategory=item.label;
+						this.selectCategoriesShow=false;
+						// console.log('judgingAccountStatus'+this.judgingAccountStatus);
+					},
+				},
+				created: function () {
+					var that=this;
+					getLists(that);
+				}
+			});
+			
+			$('.openAndCloseBtn').click(function(){
+				// toggleClassFn($(this),'active');
+				$(this).toggleClass('active');
+				var flagActive=$(this).hasClass('active');
+				if(!flagActive){
+					$(this).text('关闭');
+				}else{
+					$(this).text('打开');
+				};
+			});
+			
+			$('.deleteBtn').click(function(){
+				toggleClassFn($(this),'active');
+			});
+			
+			$('.changeBtn').click(function(){
+				$(this).toggleClass('active');
+			});
+			
+			function getLists(that){
+				ajax("/memberBank/list", {
+					"memberId": mbId(),
+					"ptId": 7
+				}, function(res){
+					var data = JSON.stringify(res.memberBankList);
+					// console.log(data)
+					// 判断数据是否为 undefined
+					if(data == undefined){
+						that.accountNumberList = [];
+					}else{
+						that.accountNumberList=JSON.parse(data);
+					}
+				}, "GET");
+			}
+		</script>
+	</body>
+</html>

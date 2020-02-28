@@ -1,0 +1,189 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>充值</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="css/mui.min.index.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<script src="js/jquery-2.1.0.js"></script>
+		<script src="js/vue-2.6.10.js"></script>
+		<style>
+			input[type="text"],input[type="number"]{margin-bottom: 0;border: none;}
+			.width_33{display: block;width: 33%;}
+			#wrap{margin: 44px 0 0;}
+			.rechargeList{border-bottom: 6px solid #ccc;}
+			.rechargeContent{padding: 10px 5%;}
+			.rechargeList .rechargeContent>div{width: 25%;}
+			.rechargeList .rechargeContent input{width: 50%;padding: 10px 6px;}
+			.twoColumn{width: 65%;}
+			.threeColumn{width: 100%;background: lightblue;}
+			.mattersNeedingAttention{padding: 30px 5%;}
+			.mattersNeedingAttentionTitle{color: #000;}
+			.mattersNeedingAttention div{margin: 5px 0 0 0;}
+
+			.btns{
+				display: block;
+				width: 50%;
+				margin: 40px auto 0px;
+				height: 42px;
+				color: rgba(49,124,223,1);
+				font-size: 15px;
+				border-radius: 25px;
+				border: 1px solid rgba(49,124,223,1);
+				background: none;
+			}
+			.btns.active{background: rgba(49,124,223,1);color:white;}
+		</style>
+	</head>
+	<body>
+		<div id="wrap" v-cloak>
+			<header class="mui-bar mui-bar-nav">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+				<h1 class="mui-title">充值</h1>
+			</header>
+			
+			<div class="font_14 content">
+				<div class="rechargeMain">
+					<div class="rechargeList" v-for="(item,index) in rechargeItem" v-key="index">
+						<div class="flex itemFlex rechargeContent" >
+							<div v-text="item"></div> 
+							<input class="font_14" type="text" id="bankName" placeholder="中国银行" :value="bankCardNumbers" readonly="readonly" v-if="!index">
+							<input class="font_14" type="text" id="rechargeMoney" placeholder="0" :value="inputAmountText" readonly="readonly" v-else-if="index==1">
+							<input class="font_14" type="text" id="accountName" :placeholder="appName" :value="accountNameText" readonly="readonly" v-else-if="index==2">
+							<input class="font_14" type="number" id="bankno" placeholder="10000000000000000000" :value="bankNames" readonly="readonly" v-else-if="index==3">
+							<input class="font_14" type="text" id="orderno" placeholder="请输入流水号" v-else-if="index==4">
+							<input class="font_14" type="text" id="remark" placeholder="备注说明" v-else-if="index==5">
+							<div class="right" v-if="index>0 && index <5"><button @click="copyBtnFn(index)" v-text="copyBtn"></button></div> 
+						</div>  
+					</div> 
+					<button class="btns rechargeBtn" :class="{'active':rechargeBtnFlag}" @click="rechargeBtnToggle" v-text="rechargeBtn"></button>
+					<div class="mattersNeedingAttention">
+						<div class="mattersNeedingAttentionTitle" v-text="mattersNeedingAttentionTitle"></div>
+						<div v-text="mattersNeedingAttention"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- 重连遮罩层	start -->
+		<!-- @touchmove.prevent -->
+		<div class="stopBlock">
+			<!-- 重连时禁止用户操作界面 -->
+			<div class="centers content">
+				<h3 class="centers title txt_2">温馨提示!</h3>
+				<p class="font_20 green txt_1">您已断开连接,已为您重连&nbsp;<span class="red txt_1 counts"></span>&nbsp;次</p>
+			</div>
+		</div>
+		<!-- 重连遮罩层	end -->
+		<script src="js/mui.min.js"></script>
+		<script src="js/comm.js"></script>
+		<script type="text/javascript">
+			mui.init(); 
+			var flagKey=false;
+			var app=new Vue({
+				el:'#wrap',
+				data:{
+					textBz:'备注',
+					rechargeBtnFlag:false,
+					rechargeBtn:'充值',
+					rechargeItem:['充值方式','充值金额','银行户名','银行卡','流水号','备注'],
+					copyBtn:'复制',
+					rechargeMode:'充值方式',
+					bankCardName:'建设银行',
+					rechargeAmount:'充值金额',
+					amout:500,
+					bankCard:'银行卡号',
+					bankCardNumber:'48966874918',
+					postscript:'附言',
+					postscriptText:'......',
+					mattersNeedingAttentionTitle:'充值注意事项:',
+					mattersNeedingAttention:'请核对姓名、卡号、充值金额是否正确，流水号是否重复，如若转错，则后果自负',
+					accountNameText: '',
+					inputAmountText: '',
+					bankCardNumbers: '',
+					bankNames: '', 
+					rechargeList:[{
+						bankCardName:'建设银行',
+						amout:500,
+						bankCardNumber:'48966874918',
+					}]
+				},
+				methods:{
+					rechargeBtnToggle(){
+						this.rechargeBtnFlag=!this.rechargeBtnFlag;
+					},
+					/* copy_fun */
+					copyBtnFn(index){
+						var vals=$('.rechargeList').eq(index).find('input').val();
+						mui.alert('已复制到剪切板', ' ', '确定', function(e) {
+							copy_fun(vals);
+						}, 'div');
+					}
+				},
+				created: function() {
+					this.inputAmountText = localStorage.getItem("inputAmountText");
+					this.bankNames = localStorage.getItem("bankNames");
+					this.bankCardNumbers = localStorage.getItem("bankCardNumbers");
+					this.accountNameText = localStorage.getItem("accountName");
+				},
+			})
+			/* ---------------------------判断验证输入框是否为空---------------------------	start */
+			var orderno_Boolean=false,
+				remark_Boolean=false;
+			var msgs=['充值流水号不能为空']
+			// #bankName rechargeMoney bankno orderno remark
+			// 充值流水号
+			function judgmentEmpty(){
+				if(orderno_Boolean){
+					//判断成功处理事件
+					flagKey = true;
+				}else{
+					mui.toast('请完善信息',{duration:'short',type:'div'});
+				};
+			};
+			/* -----------判断验证输入框是否为空	end------------------------------ */
+			// 提交充值信息
+			$('.rechargeBtn').click(function(){
+				var regOrderno=$('#orderno').val();
+				if(regOrderno == null || regOrderno == ''){
+					orderno_Boolean=false;
+				}else{
+					orderno_Boolean=true;
+				}
+				judgmentEmpty();//调用验证
+				if(!flagKey){
+					return;
+				}
+				var money = $("#rechargeMoney").val();
+				var orderno = $("#orderno").val();
+				var bankNo = $("#bankno").val();
+				var bankName = $("#bankName").val();
+				var remark = $("#remark").val();
+				ajax("/memberRecharge/new-save", {
+					"memberId": mbId(),
+					"money": money,
+					"orderno": orderno,
+					"remark": remark,
+					"bankNo": bankNo,
+					"bankName": bankName
+				}, function(data) {
+					if(data.ok){
+						mui.alert(data.message," ","确定",function(){
+							// 清空表单
+							localStorage.removeItem("bankName");
+							localStorage.getItem("inputAmountText");
+							localStorage.getItem("accountNumber");
+							$("#orderno").val("");
+							$("#remark").val("");
+							// 跳转至首页
+							window.location.href="index.html";
+						},"div");
+					}else{
+						mui.alert(data.message," ","确定",function(){},"div");
+					}
+				}, "POST");
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,373 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>历史订单</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<script src="js/jquery-2.1.0.js"></script>
+		<script src="js/vue-2.6.10.js"></script>
+		<link href="css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" href="lib/element-ui/element-ui.css">
+		<script src="lib/element-ui/element-ui.js"></script>
+		<link rel="stylesheet" href="css/public.css" />
+		<style>	
+			input[type="text"]{margin-bottom: 0;}
+			.el-picker-panel__sidebar+.el-picker-panel__body{margin-left: 30%;}
+			.dateBox{margin: 44px 0 0 0;padding: 10px 8px;border-bottom: 1px solid #ccc;}
+			.dateItem{width: 88%;margin: 0 auto;}
+			.queryResults{padding:0 4%;height: 30px;line-height: 30px;color: #cc9999;margin-left: 8px;}
+			#wrap .mui-bar-nav~.mui-content{top:86px;padding-top: 0px;width: 95%;margin:0 auto 0;background-color: #fff;}
+			#wrap .mui-pull-bottom-pocket {background-color:#fff;}
+			.historyOrdersItem{padding: 20px 4%;border-bottom: 1px solid #ccc;}
+			.orderLists{position: relative;padding: 20px 10px;border-bottom: 1px solid #ccc;}
+			.orderNumbers_box{line-height: 26px;}
+			.orderPays:nth-of-type(2){margin-left: 40px;}
+			.leftText{margin-left: 6px;}
+			.orderBTn{position: absolute;top: 20px;right: 0;}
+			.repurchaseBtn,.orderLink{padding: 2px 10px;border-radius:10px;border: 1px solid rgba(49,124,223,1);color: rgba(49,124,223,1);}
+			.confirmBtn,.orderLink:nth-of-type(2){margin: 10px 0 0 0;}
+			.orderLink.active{background: rgba(49,124,223,1);color:white;}
+			.searchQuery{margin-left: 6px;}
+		</style>
+	</head>
+	<body>
+		<div id="wrap"  v-cloak>
+			<header class="mui-bar mui-bar-nav">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+				<h1 class="mui-title">历史订单</h1>
+			</header>
+			
+			<div class="dateBox">
+				<!-- 日期选择插件 -->
+				<div class="dateItem">
+					<template>
+					  <!-- type="daterange"
+					  type="datetimerange" -->
+					  <div class="block itemFlex">
+					    <el-date-picker
+					      v-model="showDateValue"
+					      type="daterange"
+					      align="right"
+					      unlink-panels
+					      range-separator="至"
+					      :start-placeholder="startDate"
+					      :end-placeholder="endDate"
+						  format="yyyy-MM-dd"
+						  value-format="yyyy-MM-dd"
+					      :picker-options="pickerOptions">
+					    </el-date-picker>
+						<button class="searchQuery" @click="search()" v-text="searchQuery"></button>
+					  </div>
+					</template>
+				</div>
+				<div class="font_14 queryResults">
+					<span>为您匹配</span>
+					<span v-text="showDateValue[0]"></span>
+					<span>至</span>
+					<span v-text="showDateValue[1]"></span>
+					<span>的历史订单</span>
+				</div>
+			</div>
+			<div id="pullrefresh" class="mui-content mui-scroll-wrapper font_14 historyOrdersBox">
+				<div class="mui-scroll">
+					<ul class="mui-table-view mui-table-view-chevron">
+						<li class="orderLists" v-for="(item,index) in orderListsRe" v-key="index">
+							<div class="orderNumbers_box">
+								<div class="flex orderNumbers" v-for="(subItem,subIndex) in numberNames" v-key="subIndex">
+									<div class="name" v-text="subItem+' : '"></div>
+									<div class="leftText" :class="{'greenColor':!subIndex}" v-if="!subIndex" v-text="item.getGrabeggStatusName"></div>
+									<div class="leftText" :class="{'greenColor':!subIndex}" v-if="subIndex==1" v-text="item.mbId"></div>
+									<div class="leftText" :class="{'greenColor':!subIndex}" v-if="subIndex==2" v-text="item.grabeggId"></div>
+									<div class="leftText" :class="{'greenColor':!subIndex}" v-if="subIndex==3" v-text="item.grabeggTime"></div>
+								</div>
+							</div>
+							<div class="flex orderPays_box">
+								<div class="flex orderPays" v-for="(subItem,subIndex) in paysName" v-key="subIndex">
+									<div v-text="subItem+' : '"></div>
+									<div class="leftText" :class="{'redColor fontItalic':subIndex==1}" v-if="!subIndex" v-text="item.payTye"></div>
+									<div class="leftText" :class="{'redColor fontItalic':subIndex==1}" v-if="subIndex==1" v-text="item.getGrabeggMoney"></div>
+								</div>
+							</div>
+							<!-- <div class="orderBTn">
+								<div  class="orderLink repeatPurchase" :class="{'active':!orderBtnActive}" @click="repeatPurchase(item,index)" v-text="orderLink[0]"></div>
+								<div class="orderLink confirmOrders" :class="{'active':orderBtnActive}" @click="confirmOrders(item,index)" v-text="orderLink[1]"></div>
+							</div> -->
+						</li>
+					</ul>
+				</div>	
+			</div>
+		</div>
+		
+		<!-- 重连遮罩层	start -->
+		<!-- @touchmove.prevent -->
+		<div class="stopBlock">
+			<!-- 重连时禁止用户操作界面 -->
+			<div class="centers content">
+				<h3 class="centers title txt_2">温馨提示!</h3>
+				<p class="font_20 green txt_1">您已断开连接,已为您重连&nbsp;<span class="red txt_1 counts"></span>&nbsp;次</p>
+			</div>
+		</div>
+		<!-- 重连遮罩层	end -->
+		<script src="js/mui.js"></script>
+		<script src="js/comm.js"></script>
+		<script type="text/javascript">
+			var app=new Vue({
+				el:'#wrap',
+				data:{
+					searchQuery:'查询',
+					// 日期		start
+					valueDate:dateFormatter(new Date(),false),//默认今天
+					// valueDate:dateFormatter(new Date(),true),//默认今天--显示时分秒
+					startDate:'开始日期',
+					endDate:'结束日期',
+					// showDateValue: '',
+					// showDateValue:['开始日期','结束日期'],
+					showDateValue:[dateFormatter(new Date(),false),dateFormatter(new Date(),false)],//默认今天
+					pickerOptions: {
+						shortcuts: [{
+							text: '最近一周',
+							onClick(picker) {
+							  const end = new Date();
+							  const start = new Date();
+							  start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+							  picker.$emit('pick', [start, end]);
+							}
+						}, {
+							text: '最近一个月',
+							onClick(picker) {
+							  const end = new Date();
+							  const start = new Date();
+							  start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+							  picker.$emit('pick', [start, end]);
+							}
+						}, {
+							text: '最近三个月',
+							onClick(picker) {
+							  const end = new Date();
+							  const start = new Date();
+							  start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+							  picker.$emit('pick', [start, end]);
+							}
+						}]
+					},
+					// 日期		end
+
+					// 订单列表	start
+					orderBtnActive:0,
+					// orderLink:['补单','确认'],
+					numberNames:['状态','账号','订单编号','时间'],
+					paysName:['支付方式','金额'],
+					orderLists: [],
+					orderListsRe: [] ,//刷新控件数据
+					count: 0,
+					bigNum: 0
+					// 订单列表	end	
+				},
+				// mounted:html加载完成后执行。执行顺序：子组件-父组件
+				mounted () {
+				},
+				methods:{
+					dateChangebirthday(val) {
+					   this.valueDate = val;
+					 },
+					// 补单按钮
+					repeatPurchase(item, index) {
+						this.orderBtnActive = false;
+						// $('.orderLists')
+						// console.log($(this).parents('.orderLists'));
+						console.log(item.getGrabeggMoney) //获取到当前列表金额值
+						mui.confirm('是否确认补单？', '补单', this.btnArray, function(e) {
+							// console.log(e.index)
+							if (e.index == 1) {
+								// 弹窗确定按钮
+					
+							} else {
+								// 弹窗取消按钮
+					
+							};
+						});
+					},
+					// 确认订单按钮
+					confirmOrders(item, index) {
+						this.orderBtnActive = true;
+						console.log(item.getGrabeggMoney) //获取到当前列表金额值
+						var receiptMoney = item.getGrabeggMoney;
+						mui.confirm('是否确认收款？', '补单', this.btnArray, function(e) {
+							// console.log(e.index)
+							if (e.index == 1) {
+								// 弹窗确定按钮
+								ajax("/member/grabegg-info/member_confirm_receipt", {
+									"memberId": mbId(),
+									"money": receiptMoney
+								}, function(data) {
+									if (data.ok == true) {
+										window.location.href='index.html';
+										mui.alert("确认收款成功！");
+										// 重新设置待确认状态
+										getConfirmOrderNum();
+									} else {
+										mui.alert(data.message);
+									}
+								}, "GET");
+							} else {
+								// 弹窗取消按钮
+							};
+						});
+					},
+					search(){
+						var that = this;
+						var startTime = this.showDateValue[0];
+						var endTime = this.showDateValue[1];
+						var url = "/member/grabegg-info/getGraBeggInfoList?memberId="+mbId();
+						if(startTime != null && startTime != ''){
+							url = url + "&startTime=" + startTime;
+						}
+						if(endTime != null && endTime != ''){
+							url = url + "&endTime=" + endTime;
+						}
+						ajax(url, {}, function(res) {
+							var data = JSON.stringify(res);
+							// console.log(data);
+							// 判断数据是否为 undefined
+							// console.log("--------------------="+data);
+							if(data == undefined){
+								that.orderLists = [];
+							}else{
+								that.orderLists = JSON.parse(data);
+							}
+						}, "GET");
+						app.orderListsRe = [];
+						pullLoading();
+					}
+				},
+				created: function() {
+					var that = this;
+					var startTime = this.showDateValue[0];
+					var endTime = this.showDateValue[1];
+					// var time=dateFormatter(new Date(),false);
+					var url = "/member/grabegg-info/getGraBeggInfoList?memberId="+mbId();
+					if(startTime != null && startTime != ''){
+						url = url + "&startTime=" + startTime;
+					}
+					if(endTime != null && endTime != ''){
+						url = url + "&endTime=" + endTime;
+					}
+					ajax(url, {}, function(res) {
+						var data = JSON.stringify(res);
+						// console.log(data);
+						// 判断数据是否为 undefined
+						// console.log("--------------------="+data);
+						if(data == undefined){
+							that.orderLists = [];
+						}else{
+							that.orderLists = JSON.parse(data);
+						}
+					}, "GET");
+				},
+			});		
+				
+				
+			//防止刷新控件在其他页面生效
+			// mui.plusReady(function() {
+			// 	mui('body').on('tap','a',function(){plus.webview.open(this.href);});
+			// });
+				
+			mui.init({
+				pullRefresh: {
+					container: '#pullrefresh',
+					down: {
+					    style:'circle',//必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+					    color:'#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
+					    height:'50px',//可选,默认50px.下拉刷新控件的高度,
+					    range:'100px', //可选 默认100px,控件可下拉拖拽的范围
+					    offset:'0px', //可选 默认0px,下拉刷新控件的起始位置
+					    auto: true,//可选,默认false.首次加载自动下拉刷新一次
+						callback: pulldownRefresh
+					},
+					up: {
+						height:"50px",
+						auto: true,
+						contentrefresh: '正在加载...',
+						callback: pullupRefresh
+					}
+				}
+			});
+			
+			/**
+			 * 上拉加载具体业务实现
+			 * bigNum 原始数据
+			 * count 展现数据
+			 */
+			function pullupRefresh() {
+				setTimeout(function() {	
+					// 下面两个变量赋值不能外放,因为每次刷新进来都需要取得变化中的count值,而bigNum也有可能重新获取
+					app.bigNum = Math.ceil(app.orderLists.length/5); 
+					app.count = Math.ceil(app.orderListsRe.length/5);
+					console.log('bigNum01:'+app.bigNum);
+					console.log('count01:'+app.count);
+					mui('#pullrefresh').pullRefresh().endPullupToRefresh(app.count===app.bigNum); 
+					if(app.bigNum!==0){
+						if(app.bigNum===1){
+							app.orderListsRe = app.orderLists;
+						}else {
+							for(var i=app.count*5;i<(app.count+1)*5;i++){
+								if(app.orderLists[i]){
+									app.orderListsRe.push(app.orderLists[i]);
+								}
+									
+							}
+						}
+					}
+					
+				}, 1000);
+			}
+			
+			/**
+			 * 下拉刷新具体业务实现
+			 * bigNum 原始数据
+			 * count 展现数据 
+			 */
+			function pulldownRefresh() {
+				setTimeout(function() {	
+					// 下面两个变量赋值不能外放,因为每次刷新进来都需要取得变化中的count值,而bigNum也有可能重新获取
+					app.bigNum = Math.ceil(app.orderLists.length/5);
+					app.count = Math.ceil(app.orderListsRe.length/5);
+					console.log('bigNum02:'+app.bigNum);
+					console.log('count02:'+app.count);
+					if(app.bigNum!==0){
+						if(app.bigNum===1){
+							app.orderListsRe = app.orderLists;
+						}else {
+							for(var j=app.count*5;j<(app.count+1)*5;j++){
+								if(app.orderLists[j]){
+									app.orderListsRe.unshift(app.orderLists[j]);
+								}									
+							}
+						}
+					}
+					mui('#pullrefresh').pullRefresh().endPulldownToRefresh(); //refresh completed
+				}, 1000);
+			}
+			
+			
+			
+			//上、下拉刷新控件触发函数
+			function pullLoading(){
+				if (mui.os.plus) {
+					mui.plusReady(function() {
+						setTimeout(function() {
+							mui('#pullrefresh').pullRefresh().pullupLoading();
+						}, 1000);
+				
+					});
+				} else {
+					mui.ready(function() {
+						mui('#pullrefresh').pullRefresh().pullupLoading();
+					});
+				}				
+			}
+
+		</script>
+	</body>
+
+</html>

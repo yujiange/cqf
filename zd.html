@@ -1,0 +1,262 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>抓单</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style>
+			.img { width: 45%; max-width: 300px; margin: 30px 0 20px; }
+			.bottom-fix { background: url(images/zd.png) no-repeat 0 bottom; background-size: 100% auto; }
+			.btn-zd {
+				display: block;
+				width: 90%;
+				padding: 15px 0 16px;
+				margin: 0 auto 20px;
+				border: none;
+				font-size: 110%;
+				color: #fff;
+				text-align: center;
+				border-radius: 50px;
+				background-color: #96c2eb;
+				background-image: -moz-linear-gradient( 50deg, rgb(122,178,229) 0%, rgb(168,204,238) 100%);
+				background-image: -webkit-linear-gradient( 50deg, rgb(122,178,229) 0%, rgb(168,204,238) 100%);
+				background-image: -ms-linear-gradient( 50deg, rgb(122,178,229) 0%, rgb(168,204,238) 100%);
+				box-shadow: inset 0px -4px 4px 0px rgba(2, 150, 219, 0.56);
+			}
+			#zdqx{cursor:pointer}
+		</style>
+	</head>
+
+	<body class="b_white">
+		<header class="mui-bar mui-bar-nav">
+			<!--<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>-->
+			<h1 class="mui-title">抓单</h1>
+		</header>
+		<div class="mui-content">
+			<div class="t-center m_10 grey f_8" id="memberName">用户</div>
+			<div class="t-center m_10"> 已激活付款方式：<span class="orange" id="payTypeNameList"></span></div>
+			<div class="main_white m_20">
+				<p class="t-center"><img class="img" src="images/loading.gif" alt=""></p>
+				<div class="t-center grey">您排在队列中<span id="place"></span>名，请合理安排好时间</div>
+			</div>
+		</div>
+		<nav class="mui-bar mui-bar-tab bottom-fix"><a class="btn-zd" id="zdqx" href="javascript:">取消抓单</a></nav>
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/comm.js" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.back = function() {
+				var url = "/member/grabegg-info/cancel_grabegg?id=" + mbId();
+				ajax(url, {}, function(data) {
+					console.log("21212121212");
+					if (data.ok) {
+						plus.webview.currentWebview().close("index");
+						create_view("index", "index.html");
+						plus.webview.currentWebview().close("zd");
+					} else {
+						mui.alert("取消抓单失败.");
+					}
+				}, "GET");
+			}
+			mui.init({
+				beforeback: function() {
+					//获得父页面的webview
+					var list = plus.webview.currentWebview().opener();
+					//触发父页面的自定义事件(refresh),从而进行刷新
+					mui.fire(list, 'refresh');
+					//返回true,继续页面关闭逻辑
+					return true;
+				}
+			});
+			
+			var lockReconnect = false; //避免ws重复连接
+			var ws = null; // 判断当前浏览器是否支持WebSocket
+			var wsUrl = "ws://" + api + "/websocket/" + mbId();
+			createWebSocket(wsUrl); //连接ws
+
+			function createWebSocket(url) {
+				try {
+					if ('WebSocket' in window) {
+						ws = new WebSocket(url);
+					} else if ('MozWebSocket' in window) {
+						ws = new MozWebSocket(url);
+					} else {
+						layui.use(['layer'], function() {
+							var layer = layui.layer;
+							layer.alert("您的浏览器不支持websocket协议,建议使用新版谷歌、火狐等浏览器，请勿使用IE10以下浏览器，360浏览器请使用极速模式，不要使用兼容模式！");
+						});
+					}
+					initEventHandle();
+				} catch (e) {
+					reconnect(url);
+					console.log(e);
+				}
+			}
+
+			function initEventHandle() {
+				ws.onclose = function() {
+					// reconnect(wsUrl);
+					// console.log("llws连接关闭!" + new Date().toUTCString());
+					console.log("Socket已关闭");
+					var url = "/member/grabegg-info/cancel_grabegg?id=" + mbId();
+					ajax(url, {}, function(data) {
+						if (data.ok) {
+							create_view("index", "index.html");
+							plus.webview.currentWebview().close();
+						} else {
+							mui.alert("取消抓单失败.");
+						}
+					}, "GET");
+				};
+				ws.onerror = function() {
+					// reconnect(wsUrl);
+					// console.log("llws连接错误!");
+					console.log("Socket发生了错误");
+					//此时可以尝试刷新页面
+					var url = "/member/grabegg-info/cancel_grabegg?id=" + mbId();
+					ajax(url, {}, function(data) {
+						if (data.ok) {
+							create_view("index", "index.html");
+							plus.webview.currentWebview().close();
+						} else {
+							mui.alert("取消抓单失败.");
+						}
+					}, "GET");
+				};
+				ws.onopen = function() {
+					heartCheck.reset().start(); //心跳检测重置
+					console.log("llws连接成功!" + new Date().toUTCString());
+				};
+				ws.onmessage = function(event) { //如果获取到消息，心跳检测重置
+					heartCheck.reset().start(); //拿到任何消息都说明当前连接是正常的
+					// console.log("llws收到消息啦:" + event.data);
+					// if (event.data != 'pong') {
+					// 	var obj = eval("(" + event.data + ")");
+					// 	layui.use(['layim'], function(layim) {
+					// 			if (obj.type == "onlineStatus") {
+					// 				layim.setFriendStatus(obj.id, obj.content);
+					// 			} else if (obj.type == "friend" || obj.type == "group") {
+					// 				layim.getMessage(obj);
+					// 			}
+					// 		};
+					// 	}
+					console.log("---> 抓单获取的数据:" + event.data);
+					var data = JSON.parse(event.data);
+					//发现消息进入    开始处理前端触发逻辑
+					if (data.ok == true) {
+						create_view("zd_cg", "zd_cg.html", {}, {
+							"zdcg": JSON.stringify(data)
+						});
+						plus.webview.currentWebview().close();
+					}
+				}
+				// 监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+				window.onbeforeunload = function() {
+					consolel.log("onbeforeunload");
+					ws.close();
+				}
+
+				function reconnect(url) {
+					if (lockReconnect) return;
+					lockReconnect = true;
+					setTimeout(function() { //没连接上会一直重连，设置延迟避免请求过多
+						createWebSocket(url);
+						lockReconnect = false;
+					}, 2000);
+				}
+
+				//心跳检测
+				var heartCheck = {
+					// timeout: 540000, //9分钟发一次心跳
+					timeout: 89000,
+					timeoutObj: null,
+					serverTimeoutObj: null,
+					reset: function() {
+						clearTimeout(this.timeoutObj);
+						clearTimeout(this.serverTimeoutObj);
+						return this;
+					},
+					start: function() {
+						var self = this;
+						this.timeoutObj = setTimeout(function() {
+							//这里发送一个心跳，后端收到后，返回一个心跳消息，
+							//onmessage拿到返回的心跳就说明连接正常
+							ws.send("ping");
+							console.log("ping!")
+							self.serverTimeoutObj = setTimeout(function() { //如果超过一定时间还没重置，说明后端主动断开了
+								ws.close(); //如果onclose会执行reconnect，我们执行ws.close()就行了.如果直接执行reconnect 会触发onclose导致重连两次
+							}, self.timeout)
+						}, this.timeout)
+					}
+				}
+			}
+
+			// //检查连接状态
+			// setInterval(function() {
+			// 	var socketStatic = socket.readyState;
+			// 	console.log("检查socket连接状态+++++++++++++>" + socketStatic)
+			// 	if (socketStatic != 1) {
+			// 		location.reload();
+			// 	}
+			// }, 2000)
+			//调用抓单接口
+			function GetPlace() {
+				var url = "/member/grabegg-info/start_grabegg?id=" + mbId();
+				ajax(url, {}, function(data) {
+					if (data.ok) {
+						var indexData = data;
+						var place = indexData.place;
+						var memberName = indexData.memberName;
+						var payTypeNameList = indexData.payTypeNameList;
+						console.log("place++++++++++++++++++++++++++++++>" + place);
+						console.log("========================>" + payTypeNameList);
+						$('#place').text(place);
+						$('#memberName').text(memberName);
+						$("#payTypeNameList").text(payTypeNameList);
+					} else {
+						mui.alert(data.message," ","确定",function(){
+							create_view("index","index.html");
+							plus.webview.currentWebview().close();
+						},"div");
+					}
+				}, "GET");
+			}
+			mui.plusReady(function() {
+				GetPlace();
+			})
+			$("#zdqx").on("tap", function() {
+				outgraber();
+			});
+			//取消抓单
+			function outgraber() {
+				console.log("quxiao")
+				var url = "/member/grabegg-info/cancel_grabegg?id=" + mbId();
+				ajax(url, {}, function(data) {
+					if (data.ok) {
+						plus.webview.currentWebview().close("index");
+						create_view("index", "index.html");
+						plus.webview.currentWebview().close();
+					} else {
+						mui.alert("取消抓单失败.");
+					}
+				}, "GET");
+			};
+			$(function() {
+
+
+				// 五秒倒计时
+				// 				setInterval(function () {
+				// 					// create_view("zd_cg","zd_cg.html");
+				// 					location.href = "zd_cg.html";
+				// 				}, 10000);
+			});
+		</script>
+	</body>
+
+</html>

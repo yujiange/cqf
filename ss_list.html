@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>代理账号信息</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style>
+			.main_white { margin-bottom: 20px; }
+			.items { padding-bottom: 10px; }
+			.items .mui-row { padding: 5px 0; border: none; }
+		</style>
+	</head>
+
+	<body class="b_white">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">代理账号信息</h1>
+		</header>
+		<div class="mui-content" id="refreshContainer">
+			<div class="main_white">
+				<div class="items">
+					<div class="mui-row">
+						<div class="mui-col-xs-4 tit">申诉编号：</div>
+						<div class="mui-col-xs-8 cont">156456489</div>
+					</div>
+					<div class="mui-row">
+						<div class="mui-col-xs-4 tit">申诉类型：</div>
+						<div class="mui-col-xs-8 cont">156456489</div>
+					</div>
+					<div class="mui-row">
+						<div class="mui-col-xs-4 tit">申诉内容：</div>
+						<div class="mui-col-xs-8 cont">dagg申诉内容申诉内容申诉内容申诉内容申诉内容申诉内容申诉内容申诉内容申诉内容</div>
+					</div>
+					<div class="mui-row">
+						<div class="mui-col-xs-4 tit">申诉反馈：</div>
+						<div class="mui-col-xs-8 cont">收到</div>
+					</div>
+					<div class="mui-row">
+						<div class="mui-col-xs-4 tit">申诉状态：</div>
+						<div class="mui-col-xs-8 cont">已提交上去</div>
+					</div>
+				</div>
+				<div class="items">
+					<div class="mui-row">
+						<div class="mui-col-xs-4 tit">申诉编号：</div>
+						<div class="mui-col-xs-8 cont">156456489</div>
+					</div>
+					<div class="mui-row">
+						<div class="mui-col-xs-4 tit">申诉类型：</div>
+						<div class="mui-col-xs-8 cont">156456489</div>
+					</div>
+					<div class="mui-row">
+						<div class="mui-col-xs-4 tit">申诉内容：</div>
+						<div class="mui-col-xs-8 cont">dagg申诉内容申诉内容申诉内容申诉内容申诉内容申诉内容申诉内容申诉内容申诉内容</div>
+					</div>
+					<div class="mui-row">
+						<div class="mui-col-xs-4 tit">申诉反馈：</div>
+						<div class="mui-col-xs-8 cont">收到</div>
+					</div>
+					<div class="mui-row">
+						<div class="mui-col-xs-4 tit">申诉状态：</div>
+						<div class="mui-col-xs-8 cont">已提交上去</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<nav class="mui-bar mui-bar-tab bottom-fix"><a class="btn-blue" href="ss_add.html">发起申诉</a></nav>
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init({
+				pullRefresh  : {
+					container: "#refreshContainer",
+					up : {  //上拉加载分页
+						// auto: true,//可选,默认false.首次加载自动上拉刷新一次
+						callback : getList //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					}, 
+					down : {
+						auto: true,//可选,默认false.首次加载自动上拉刷新一次
+						callback : function (){
+							// ajax("", {}, function () {
+							// 	this.endPulldownToRefresh();  // 上拉结束，true时表示没有数据了
+							// })
+							this.endPulldownToRefresh();
+						} 
+					}
+				}
+			});
+			function getList () {
+				// 获取数据循环列表
+				ajax("", {}, function () {
+					this.endPullupToRefresh(false);  // 上拉结束，true时表示没有数据了
+				})
+			}
+		</script>
+	</body>
+
+</html>

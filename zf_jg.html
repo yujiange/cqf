@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>收银台</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style>
+			.img { width: 45%; max-width: 300px; margin: 15px 0 10px; }
+			.tips { margin: 20px 15px 30px; padding: 10px 30px 0; border: 1px solid #f00c0c; border-radius: 4px; }
+			.tips ol { padding-left: 15px; margin: 10px 0 0; }
+			.tips ol li { margin-bottom: 15px; font-size: 14px; line-height: 20px; }
+			.mui-table-view { padding: 15px 0 ;}
+			.mui-table-view-cell { height: auto; padding: 3px 15px; }
+			.mui-table-view-cell:after { height: 0; }
+			.img_code { width: 160px; height: 160px; margin: 10px auto; padding: 5px; border: 1px solid #ccc; position: relative; overflow: hidden; text-align: center;  }
+			.time-box { display: inline-block; padding: 10px 40px; line-height: 30px; border: 1px solid #f00c0c; }
+		</style>
+	</head>
+
+	<body class="b_white">
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">收银台</h1>
+		</header>
+		<div class="mui-content ">
+			<div class="main_white" >
+				<div class="t-center"><img class="img" src="images/pay_zfb.png" alt=""></div>
+				<div class="tips red">
+					<div class="t-center f_8 ">重点提示</div>
+					<ol>
+						<li>请勿直接打款到之前充值的卡号,每次充值重新匹配账号。否则不能到账，损失自行承担!</li>
+						<li>订单超过5分钟未付款则将超时自动取消，超时取消之后，请不要再继续付款，如仍需充值请重新提交订单。</li>
+					</ol>
+				</div>
+				<ul class="mui-table-view m_20">
+					<li class="mui-table-view-cell">时间：<span class="mui-pull-right">2019-02-19 10:05:23</span></li>
+					<li class="mui-table-view-cell">充值金额：<span class="mui-pull-right red">81000</span></li>
+				</ul>
+				<div class="t-center red m_20">保存二维码到相册，微信扫一扫付钱</div>
+				<p class="t-center m_10">实名：王小儿(如需验证名字请输入入实名)</p>
+				<div class="img_code" id="img_code"><img src="images/bg.png"></div>
+				<p class="t-center"><a class="red bt-save">保存图片</a></p>
+				<div class="t-center m_20"><span class="time-box red">还剩<span class="time">300</span>秒</span></div>
+			</div>
+
+		</div>
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init();
+			
+			mui.plusReady(function() {
+        var self = plus.webview.currentWebview();
+        rg = self.orderInfo;
+        var rg_obj = JSON.parse(rg);
+        console.log(JSON.stringify(rg_obj));
+        
+    });
+			
+			$(function () {
+				// 五分钟倒计时
+				var time = 5*60;
+				var set = setInterval(function () {
+					if (time > 0) {
+						time--;
+						$(".time").html(time);
+					} else {
+						clearInterval(set);
+					}
+				}, 1000)
+			})
+		</script>
+	</body>
+
+</html>

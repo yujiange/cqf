@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style type="text/css">
+			.bottom-fix .line {
+				padding-right: 1px;
+			}
+
+			.bottom-fix .btn-blue {
+				border-radius: 0;
+				border-top-left-radius: 3px;
+				border-top-right-radius: 3px;
+			}
+
+			.mui-input-row .mui-input-right {
+				top: 14px;
+			}
+
+			#ok_fk,
+			#ok_rg {
+				cursor: pointer
+			}
+
+			#bt_view {
+				margin: 30px auto;
+				width: 100%;
+				height: 70px;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: space-around;
+			}
+
+			#bt_view button {
+				width: 30%;
+				height: 60px;
+				background: #00A1E9;
+				color: #FFFFFF;
+				border-radius: 5px;
+				border: none;
+			}
+		</style>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a> 
+			<h1 class="mui-title">充值</h1>
+		</header>
+		<div class="mui-content">
+			<form class="mui-input-group" id="form">
+				<div class="mui-input-row">
+					<label>充值金额：</label>
+					<input type="text" name="cz_money" class="mui-input-clear" disabled>
+				</div>
+				<div class="mui-input-row">
+					<label>充值账户：</label>
+					<input type="text" class="mui-input-clear" name="cz_account" disabled>
+					<span class="mui-input-right"><a id="cz_account_copy" class="btn-xs">复制</a></span>
+				</div>
+				<div class="mui-input-row">
+					<label>充值账户名：</label>
+					<input type="text" class="mui-input-clear" name="cz_name" disabled>
+					<span class="mui-input-right"><a id="cz_name_copy" class="btn-xs">复制</a></span>
+				</div>
+				<div class="mui-input-row">
+					<label>账户银行：</label>
+					<input type="text" class="mui-input-clear" name="cz_bank" disabled>
+				</div>
+				<div class="mui-input-row">
+					<label>开户支行：</label>
+					<input type="text" class="mui-input-clear" name="cz_branch" disabled>
+				</div>
+				<div class="mui-input-row">
+					<label>转账流水号：</label>
+					<input type="text" class="mui-input-clear" name="cz_serial" placeholder="请输入转账成功后的流水号">
+				</div>
+				<div class="t-center red m_20" style="padding-bottom: 20px;">*</div>
+			</form>
+		</div>
+		<div id="bt_view">
+			<!-- <button type="button" class="recharge_list">充值记录</button> -->
+			<button type="button" class="recharge">充值提交</button>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var money;
+			var accountNumber;
+			var accountName;
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				money = self.money;
+				ajax("/memberRecharge/getNewPlatformAccountInfo", {}, function(res) {
+					console.log(JSON.stringify(res));
+					var data = res.platformAccountInfo;
+					$("[name='cz_money']").val(money);
+					$("[name='cz_account']").val(data.accountNumber);
+					$("[name='cz_name']").val(data.accountName);
+					$("[name='cz_bank']").val(data.bankName);
+					$("[name='cz_branch']").val(data.branch);
+					accountNumber=data.accountNumber;
+					accountName=data.accountName;
+				}, "POST")
+			})
+			$("#cz_account_copy").on("tap",function(){
+				copy_fun(accountNumber);
+			})
+			$("#cz_name_copy").on("tap",function(){
+				copy_fun(accountName);
+			})
+			$(".recharge").on("tap", function() {
+				var orderno = $("[name='cz_serial']").val();
+				console.log(orderno);
+				console.log(orderno.indexOf(" "));
+				orderno=orderno.replace(/\n/g,'');
+				var reg = /.*[\u4e00-\u9fa5]+.*$/;
+				if (javaTrim(orderno) != "" && orderno.indexOf(" ") < 0 && !reg.test(orderno)) {
+					ajax("/memberRecharge/save", {
+						"memberId": mbId(),
+						"money": money,
+						"orderno": orderno
+					}, function(res) {
+						if (res.ok) {
+							mui.alert(res.message, ' ', '确定', function(e) {
+								plus.webview.close("cz");
+								plus.webview.currentWebview().close();
+								create_view("index", "index.html", "", {});
+							}, 'div');
+						} else {
+							mui.alert(res.message, ' ', '确定', function(e) {}, 'div')
+						}
+					}, "POST");
+				} else {
+					mui.alert('请输入正确的转账流水号', ' ', '确定', function(e) {}, 'div')
+				}
+
+			})
+			// var time = 60;
+			// var set = setInterval(function() {
+			// 	if (time > 0) {
+			// 		time--;
+			// 		$("#time").html(time);
+			// 	} else {
+			// 		clearInterval(set);
+			// 		//清除定时器后
+			// 		console.log("============定时器" + isOpened);
+			// 		if (isOpened == false) {
+			// 			mui.alert("会员超时未上传收款码，交易失败！");
+			// 			mui.alert('超时未确认支付，交易失败！', ' ', '确定', function(e) {
+			// 				create_view("index", "index.html", "", {});
+			// 				plus.webview.currentWebview().close();
+			// 			}, 'div')
+			// 		}
+			// 	}
+			// }, 1000);
+		</script>
+	</body>
+</html>

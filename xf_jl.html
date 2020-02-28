@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>消费记录</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css" />
+		<link rel="stylesheet" href="css/public.css" />
+		<style type="text/css">
+			.mui-table-view-cell {
+				height: auto;
+			}
+			
+			.mui-pull-right {
+				width: 90px;
+				margin-left: 10px;
+			}
+			
+			.mui-media-body {
+				height: 46px;
+				line-height: 46px;
+			}
+			
+			.mui-media-body .name {
+				display: inline-block;
+				background-color: #d9d9d9;
+				padding: 0 15px;
+				border-radius: 8px;
+				font-size: 14px;
+				line-height: 22px;
+				color: #525252;
+				vertical-align: middle;
+			}
+			
+			.num {
+				font-size: 140%;
+			}
+			
+			.type {
+				color: #000;
+				font-size: 15px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">消费记录</h1>
+		</header>
+
+		<div class="mui-content" id="refreshContainer">
+			<ul class="mui-table-view" id="jfForm">
+			</ul>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/comm.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init();
+			var mbId = mbId();
+			ajax("/member/jfMx", {
+				"mbId": mbId
+			}, function(data) {
+				$.each(data.subscriptionOrderList, function(index,coment) {
+					$("#jfForm").append(''+
+					'<li class="mui-table-view-cell">'+
+					'<div class="mui-pull-right">'+
+					'<span class="red num">'+coment.soCny+'</span><br>'+
+					'<span class="type">会员积分充值</span>'+
+					'</div>'+
+					'<div class="mui-pull-left"><span class="name">积分认购</span><br/><span class="date">'+format(coment.soTime)+'</span></div>'+
+					'</li>');
+				});
+				$.each(data.grabeggInfoList, function(index,coment) {
+					var type = "";
+					if(coment.ptId==1){
+						type = "微信充值";
+					}
+					if(coment.ptId==2){
+						type = "支付宝充值";
+					}
+					if(coment.ptId==3){
+						type = "银行卡充值";
+					}
+					if(coment.ptId==4){
+						type = "闪付充值";
+					}
+					$("#jfForm").append(''+
+					'<li class="mui-table-view-cell">'+
+					'<div class="mui-pull-right">'+
+					'<span class="red num">'+coment.grabeggMoney+'</span><br>'+
+					'<span class="type">'+type+'</span>'+
+					'</div>'+
+					'<div class="mui-pull-left"><span class="name">抓单消费</span><br/><span class="date">'+format(coment.grabeggTime)+'</span></div>'+
+					'</li>');
+				});
+				
+				
+
+			}, "POST")
+			function add0(m) {
+				return m < 10 ? '0' + m : m
+			}
+			
+			function format(shijianchuo) {
+				//shijianchuo是整数，否则要parseInt转换
+				var time = new Date(shijianchuo);
+				var y = time.getFullYear();
+				var m = time.getMonth() + 1;
+				var d = time.getDate() + 1;
+				var h = time.getHours() + 1;
+				var mm = time.getMinutes() + 1;
+				var s = time.getSeconds() + 1;
+				return y + '-' + add0(m) + '-' + add0(d) + ' ' + add0(h) + ':' + add0(mm) + ':' + add0(s);
+			}
+
+			function getList() {
+				// 获取数据循环列表
+
+			}
+		</script>
+	</body>
+
+</html>
